@@ -92,7 +92,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          wranglerVersion: 4.151.1
+          wranglerVersion: 4.156.1
           command:
             pages deploy apps/assets/dist-assets
             --project-name=animated-fluent-emojis --branch=main
@@ -109,7 +109,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          wranglerVersion: 4.151.1
+          wranglerVersion: 4.156.1
           command:
             pages deploy apps/assets/dist-files
             --project-name=animated-fluent-emojis-files --branch=main
