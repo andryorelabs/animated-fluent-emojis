@@ -88,7 +88,7 @@
     "turbo": "^2.11.10",
     "typescript": "catalog:",
     "typescript-eslint": "8.72.1",
-    "typescript7": "npm:typescript@7.1.0-beta",
+    "typescript7": "npm:typescript@7.1.0-dev.20261101.1",
     "vitest": "catalog:",
     "yaml": "^2.9.1"
   },
