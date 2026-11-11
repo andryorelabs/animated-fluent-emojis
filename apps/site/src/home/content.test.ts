@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
 import publicIndexFixture from "../gallery/fixtures/public-index.json";
 import { parsePublicIndex } from "../gallery/public-index";
@@ -59,6 +59,10 @@ function text(html: string): string {
 }
 
 describe("highlighted blocks", () => {
+  beforeAll(async () => {
+    await buildInstallHtml();
+  }, 30_000);
+
   it("fills the placeholders of every framework tab at build time", async () => {
     const emoji = emojis[0];
     if (!emoji) throw new Error("fixture is empty");
