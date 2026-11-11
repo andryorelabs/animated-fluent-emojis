@@ -36,7 +36,7 @@ export type ConvertSprite = (
  */
 interface SpriteState {
   readonly etag: string
-  readonly animation?: AnimationState
+  readonly animation?: AnimationState | undefined
 }
 
 /**
@@ -49,18 +49,18 @@ export type StateFile = Record<string, SpriteState>
  */
 export interface BuildOptions {
   readonly fetchImplementation: FetchLike
-  readonly githubHeaders?: Record<string, string>
+  readonly githubHeaders?: Record<string, string> | undefined
   readonly teamsVersion: TeamsVersion
   readonly outputDirectory: string
   readonly cacheDirectory: string
-  readonly limit?: number
-  readonly previousManifest?: Manifest
-  readonly liveUrl?: string
+  readonly limit?: number | undefined
+  readonly previousManifest?: Manifest | undefined
+  readonly liveUrl?: string | undefined
   readonly maxOutputFiles?: number
   readonly convert?: ConvertSprite
   readonly now?: () => Date
   readonly stepSummaryPath?: string
-  readonly onPlanned?: (planned: Manifest) => void
+  readonly onPlanned?: ((planned: Manifest) => void) | undefined
 }
 
 /**

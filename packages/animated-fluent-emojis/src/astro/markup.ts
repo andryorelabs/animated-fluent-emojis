@@ -29,11 +29,11 @@ export interface EmojiRuntimeConfig {
   playOnHover: boolean
   animationIterations: number | 'infinite'
   autoPlay: boolean
-  playing?: boolean
+  playing?: boolean | undefined
   size: number | string
   animation: { framesCount: number; fps: number; firstFrame: number }
   label: string
-  unicode?: string
+  unicode?: string | undefined
 }
 
 /** The environment facts the playback gate reads. */
@@ -105,8 +105,8 @@ export interface RootOptions {
   alt: string | undefined
   className: string | undefined
   style: string | undefined
-  extraClass?: string
-  config?: EmojiRuntimeConfig
+  extraClass?: string | undefined
+  config?: EmojiRuntimeConfig | undefined
 }
 
 const buildRoot = (options: RootOptions, content: string): string => {
@@ -139,7 +139,7 @@ const buildRoot = (options: RootOptions, content: string): string => {
 /** The sprite image of a ready emoji. */
 export interface ReadyImage {
   source: string
-  sourceSet?: string
+  sourceSet?: string | undefined
   alt: string
 }
 

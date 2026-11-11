@@ -119,7 +119,7 @@ export function EmojiSheetBody(props: EmojiSheetBodyProps) {
               key={previewKey}
               id={emoji.id}
               size={PREVIEW_SIZE}
-              skinTone={appliedTone}
+              {...(appliedTone && { skinTone: appliedTone })}
               animationIterations="infinite"
               alt={name}
               onLoad={() => {

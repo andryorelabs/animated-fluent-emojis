@@ -104,7 +104,7 @@ export interface FilesSiteOptions {
   readonly assetsDirectory: string
   readonly outputDirectory: string
   readonly registry: SlugRegistry
-  readonly encode?: EncodeFiles
+  readonly encode?: EncodeFiles | undefined
   readonly maxOutputFiles?: number
   readonly concurrency?: number
 }

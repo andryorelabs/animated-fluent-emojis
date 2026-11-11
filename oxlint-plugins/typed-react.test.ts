@@ -44,13 +44,15 @@ afterAll(() => {
  * @param files File contents keyed by path relative to the root.
  * @returns Absolute paths keyed like `files`.
  */
-function writeTree(files: Record<string, string>): Record<string, string> {
-  const written: Record<string, string> = {}
-  for (const [relative, contents] of Object.entries(files)) {
+function writeTree<Key extends string>(
+  files: Record<Key, string>,
+): Record<Key, string> {
+  const written = {} as Record<Key, string>
+  for (const [relative, contents] of Object.entries<string>(files)) {
     const absolute = path.join(temporaryRoot, relative)
     mkdirSync(path.dirname(absolute), { recursive: true })
     writeFileSync(absolute, contents)
-    written[relative] = absolute
+    written[relative as Key] = absolute
   }
   return written
 }

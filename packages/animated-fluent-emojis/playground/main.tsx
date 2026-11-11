@@ -38,8 +38,8 @@ const toFallback = (option: FallbackOption): ReactNode => {
   return option === 'null' ? null : undefined
 }
 
-const toPlaying = (option: PlayingOption): boolean | undefined =>
-  option === 'auto' ? undefined : option === 'true'
+const toPlaying = (option: PlayingOption): { playing?: boolean } =>
+  option === 'auto' ? {} : { playing: option === 'true' }
 
 const toSize = (option: string): number | string =>
   /^\d+$/.test(option) ? Number(option) : option
@@ -176,7 +176,7 @@ function Playground(): ReactElement {
           size={toSize(size)}
           skinTone={skinTone}
           fallback={toFallback(fallback)}
-          playing={toPlaying(playing)}
+          {...toPlaying(playing)}
           onPlaybackEnd={() => {
             setEndedRuns((current) => current + 1)
           }}

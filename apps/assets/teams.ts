@@ -99,7 +99,11 @@ async function readText(
   url: string,
   headers?: Record<string, string>,
 ): Promise<string> {
-  const response = await fetchOk(fetchImplementation, url, { headers })
+  const response = await fetchOk(
+    fetchImplementation,
+    url,
+    headers === undefined ? {} : { headers },
+  )
   return response.text()
 }
 

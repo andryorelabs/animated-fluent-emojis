@@ -21,7 +21,7 @@ export interface StructuredDataInput {
   title: string
   description: string
   path: string
-  trail?: readonly Breadcrumb[]
+  trail?: readonly Breadcrumb[] | undefined
 }
 
 /**

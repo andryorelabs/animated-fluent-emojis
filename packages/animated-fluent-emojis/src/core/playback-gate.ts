@@ -22,7 +22,7 @@ export interface PlaybackGateConfig {
   playOnHover: boolean
   animationIterations: number | 'infinite'
   autoPlayRequested: boolean
-  playing?: boolean
+  playing?: boolean | undefined
   prefersReducedMotion: boolean
   isDocumentHidden: boolean
   size: number | string
