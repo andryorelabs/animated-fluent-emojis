@@ -71,6 +71,10 @@ describe('renovate.json5 presets', () => {
     )
   })
 
+  test('turns the dependency dashboard on', () => {
+    expect(config.extends).toContain(':dependencyDashboard')
+  })
+
   test('rebases branches that fall behind the base branch', () => {
     expect(config.rebaseWhen).toBe('behind-base-branch')
   })
@@ -101,6 +105,13 @@ describe('renovate.json5 groups', () => {
     )
     expect(oxc.rangeStrategy).toBe('pin')
     expect(oxc.automerge).toBe(false)
+  })
+
+  test('keeps the oxc rule last so no later rule can turn automerge back on', () => {
+    const rulesAfterOxc = config.packageRules.slice(
+      config.packageRules.indexOf(findGroup('oxc')) + 1,
+    )
+    expect(rulesAfterOxc).toEqual([])
   })
 
   test('keeps the oxc packages out of the eslint group', () => {
