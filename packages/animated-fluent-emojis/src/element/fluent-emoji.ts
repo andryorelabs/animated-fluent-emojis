@@ -86,7 +86,9 @@ const createElementClass = (): CustomElementConstructor => {
       stylesheet.textContent = SHADOW_STYLES
       this.shadow.append(stylesheet)
       this.slotObserver = new MutationObserver(() => {
-        this.controller?.update({ fallback: this.resolveFallback() })
+        this.controller?.update({
+          fallback: this.resolveFallback(),
+        } as Partial<EmojiOptions>)
       })
     }
 
@@ -118,7 +120,7 @@ const createElementClass = (): CustomElementConstructor => {
         onPlaybackEnd: () => {
           this.emit('playback-end')
         },
-      }
+      } as EmojiOptions
     }
 
     private emit(type: string): void {

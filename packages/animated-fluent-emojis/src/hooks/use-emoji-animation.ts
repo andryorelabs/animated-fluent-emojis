@@ -23,8 +23,8 @@ import { useDocumentHidden } from './use-document-hidden.js'
 import { usePrefersReducedMotion } from './use-prefers-reduced-motion.js'
 
 export interface EmojiPlaybackControls {
-  playing?: boolean
-  onPlaybackEnd?: () => void
+  playing?: boolean | undefined
+  onPlaybackEnd?: (() => void) | undefined
 }
 
 export interface UseEmojiAnimationResult {

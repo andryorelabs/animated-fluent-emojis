@@ -180,12 +180,9 @@ function resolveEmoji(
   const modifiers = plain.match(SKIN_TONE_MODIFIERS)
   const base = index.diverse.get(plain.replaceAll(SKIN_TONE_MODIFIERS, ''))
   if (!modifiers || !base) return undefined
-  return new Set(modifiers).size > 1
-    ? { id: base.id }
-    : {
-        id: base.id,
-        skinTone: TONES[(modifiers[0].codePointAt(0) ?? 0) - 0x1_f3_fb],
-      }
+  if (new Set(modifiers).size > 1) return { id: base.id }
+  const skinTone = TONES[(modifiers[0].codePointAt(0) ?? 0) - 0x1_f3_fb]
+  return skinTone === undefined ? { id: base.id } : { id: base.id, skinTone }
 }
 
 /**

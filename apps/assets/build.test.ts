@@ -1041,11 +1041,12 @@ test('rebuilds an emoji from the source when its live file is corrupt', async ()
 const withGhostEmoji = (manifest: Manifest): Manifest => ({
   categories: manifest.categories.map((category) => ({
     ...category,
-    emoticons: category.emoticons.map((emoticon) =>
-      emoticon.id === '1f3c1_chequeredflag'
-        ? { ...emoticon, id: 'ghost', origin: undefined }
-        : emoticon,
-    ),
+    emoticons: category.emoticons.map((emoticon) => {
+      if (emoticon.id !== '1f3c1_chequeredflag') return emoticon
+      const unofficial = { ...emoticon, id: 'ghost' }
+      delete unofficial.origin
+      return unofficial
+    }),
   })),
 })
 

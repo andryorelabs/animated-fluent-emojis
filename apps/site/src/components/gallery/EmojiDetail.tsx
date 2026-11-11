@@ -274,9 +274,9 @@ export function EmojiDetail(props: EmojiDetailProps) {
             key={previewKey}
             id={emoji.id}
             size={size}
-            skinTone={appliedTone}
+            {...(appliedTone && { skinTone: appliedTone })}
             animationIterations="infinite"
-            playing={playing}
+            {...(playing !== undefined && { playing })}
             alt={name}
             onLoad={() => {
               setLoadedKey(previewKey)

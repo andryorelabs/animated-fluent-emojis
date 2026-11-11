@@ -77,7 +77,7 @@ type SpriteOutcome =
   | {
       status: 'ok'
       task: SpriteTask
-      animation?: AnimationState
+      animation?: AnimationState | undefined
       reused: boolean
     }
   | { status: 'failed'; task: SpriteTask; error: Error }
@@ -85,7 +85,11 @@ type SpriteOutcome =
 async function produceSprite(
   task: SpriteTask,
   context: BuildContext,
-): Promise<{ task: SpriteTask; animation?: AnimationState; reused: boolean }> {
+): Promise<{
+  task: SpriteTask
+  animation?: AnimationState | undefined
+  reused: boolean
+}> {
   const { options, mitSha, state, convert } = context
   const target = path.join(options.cacheDirectory, task.outputPath)
   const cached = state[task.outputPath]

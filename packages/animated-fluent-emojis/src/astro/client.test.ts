@@ -50,17 +50,7 @@ afterAll(() => {
 })
 
 const renderOptions = async (options: ConformanceOptions): Promise<string> =>
-  renderEmojiHtml(
-    {
-      id: options.id,
-      size: options.size,
-      animationIterations: options.animationIterations,
-      autoPlay: options.autoPlay,
-      playing: options.playing,
-      alt: options.alt,
-    },
-    '',
-  )
+  renderEmojiHtml(options, '')
 
 defineConformanceSuite(
   'astro',

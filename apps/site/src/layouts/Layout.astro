@@ -31,8 +31,8 @@ interface Props {
   imageAlt?: string
   jsonLd?: object
   trail?: readonly Breadcrumb[]
-  previousHref?: string
-  nextHref?: string
+  previousHref?: string | undefined
+  nextHref?: string | undefined
 }
 
 const {

@@ -58,7 +58,7 @@ interface SegmentedProps<Value extends string | number> {
   options: readonly {
     value: Value
     text: string
-    coarseText?: string
+    coarseText?: string | undefined
     name?: string
     leading?: ReactNode
   }[]
@@ -71,7 +71,7 @@ interface SegmentedProps<Value extends string | number> {
 function OptionText({
   option,
 }: {
-  option: { text: string; coarseText?: string }
+  option: { text: string; coarseText?: string | undefined }
 }) {
   if (option.coarseText === undefined) return option.text
   return (

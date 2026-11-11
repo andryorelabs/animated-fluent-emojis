@@ -29,6 +29,7 @@ export interface GalleryTileEmojiProps {
  */
 export function GalleryTileEmoji(props: GalleryTileEmojiProps) {
   const { emoji, tone, size, armed } = props
+  const appliedTone = effectiveTone(emoji, tone)
   return (
     <span
       className="relative inline-grid size-(--tile-size)"
@@ -47,7 +48,7 @@ export function GalleryTileEmoji(props: GalleryTileEmojiProps) {
         <Emoji
           id={emoji.id}
           size={size}
-          skinTone={effectiveTone(emoji, tone)}
+          {...(appliedTone && { skinTone: appliedTone })}
           autoPlay={false}
           playOnHover
           alt=""
