@@ -11,14 +11,14 @@ A folha de estilo traz os keyframes da animação. Sem ela, os emojis são
 renderizados como sprite sheets estáticos. Importe-a uma vez, no layout raiz:
 
 ```jsx
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>{children}</body>
     </html>
-  )
+  );
 }
 ```
 
@@ -28,10 +28,10 @@ O bundle começa com `"use client";`, então um Server Component pode importar
 `Emoji` diretamente, sem um arquivo intermediário:
 
 ```jsx
-import { Emoji } from 'animated-fluent-emojis/react'
+import { Emoji } from "animated-fluent-emojis/react";
 
 export default function Page() {
-  return <Emoji id="1f44b_wavinghand" size={64} />
+  return <Emoji id="1f44b_wavinghand" size={64} />;
 }
 ```
 
@@ -48,15 +48,15 @@ de um módulo que comece com `"use client"`, não de um Server Component. Um
 pequeno componente montado no layout raiz é suficiente:
 
 ```jsx
-'use client'
+"use client";
 
-import { configureEmojis, preloadEmojis } from 'animated-fluent-emojis'
+import { configureEmojis, preloadEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
-void preloadEmojis()
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
+void preloadEmojis();
 
 export function EmojiSetup() {
-  return null
+  return null;
 }
 ```
 

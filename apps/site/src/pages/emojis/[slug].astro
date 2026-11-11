@@ -1,13 +1,13 @@
 ---
-import EmojiPage from '../../components/EmojiPage.astro'
-import { loadEmojiPageData } from '../../emoji-pages/data'
+import EmojiPage from "../../components/EmojiPage.astro";
+import { loadEmojiPageData } from "../../emoji-pages/data";
 
 export async function getStaticPaths() {
-  const { emojis } = await loadEmojiPageData('en')
-  return emojis.map(({ slug }) => ({ params: { slug } }))
+  const { emojis } = await loadEmojiPageData("en");
+  return emojis.map(({ slug }) => ({ params: { slug } }));
 }
 
-const { slug } = Astro.params
+const { slug } = Astro.params;
 ---
 
 <EmojiPage locale="en" slug={slug} />

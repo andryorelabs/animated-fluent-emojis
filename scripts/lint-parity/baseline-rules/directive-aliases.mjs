@@ -3,21 +3,21 @@
  * name, the same mapping `diff.ts` applies to Oxlint findings.
  */
 const ALIAS_PREFIXES = {
-  'eslint-js/': '',
-  'unicorn-js/': 'unicorn/',
-  'jsdoc-js/': 'jsdoc/',
-  'react-hooks-js/': 'react-hooks/',
-  'vitest-js/': 'vitest/',
-  'typescript-js/': '@typescript-eslint/',
-  'typed-react/': '@eslint-react/',
-}
+  "eslint-js/": "",
+  "unicorn-js/": "unicorn/",
+  "jsdoc-js/": "jsdoc/",
+  "react-hooks-js/": "react-hooks/",
+  "vitest-js/": "vitest/",
+  "typescript-js/": "@typescript-eslint/",
+  "typed-react/": "@eslint-react/",
+};
 
 const ALIAS_PATTERN = new RegExp(
-  String.raw`(?<![\w@/-])(${Object.keys(ALIAS_PREFIXES).join('|')})(?=[a-z])`,
-  'g',
-)
+  String.raw`(?<![\w@/-])(${Object.keys(ALIAS_PREFIXES).join("|")})(?=[a-z])`,
+  "g",
+);
 
-const DIRECTIVE_LINE = /eslint-(?:disable|enable)/
+const DIRECTIVE_LINE = /eslint-(?:disable|enable)/;
 
 /**
  * Rewrites jsPlugin alias names in `eslint-disable`/`eslint-enable` comments
@@ -27,13 +27,13 @@ const DIRECTIVE_LINE = /eslint-(?:disable|enable)/
  */
 export function renameDirectiveAliases(text) {
   return text
-    .split('\n')
+    .split("\n")
     .map((line) =>
       DIRECTIVE_LINE.test(line)
         ? line.replaceAll(ALIAS_PATTERN, (alias) => ALIAS_PREFIXES[alias])
         : line,
     )
-    .join('\n')
+    .join("\n");
 }
 
 /**
@@ -49,6 +49,6 @@ const directiveAliasesPlugin = {
       supportsAutofix: false,
     },
   },
-}
+};
 
-export default directiveAliasesPlugin
+export default directiveAliasesPlugin;

@@ -18,10 +18,10 @@ sheet(200px 프레임)가 있는 emoji에는 너비 기반 `srcSet`(`100w`와 `2
 id가 주어지면 준비되는 즉시 해당 sprite sheet를 요청합니다. reject되지 않습니다.
 
 ```js
-import { preloadEmojis } from 'animated-fluent-emojis'
+import { preloadEmojis } from "animated-fluent-emojis";
 
-void preloadEmojis()
-void preloadEmojis(['1f44b_wavinghand', '1f525_fire'], { skinTone: 'medium' })
+void preloadEmojis();
+void preloadEmojis(["1f44b_wavinghand", "1f525_fire"], { skinTone: "medium" });
 ```
 
 `skinTone`은 피부색이 있는 emoji에서 미리 준비할 변형을 선택합니다.
@@ -34,7 +34,7 @@ void preloadEmojis(['1f44b_wavinghand', '1f525_fire'], { skinTone: 'medium' })
 제공하려면 첫 `Emoji`가 렌더링되기 전에 `configureEmojis`를 한 번 호출하세요.
 
 ```js
-import { configureEmojis } from 'animated-fluent-emojis'
+import { configureEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
 ```

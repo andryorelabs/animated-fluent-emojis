@@ -1,12 +1,12 @@
-import path from 'node:path'
+import path from "node:path";
 
 /**
  * One lint finding, identified by `(file, line, rule)` in ESLint rule ids.
  */
 export interface Finding {
-  file: string
-  line: number
-  rule: string
+  file: string;
+  line: number;
+  rule: string;
 }
 
 /**
@@ -14,36 +14,36 @@ export interface Finding {
  * `(file, rule)`; `reason` is mandatory and must not be blank.
  */
 export interface AcceptedEntry {
-  file: string
-  line?: number
-  rule: string
-  reason: string
+  file: string;
+  line?: number;
+  rule: string;
+  reason: string;
 }
 
 export interface FindingsDiff {
-  common: Finding[]
-  eslintOnly: Finding[]
-  oxlintOnly: Finding[]
+  common: Finding[];
+  eslintOnly: Finding[];
+  oxlintOnly: Finding[];
 }
 
 export interface GateResult {
-  unexplained: Finding[]
-  explained: (Finding & { reason: string })[]
-  stale: AcceptedEntry[]
-  exitCode: 0 | 1
+  unexplained: Finding[];
+  explained: (Finding & { reason: string })[];
+  stale: AcceptedEntry[];
+  exitCode: 0 | 1;
 }
 
 export const findingKey = (finding: Finding): string =>
-  `${finding.file}:${String(finding.line)}:${finding.rule}`
+  `${finding.file}:${String(finding.line)}:${finding.rule}`;
 
 const compareFindings = (left: Finding, right: Finding): number =>
   left.file.localeCompare(right.file) ||
   left.line - right.line ||
-  left.rule.localeCompare(right.rule)
+  left.rule.localeCompare(right.rule);
 
 function uniqueSorted(findings: readonly Finding[]): Finding[] {
-  const byKey = new Map(findings.map((item) => [findingKey(item), item]))
-  return byKey.values().toArray().toSorted(compareFindings)
+  const byKey = new Map(findings.map((item) => [findingKey(item), item]));
+  return byKey.values().toArray().toSorted(compareFindings);
 }
 
 /**
@@ -53,23 +53,16 @@ function uniqueSorted(findings: readonly Finding[]): Finding[] {
  * @param oxlint Findings from the candidate stack.
  * @returns The findings split into common, ESLint-only and Oxlint-only.
  */
-export function diffFindings(
-  eslint: readonly Finding[],
-  oxlint: readonly Finding[],
-): FindingsDiff {
-  const eslintUnique = uniqueSorted(eslint)
-  const oxlintUnique = uniqueSorted(oxlint)
-  const eslintKeys = new Set(eslintUnique.map((item) => findingKey(item)))
-  const oxlintKeys = new Set(oxlintUnique.map((item) => findingKey(item)))
+export function diffFindings(eslint: readonly Finding[], oxlint: readonly Finding[]): FindingsDiff {
+  const eslintUnique = uniqueSorted(eslint);
+  const oxlintUnique = uniqueSorted(oxlint);
+  const eslintKeys = new Set(eslintUnique.map((item) => findingKey(item)));
+  const oxlintKeys = new Set(oxlintUnique.map((item) => findingKey(item)));
   return {
     common: eslintUnique.filter((item) => oxlintKeys.has(findingKey(item))),
-    eslintOnly: eslintUnique.filter(
-      (item) => !oxlintKeys.has(findingKey(item)),
-    ),
-    oxlintOnly: oxlintUnique.filter(
-      (item) => !eslintKeys.has(findingKey(item)),
-    ),
-  }
+    eslintOnly: eslintUnique.filter((item) => !oxlintKeys.has(findingKey(item))),
+    oxlintOnly: oxlintUnique.filter((item) => !eslintKeys.has(findingKey(item))),
+  };
 }
 
 /**
@@ -80,35 +73,35 @@ export function diffFindings(
  * @returns The validated entries.
  */
 export function parseAccepted(text: string): AcceptedEntry[] {
-  const document: unknown = JSON.parse(text)
+  const document: unknown = JSON.parse(text);
   if (!Array.isArray(document)) {
-    throw new TypeError('accepted.json must be a JSON array')
+    throw new TypeError("accepted.json must be a JSON array");
   }
   return (document as unknown[]).map((raw, index) => {
-    const entry = raw as Partial<AcceptedEntry> | null
-    const label = `accepted.json entry ${String(index)}`
-    if (typeof entry?.file !== 'string' || typeof entry.rule !== 'string') {
-      throw new TypeError(`${label} needs string "file" and "rule"`)
+    const entry = raw as Partial<AcceptedEntry> | null;
+    const label = `accepted.json entry ${String(index)}`;
+    if (typeof entry?.file !== "string" || typeof entry.rule !== "string") {
+      throw new TypeError(`${label} needs string "file" and "rule"`);
     }
-    if (typeof entry.reason !== 'string' || entry.reason.trim() === '') {
-      throw new TypeError(`${label} needs a non-empty "reason"`)
+    if (typeof entry.reason !== "string" || entry.reason.trim() === "") {
+      throw new TypeError(`${label} needs a non-empty "reason"`);
     }
-    if (entry.line !== undefined && typeof entry.line !== 'number') {
-      throw new TypeError(`${label} "line" must be a number`)
+    if (entry.line !== undefined && typeof entry.line !== "number") {
+      throw new TypeError(`${label} "line" must be a number`);
     }
     return {
       file: entry.file,
       ...(entry.line !== undefined && { line: entry.line }),
       rule: entry.rule,
       reason: entry.reason,
-    }
-  })
+    };
+  });
 }
 
 const isCoveredBy = (entry: AcceptedEntry, finding: Finding): boolean =>
   entry.file === finding.file &&
   entry.rule === finding.rule &&
-  (entry.line === undefined || entry.line === finding.line)
+  (entry.line === undefined || entry.line === finding.line);
 
 /**
  * Applies the accepted gaps to the ESLint-only findings. Anything left
@@ -122,16 +115,16 @@ export function resolveGate(
   eslintOnly: readonly Finding[],
   accepted: readonly AcceptedEntry[],
 ): GateResult {
-  const unexplained: Finding[] = []
-  const explained: GateResult['explained'] = []
-  const used = new Set<AcceptedEntry>()
+  const unexplained: Finding[] = [];
+  const explained: GateResult["explained"] = [];
+  const used = new Set<AcceptedEntry>();
   for (const finding of eslintOnly) {
-    const match = accepted.find((entry) => isCoveredBy(entry, finding))
+    const match = accepted.find((entry) => isCoveredBy(entry, finding));
     if (match) {
-      used.add(match)
-      explained.push({ ...finding, reason: match.reason })
+      used.add(match);
+      explained.push({ ...finding, reason: match.reason });
     } else {
-      unexplained.push(finding)
+      unexplained.push(finding);
     }
   }
   return {
@@ -139,23 +132,23 @@ export function resolveGate(
     explained,
     stale: accepted.filter((entry) => !used.has(entry)),
     exitCode: unexplained.length > 0 ? 1 : 0,
-  }
+  };
 }
 
 const OXLINT_PLUGIN_PREFIX: Record<string, string> = {
-  eslint: '',
-  'eslint-js': '',
-  typescript: '@typescript-eslint/',
-  'typescript-eslint': '@typescript-eslint/',
-  nextjs: '@next/next/',
-  next: '@next/next/',
-  'unicorn-js': 'unicorn/',
-  'jsdoc-js': 'jsdoc/',
-  'react-hooks-js': 'react-hooks/',
-  'vitest-js': 'vitest/',
-  'typed-react': '@eslint-react/',
-  'typescript-js': '@typescript-eslint/',
-}
+  eslint: "",
+  "eslint-js": "",
+  typescript: "@typescript-eslint/",
+  "typescript-eslint": "@typescript-eslint/",
+  nextjs: "@next/next/",
+  next: "@next/next/",
+  "unicorn-js": "unicorn/",
+  "jsdoc-js": "jsdoc/",
+  "react-hooks-js": "react-hooks/",
+  "vitest-js": "vitest/",
+  "typed-react": "@eslint-react/",
+  "typescript-js": "@typescript-eslint/",
+};
 
 /**
  * Maps an Oxlint diagnostic `code` (`plugin(rule)`) to the ESLint rule id the
@@ -168,10 +161,10 @@ const OXLINT_PLUGIN_PREFIX: Record<string, string> = {
  * @returns The ESLint rule id.
  */
 export function normalizeOxlintRule(code: string): string {
-  const match = /^([^()]+)\((.+)\)$/.exec(code)
-  if (!match) return code
-  const [, plugin = '', rule = ''] = match
-  return `${OXLINT_PLUGIN_PREFIX[plugin] ?? `${plugin}/`}${rule}`
+  const match = /^([^()]+)\((.+)\)$/.exec(code);
+  if (!match) return code;
+  const [, plugin = "", rule = ""] = match;
+  return `${OXLINT_PLUGIN_PREFIX[plugin] ?? `${plugin}/`}${rule}`;
 }
 
 /**
@@ -179,19 +172,18 @@ export function normalizeOxlintRule(code: string): string {
  * without a rule id, Oxlint with an empty code, and both are enforced
  * (`reportUnusedDisableDirectives`).
  */
-export const UNUSED_DIRECTIVE_RULE = 'unused-disable-directive'
+export const UNUSED_DIRECTIVE_RULE = "unused-disable-directive";
 
-const UNUSED_DIRECTIVE_MESSAGE =
-  /^Unused (?:eslint|oxlint)-(?:disable|enable) directive/
+const UNUSED_DIRECTIVE_MESSAGE = /^Unused (?:eslint|oxlint)-(?:disable|enable) directive/;
 
 interface EslintResult {
-  filePath: string
+  filePath: string;
   messages: {
-    ruleId: string | null
-    line: number
-    message?: string
-    fatal?: boolean
-  }[]
+    ruleId: string | null;
+    line: number;
+    message?: string;
+    fatal?: boolean;
+  }[];
 }
 
 /**
@@ -203,14 +195,14 @@ interface EslintResult {
  * @returns The findings, one per rule message.
  */
 export function parseEslintJson(text: string, root: string): Finding[] {
-  const results = JSON.parse(text) as EslintResult[]
+  const results = JSON.parse(text) as EslintResult[];
   const fatal = results.flatMap((result) =>
     result.messages
       .filter((message) => message.fatal === true)
-      .map((message) => `${result.filePath}: ${message.message ?? 'fatal'}`),
-  )
+      .map((message) => `${result.filePath}: ${message.message ?? "fatal"}`),
+  );
   if (fatal.length > 0) {
-    throw new Error(`ESLint reported fatal errors:\n${fatal.join('\n')}`)
+    throw new Error(`ESLint reported fatal errors:\n${fatal.join("\n")}`);
   }
   return results.flatMap((result) =>
     result.messages
@@ -218,7 +210,7 @@ export function parseEslintJson(text: string, root: string): Finding[] {
         line: message.line,
         rule:
           message.ruleId ??
-          (UNUSED_DIRECTIVE_MESSAGE.test(message.message ?? '')
+          (UNUSED_DIRECTIVE_MESSAGE.test(message.message ?? "")
             ? UNUSED_DIRECTIVE_RULE
             : undefined),
       }))
@@ -228,16 +220,16 @@ export function parseEslintJson(text: string, root: string): Finding[] {
         line: item.line,
         rule: item.rule ?? UNUSED_DIRECTIVE_RULE,
       })),
-  )
+  );
 }
 
 interface OxlintOutput {
   diagnostics: {
-    code: string | null
-    message?: string
-    filename: string
-    labels?: { span: { line: number } }[]
-  }[]
+    code: string | null;
+    message?: string;
+    filename: string;
+    labels?: { span: { line: number } }[];
+  }[];
 }
 
 /**
@@ -248,18 +240,18 @@ interface OxlintOutput {
  * @returns The findings, one per diagnostic.
  */
 export function parseOxlintJson(text: string, root: string): Finding[] {
-  const output = JSON.parse(text) as OxlintOutput
+  const output = JSON.parse(text) as OxlintOutput;
   return output.diagnostics.map((diagnostic) => {
-    const code = diagnostic.code ?? ''
+    const code = diagnostic.code ?? "";
     return {
       file: path.isAbsolute(diagnostic.filename)
         ? path.relative(root, diagnostic.filename)
         : diagnostic.filename,
       line: diagnostic.labels?.[0]?.span.line ?? 0,
       rule:
-        code === '' && UNUSED_DIRECTIVE_MESSAGE.test(diagnostic.message ?? '')
+        code === "" && UNUSED_DIRECTIVE_MESSAGE.test(diagnostic.message ?? "")
           ? UNUSED_DIRECTIVE_RULE
           : normalizeOxlintRule(code),
-    }
-  })
+    };
+  });
 }

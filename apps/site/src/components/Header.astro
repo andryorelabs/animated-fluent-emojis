@@ -1,48 +1,39 @@
 ---
-import ExternalLink from '@lucide/astro/icons/external-link'
+import ExternalLink from "@lucide/astro/icons/external-link";
 
-import logoMark from '../../../../docs/brand/logo/mark-animated.svg?url'
-import { LOCALE_NAMES, localePath, LOCALES, type Locale } from '../i18n/locales'
-import { getUi } from '../i18n/ui'
-import {
-  externalLinkAttributes,
-  isExternalHref,
-  REPOSITORY_URL,
-} from '../site-links'
-import HeaderMenus from './HeaderMenus'
+import logoMark from "../../../../docs/brand/logo/mark-animated.svg?url";
+import { LOCALE_NAMES, localePath, LOCALES, type Locale } from "../i18n/locales";
+import { getUi } from "../i18n/ui";
+import { externalLinkAttributes, isExternalHref, REPOSITORY_URL } from "../site-links";
+import HeaderMenus from "./HeaderMenus";
 
 interface Props {
-  locale: Locale
-  path?: string
-  skipTarget?: string
-  embedded?: boolean
+  locale: Locale;
+  path?: string;
+  skipTarget?: string;
+  embedded?: boolean;
 }
 
-const {
-  locale,
-  path = '/',
-  skipTarget = '#main',
-  embedded = false,
-} = Astro.props
-const { common, header } = getUi(locale)
+const { locale, path = "/", skipTarget = "#main", embedded = false } = Astro.props;
+const { common, header } = getUi(locale);
 const links = [
-  { href: localePath(locale, '/emojis/'), label: header.nav.gallery },
-  { href: localePath(locale, '/docs/'), label: header.nav.docs },
+  { href: localePath(locale, "/emojis/"), label: header.nav.gallery },
+  { href: localePath(locale, "/docs/"), label: header.nav.docs },
   { href: REPOSITORY_URL, label: header.nav.github },
-].map((link) => ({ ...link, external: isExternalHref(link.href) }))
-const externalAttributes = externalLinkAttributes()
+].map((link) => ({ ...link, external: isExternalHref(link.href) }));
+const externalAttributes = externalLinkAttributes();
 const localeOptions = LOCALES.map((code) => ({
   code,
   name: LOCALE_NAMES[code],
   href: localePath(code, path),
-}))
+}));
 const linkClass =
-  'inline-flex h-8 items-center rounded-md px-2.5 text-sm font-medium text-foreground hover:bg-muted'
+  "inline-flex h-8 items-center rounded-md px-2.5 text-sm font-medium text-foreground hover:bg-muted";
 ---
 
 <header
   class="site-header sticky top-0 z-30 border-b border-border"
-  role={embedded ? 'none' : undefined}
+  role={embedded ? "none" : undefined}
 >
   <a
     href={skipTarget}
@@ -65,11 +56,7 @@ const linkClass =
       class="hidden items-center gap-1 min-[860px]:flex"
     >
       {links.map((link) => (
-        <a
-          href={link.href}
-          class={linkClass}
-          {...(link.external ? externalAttributes : {})}
-        >
+        <a href={link.href} class={linkClass} {...(link.external ? externalAttributes : {})}>
           {link.label}
           {link.external && (
             <>
@@ -101,11 +88,7 @@ const linkClass =
         <ul class="flex flex-wrap gap-1 min-[860px]:hidden">
           {links.map((link) => (
             <li>
-              <a
-                href={link.href}
-                class={linkClass}
-                {...(link.external ? externalAttributes : {})}
-              >
+              <a href={link.href} class={linkClass} {...(link.external ? externalAttributes : {})}>
                 {link.label}
                 {link.external && (
                   <>
@@ -124,7 +107,7 @@ const linkClass =
                 href={option.href}
                 lang={option.code}
                 hreflang={option.code}
-                aria-current={option.code === locale ? 'true' : undefined}
+                aria-current={option.code === locale ? "true" : undefined}
                 class={linkClass}
               >
                 {option.name}

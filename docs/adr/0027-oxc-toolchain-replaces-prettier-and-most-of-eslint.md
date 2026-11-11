@@ -7,6 +7,7 @@ Accepted. Partly supersedes [0002](0002-tsdoc-only-code-comments.md),
 [0023](0023-practices-parity-with-snug.md).
 
 Date: 2026-11-02
+Revised: 2026-11-11, dropped the Oxfmt style overrides (semicolons off, single quotes, width 80, prose wrap always) in favor of the Oxfmt defaults (standard v1 rule E8).
 
 ## Context
 
@@ -21,7 +22,8 @@ templates without losing or loosening a single rule the repository enforces.
 
 ## Decision
 
-- **Oxfmt replaces Prettier.** `.oxfmtrc.json` reproduces the Prettier options,
+- **Oxfmt replaces Prettier.** `.oxfmtrc.json` keeps the Oxfmt defaults (width
+  100, semicolons, double quotes, `proseWrap` preserve) and adds only
   Tailwind class sorting (`./apps/site/src/styles/global.css`, `cn`, `cva`,
   `clsx`), `astro` formatting and import sorting (`sortImports`, with a group
   for `astro`, `astro/**` and `astro:*`). The formatted file set is unchanged,

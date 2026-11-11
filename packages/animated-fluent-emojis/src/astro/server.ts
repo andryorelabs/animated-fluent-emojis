@@ -1,19 +1,15 @@
-import { normalizeSize } from '../core/normalize.js'
-import {
-  getSpriteSourceSet,
-  getSpriteUrl,
-  startManifestLoad,
-} from '../utils/emoji-manifest.js'
-import { isDevelopment } from '../utils/is-development.js'
+import { normalizeSize } from "../core/normalize.js";
+import { getSpriteSourceSet, getSpriteUrl, startManifestLoad } from "../utils/emoji-manifest.js";
+import { isDevelopment } from "../utils/is-development.js";
 import {
   buildFallbackHtml,
   buildReadyHtml,
   type EmojiRuntimeConfig,
   type RootOptions,
-} from './markup.js'
-import type { EmojiAstroProps } from './types.js'
+} from "./markup.js";
+import type { EmojiAstroProps } from "./types.js";
 
-const warnedMissingIds = new Set<string>()
+const warnedMissingIds = new Set<string>();
 
 /**
  * Renders the HTML of one emoji at build or request time. A ready emoji is a
@@ -33,22 +29,22 @@ export const renderEmojiHtml = async (
     alt: props.alt,
     className: props.class,
     style: props.style,
-  }
-  const snapshot = await startManifestLoad()
-  if (snapshot.status !== 'ready') {
-    return buildFallbackHtml(root, fallbackHtml)
+  };
+  const snapshot = await startManifestLoad();
+  if (snapshot.status !== "ready") {
+    return buildFallbackHtml(root, fallbackHtml);
   }
 
-  const emoji = snapshot.manifest[props.id]
+  const emoji = snapshot.manifest[props.id];
   if (!emoji) {
     if (isDevelopment() && !warnedMissingIds.has(props.id)) {
-      warnedMissingIds.add(props.id)
-      console.warn(`Unknown emoji id "${props.id}".`)
+      warnedMissingIds.add(props.id);
+      console.warn(`Unknown emoji id "${props.id}".`);
     }
-    return buildFallbackHtml(root, fallbackHtml)
+    return buildFallbackHtml(root, fallbackHtml);
   }
 
-  const label = props.alt ?? emoji.description
+  const label = props.alt ?? emoji.description;
   const config: EmojiRuntimeConfig = {
     playOnHover: props.playOnHover ?? false,
     animationIterations: props.animationIterations ?? 2,
@@ -58,7 +54,7 @@ export const renderEmojiHtml = async (
     animation: emoji.animation,
     label,
     unicode: emoji.unicode,
-  }
+  };
   return buildReadyHtml(
     { ...root, config },
     {
@@ -67,5 +63,5 @@ export const renderEmojiHtml = async (
       alt: label,
     },
     fallbackHtml,
-  )
-}
+  );
+};

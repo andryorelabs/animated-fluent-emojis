@@ -12,7 +12,7 @@ Importe o entry do elemento uma vez, por exemplo no módulo de entrada da sua
 aplicação. Ele registra `<fluent-emoji>` e não precisa de folha de estilo:
 
 ```tsx
-import 'animated-fluent-emojis/element'
+import "animated-fluent-emojis/element";
 ```
 
 ## Use a tag
@@ -29,10 +29,10 @@ export function Greeting() {
       size={64}
       play-on-hover
       on:playback-end={() => {
-        console.log('done')
+        console.log("done");
       }}
     />
-  )
+  );
 }
 ```
 
@@ -43,7 +43,7 @@ elemento:
 <fluent-emoji
   id="1f44b_wavinghand"
   ref={(element) => {
-    element.playing = false
+    element.playing = false;
   }}
 >
   <span slot="fallback">👋</span>

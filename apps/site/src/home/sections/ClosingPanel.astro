@@ -1,61 +1,61 @@
 ---
-import Emoji from 'animated-fluent-emojis/astro'
+import Emoji from "animated-fluent-emojis/astro";
 
-import { buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from "@/components/ui/button";
 
-import { localePath, type Locale } from '../../i18n/locales'
-import { getUi } from '../../i18n/ui'
-import { externalLinkAttributes, REPOSITORY_URL } from '../../site-links'
-import { section } from './styles'
+import { localePath, type Locale } from "../../i18n/locales";
+import { getUi } from "../../i18n/ui";
+import { externalLinkAttributes, REPOSITORY_URL } from "../../site-links";
+import { section } from "./styles";
 
 interface Props {
-  locale: Locale
+  locale: Locale;
 }
 
-const { locale } = Astro.props
-const { home, common } = getUi(locale)
+const { locale } = Astro.props;
+const { home, common } = getUi(locale);
 
-const docsHref = localePath(locale, '/docs/')
+const docsHref = localePath(locale, "/docs/");
 
 const decorations = [
   {
-    id: '1f389_partypopper',
-    placement: 'top-5 left-pct-4',
-    size: 'size-26',
-    tilt: '-rotate-10',
-    delay: '0s',
+    id: "1f389_partypopper",
+    placement: "top-5 left-pct-4",
+    size: "size-26",
+    tilt: "-rotate-10",
+    delay: "0s",
   },
   {
-    id: 'fire',
-    placement: 'bottom-3.5 left-pct-19',
-    size: 'size-14.5',
-    tilt: 'rotate-0',
-    delay: '1.1s',
+    id: "fire",
+    placement: "bottom-3.5 left-pct-19",
+    size: "size-14.5",
+    tilt: "rotate-0",
+    delay: "1.1s",
   },
   {
-    id: 'launch',
-    placement: 'top-4 right-pct-4',
-    size: 'size-27.5',
-    tilt: 'rotate-10',
-    delay: '0.5s',
+    id: "launch",
+    placement: "top-4 right-pct-4",
+    size: "size-27.5",
+    tilt: "rotate-10",
+    delay: "0.5s",
   },
   {
-    id: 'heartgreen',
-    placement: 'bottom-4.5 right-pct-18',
-    size: 'size-15.5',
-    tilt: 'rotate-0',
-    delay: '1.7s',
+    id: "heartgreen",
+    placement: "bottom-4.5 right-pct-18",
+    size: "size-15.5",
+    tilt: "rotate-0",
+    delay: "1.7s",
   },
-]
+];
 
 const primaryButton = buttonVariants({
   className:
-    'h-auto min-h-11 rounded-xl bg-foreground px-5 text-base font-semibold text-background hover:bg-foreground/90',
-})
+    "h-auto min-h-11 rounded-xl bg-foreground px-5 text-base font-semibold text-background hover:bg-foreground/90",
+});
 const secondaryButton = buttonVariants({
-  variant: 'outline',
-  className: 'h-auto min-h-11 rounded-xl px-5 text-base font-semibold',
-})
+  variant: "outline",
+  className: "h-auto min-h-11 rounded-xl px-5 text-base font-semibold",
+});
 ---
 
 <section class={section} aria-labelledby="closing-title">
@@ -68,7 +68,7 @@ const secondaryButton = buttonVariants({
       {decorations.map((decoration) => (
         <span
           class={`emoji-float absolute hidden split:block ${decoration.size} ${decoration.placement} ${decoration.tilt}`}
-          style={{ '--float-delay': decoration.delay }}
+          style={{ "--float-delay": decoration.delay }}
         >
           <Emoji id={decoration.id} size="100%" alt="" />
         </span>
@@ -79,12 +79,9 @@ const secondaryButton = buttonVariants({
         id="closing-title"
         class="text-fluid-closing leading-tight font-extrabold tracking-heading text-balance"
       >
-        {home.closing.titleLead}{' '}
-        <span class="text-primary">{home.closing.titleAccent}</span>
+        {home.closing.titleLead} <span class="text-primary">{home.closing.titleAccent}</span>
       </h2>
-      <p class="text-lg text-pretty text-muted-foreground">
-        {home.closing.body}
-      </p>
+      <p class="text-lg text-pretty text-muted-foreground">{home.closing.body}</p>
       <div class="flex flex-wrap justify-center gap-2.5">
         <a href={docsHref} class={primaryButton}>
           {home.hero.ctaDocs}

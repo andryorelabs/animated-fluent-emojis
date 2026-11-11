@@ -1,7 +1,7 @@
-import { lastCommitDate } from '../seo/last-modified'
-import type { SitemapSource } from '../seo/sitemap'
-import { CHANGELOG_SLUG } from './changelog-pages'
-import { docSlug, PUBLISHED_DOCS } from './published'
+import { lastCommitDate } from "../seo/last-modified";
+import type { SitemapSource } from "../seo/sitemap";
+import { CHANGELOG_SLUG } from "./changelog-pages";
+import { docSlug, PUBLISHED_DOCS } from "./published";
 
 /**
  * Sitemap routes for every published doc and the changelog, listed in every
@@ -18,6 +18,6 @@ export const docsSitemapSource: SitemapSource = () => [
   {
     path: `/${CHANGELOG_SLUG}/`,
     localized: true,
-    lastmod: lastCommitDate(['../../CHANGELOG.md']),
+    lastmod: lastCommitDate(["../../CHANGELOG.md"]),
   },
-]
+];

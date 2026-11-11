@@ -1,37 +1,37 @@
-import type { Manifest } from '../../packages/animated-fluent-emojis/src/utils/types.js'
-import { TONE_SUFFIXES } from './constants.js'
+import type { Manifest } from "../../packages/animated-fluent-emojis/src/utils/types.js";
+import { TONE_SUFFIXES } from "./constants.js";
 
 /**
  * The committed registry of frozen public slugs.
  */
 export interface SlugRegistry {
   /** Registry format version. */
-  version: 1
+  version: 1;
   /** Slugs keyed by `${id}${toneSuffix}`, sorted by key. */
-  slugs: Record<string, string>
+  slugs: Record<string, string>;
 }
 
 /**
  * Pattern every public slug must match.
  */
-export const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/
+export const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 const TONE_SLUGS: Record<(typeof TONE_SUFFIXES)[number], string> = {
-  _s2: '-light',
-  _s3: '-medium-light',
-  _s4: '-medium',
-  _s5: '-medium-dark',
-  _s6: '-dark',
-}
+  _s2: "-light",
+  _s3: "-medium-light",
+  _s4: "-medium",
+  _s5: "-medium-dark",
+  _s6: "-dark",
+};
 
 const toKebab = (text: string): string =>
   text
-    .normalize('NFKD')
-    .replaceAll(/\p{M}/gu, '')
+    .normalize("NFKD")
+    .replaceAll(/\p{M}/gu, "")
     .toLowerCase()
-    .replaceAll('&', ' and ')
-    .replaceAll(/[^a-z0-9]+/g, '-')
-    .replaceAll(/^-+|-+$/g, '')
+    .replaceAll("&", " and ")
+    .replaceAll(/[^a-z0-9]+/g, "-")
+    .replaceAll(/^-+|-+$/g, "");
 
 /**
  * Turns an emoji description into a kebab-case slug.
@@ -40,7 +40,7 @@ const toKebab = (text: string): string =>
  * @returns A slug matching {@link SLUG_PATTERN}.
  */
 export function slugify(description: string, fallback: string): string {
-  return toKebab(description) || toKebab(fallback) || 'emoji'
+  return toKebab(description) || toKebab(fallback) || "emoji";
 }
 
 /**
@@ -48,11 +48,11 @@ export function slugify(description: string, fallback: string): string {
  */
 export interface RegistryKey {
   /** The emoji id. */
-  id: string
+  id: string;
   /** The registry key, `${id}${toneSuffix}`. */
-  key: string
+  key: string;
   /** The slug suffix of the tone, empty for the default tone. */
-  tone: string
+  tone: string;
 }
 
 /**
@@ -66,36 +66,33 @@ export function listRegistryKeys(manifest: Manifest): RegistryKey[] {
     category.emoticons.flatMap((emoticon) => {
       const variants = emoticon.diverse
         ? [
-            { suffix: '', tone: '' },
+            { suffix: "", tone: "" },
             ...TONE_SUFFIXES.map((suffix) => ({
               suffix: suffix,
               tone: TONE_SLUGS[suffix],
             })),
           ]
-        : [{ suffix: '', tone: '' }]
+        : [{ suffix: "", tone: "" }];
       return variants.map(({ suffix, tone }) => ({
         id: emoticon.id,
         key: `${emoticon.id}${suffix}`,
         tone,
-      }))
+      }));
     }),
-  )
+  );
 }
 
-const compareKeys = (a: string, b: string): number =>
-  a < b ? -1 : a > b ? 1 : 0
+const compareKeys = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
 
 function sortSlugs(slugs: Record<string, string>): Record<string, string> {
-  return Object.fromEntries(
-    Object.entries(slugs).toSorted(([a], [b]) => compareKeys(a, b)),
-  )
+  return Object.fromEntries(Object.entries(slugs).toSorted(([a], [b]) => compareKeys(a, b)));
 }
 
 function nextFreeSlug(candidate: string, taken: ReadonlySet<string>): string {
-  if (!taken.has(candidate)) return candidate
+  if (!taken.has(candidate)) return candidate;
   for (let suffix = 2; ; suffix += 1) {
-    const next = `${candidate}-${String(suffix)}`
-    if (!taken.has(next)) return next
+    const next = `${candidate}-${String(suffix)}`;
+    if (!taken.has(next)) return next;
   }
 }
 
@@ -108,32 +105,27 @@ function nextFreeSlug(candidate: string, taken: ReadonlySet<string>): string {
  * @param frozen The registry whose slugs are kept as-is.
  * @returns A sorted registry covering the manifest and everything frozen.
  */
-export function deriveRegistry(
-  manifest: Manifest,
-  frozen?: SlugRegistry,
-): SlugRegistry {
-  const slugs: Record<string, string> = { ...frozen?.slugs }
-  const taken = new Set(Object.values(slugs))
+export function deriveRegistry(manifest: Manifest, frozen?: SlugRegistry): SlugRegistry {
+  const slugs: Record<string, string> = { ...frozen?.slugs };
+  const taken = new Set(Object.values(slugs));
   const descriptions = new Map(
     manifest.categories.flatMap((category) =>
-      category.emoticons.map(
-        (emoticon) => [emoticon.id, emoticon.description] as const,
-      ),
+      category.emoticons.map((emoticon) => [emoticon.id, emoticon.description] as const),
     ),
-  )
-  const baseSlugs = new Map<string, string>()
+  );
+  const baseSlugs = new Map<string, string>();
   for (const { id, key, tone } of listRegistryKeys(manifest)) {
-    if (Object.hasOwn(slugs, key)) continue
+    if (Object.hasOwn(slugs, key)) continue;
     const baseSlug =
       baseSlugs.get(id) ??
       slugs[id] ??
-      nextFreeSlug(slugify(descriptions.get(id) ?? id, id), taken)
-    baseSlugs.set(id, baseSlug)
-    const slug = nextFreeSlug(`${baseSlug}${tone}`, taken)
-    slugs[key] = slug
-    taken.add(slug)
+      nextFreeSlug(slugify(descriptions.get(id) ?? id, id), taken);
+    baseSlugs.set(id, baseSlug);
+    const slug = nextFreeSlug(`${baseSlug}${tone}`, taken);
+    slugs[key] = slug;
+    taken.add(slug);
   }
-  return { version: 1, slugs: sortSlugs(slugs) }
+  return { version: 1, slugs: sortSlugs(slugs) };
 }
 
 /**
@@ -145,26 +137,26 @@ export function deriveRegistry(
  */
 export function registryFromIndex(
   entries: readonly {
-    id: string
-    slug: string
-    tones: readonly { tone: string; slug: string }[]
+    id: string;
+    slug: string;
+    tones: readonly { tone: string; slug: string }[];
   }[],
 ): SlugRegistry {
   const suffixByTone = new Map(
     TONE_SUFFIXES.map((suffix) => [TONE_SLUGS[suffix].slice(1), suffix]),
-  )
-  const slugs: Record<string, string> = {}
+  );
+  const slugs: Record<string, string> = {};
   for (const { id, slug, tones } of entries) {
-    slugs[id] = slug
+    slugs[id] = slug;
     for (const { tone, slug: toneSlug } of tones) {
-      const suffix = suffixByTone.get(tone)
+      const suffix = suffixByTone.get(tone);
       if (suffix === undefined) {
-        throw new Error(`Unknown skin tone "${tone}" for ${id} in index.json.`)
+        throw new Error(`Unknown skin tone "${tone}" for ${id} in index.json.`);
       }
-      slugs[`${id}${suffix}`] = toneSlug
+      slugs[`${id}${suffix}`] = toneSlug;
     }
   }
-  return { version: 1, slugs: sortSlugs(slugs) }
+  return { version: 1, slugs: sortSlugs(slugs) };
 }
 
 /**
@@ -174,27 +166,22 @@ export function registryFromIndex(
  * @returns The sorted union of both registries.
  * @throws {Error} When a key maps to different slugs, or two keys share a slug.
  */
-export function mergeRegistries(
-  committed: SlugRegistry,
-  live: SlugRegistry,
-): SlugRegistry {
-  const slugs: Record<string, string> = { ...committed.slugs }
+export function mergeRegistries(committed: SlugRegistry, live: SlugRegistry): SlugRegistry {
+  const slugs: Record<string, string> = { ...committed.slugs };
   for (const [key, slug] of Object.entries(live.slugs)) {
-    const existing = slugs[key]
+    const existing = slugs[key];
     if (existing !== undefined && existing !== slug) {
-      throw new Error(
-        `Slug conflict for ${key}: committed "${existing}" vs live "${slug}".`,
-      )
+      throw new Error(`Slug conflict for ${key}: committed "${existing}" vs live "${slug}".`);
     }
-    slugs[key] = slug
+    slugs[key] = slug;
   }
-  const owners = new Map<string, string>()
+  const owners = new Map<string, string>();
   for (const [key, slug] of Object.entries(slugs)) {
-    const owner = owners.get(slug)
+    const owner = owners.get(slug);
     if (owner !== undefined) {
-      throw new Error(`Slug "${slug}" is used by both ${owner} and ${key}.`)
+      throw new Error(`Slug "${slug}" is used by both ${owner} and ${key}.`);
     }
-    owners.set(slug, key)
+    owners.set(slug, key);
   }
-  return { version: 1, slugs: sortSlugs(slugs) }
+  return { version: 1, slugs: sortSlugs(slugs) };
 }

@@ -5,14 +5,11 @@ export interface CodeHtmlFactory {
   createPolicy(
     name: string,
     rules: { createHTML: (input: string) => string },
-  ): { createHTML: (input: string) => TrustedHTML }
+  ): { createHTML: (input: string) => TrustedHTML };
 }
 
-const POLICY_NAME = 'afe-code'
-const policies = new WeakMap<
-  CodeHtmlFactory,
-  ReturnType<CodeHtmlFactory['createPolicy']>
->()
+const POLICY_NAME = "afe-code";
+const policies = new WeakMap<CodeHtmlFactory, ReturnType<CodeHtmlFactory["createPolicy"]>>();
 
 /**
  * Wraps highlighted code markup as Trusted Types HTML so React can assign it
@@ -27,17 +24,16 @@ const policies = new WeakMap<
  */
 export function trustedCodeHtml(
   html: string,
-  factory: CodeHtmlFactory | undefined = (
-    globalThis as { trustedTypes?: CodeHtmlFactory }
-  ).trustedTypes,
+  factory: CodeHtmlFactory | undefined = (globalThis as { trustedTypes?: CodeHtmlFactory })
+    .trustedTypes,
 ): string | TrustedHTML {
-  if (!factory) return html
-  let policy = policies.get(factory)
+  if (!factory) return html;
+  let policy = policies.get(factory);
   if (!policy) {
     policy = factory.createPolicy(POLICY_NAME, {
       createHTML: (input) => input,
-    })
-    policies.set(factory, policy)
+    });
+    policies.set(factory, policy);
   }
-  return policy.createHTML(html)
+  return policy.createHTML(html);
 }

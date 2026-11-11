@@ -12,9 +12,9 @@ sheet，这样 emoji 出现时就不会有可见的加载过程。
 渲染之前开始获取 manifest。它永远不会 reject，所以只写 `void` 就够了：
 
 ```jsx
-import { preloadEmojis } from 'animated-fluent-emojis'
+import { preloadEmojis } from "animated-fluent-emojis";
 
-void preloadEmojis()
+void preloadEmojis();
 ```
 
 请在用户可能打开选择器的时候调用它，例如触发按钮被悬停或获得焦点时，或者应用外壳挂载时。
@@ -25,10 +25,10 @@ void preloadEmojis()
 `skinTone` 可以预热用户将看到的变体：
 
 ```jsx
-const quickReactions = ['1f44b_wavinghand', '1f525_fire', '1f389_partypopper']
+const quickReactions = ["1f44b_wavinghand", "1f525_fire", "1f389_partypopper"];
 
 function handlePickerTriggerHover() {
-  void preloadEmojis(quickReactions, { skinTone: 'medium' })
+  void preloadEmojis(quickReactions, { skinTone: "medium" });
 }
 ```
 

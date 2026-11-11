@@ -2,27 +2,27 @@ import {
   createPreferenceStore,
   type PreferenceEnvironment,
   type PreferenceStore,
-} from './persisted-preference'
+} from "./persisted-preference";
 
-export const FILE_ACTION_FORMATS = ['webp', 'gif', 'png'] as const
+export const FILE_ACTION_FORMATS = ["webp", "gif", "png"] as const;
 
-export type FileActionFormat = (typeof FILE_ACTION_FORMATS)[number]
+export type FileActionFormat = (typeof FILE_ACTION_FORMATS)[number];
 
-const FILE_ACTION_VERBS = ['download', 'copy'] as const
+const FILE_ACTION_VERBS = ["download", "copy"] as const;
 
-export type FileActionVerb = (typeof FILE_ACTION_VERBS)[number]
+export type FileActionVerb = (typeof FILE_ACTION_VERBS)[number];
 
-export type FileAction = `${FileActionVerb}-${FileActionFormat}`
+export type FileAction = `${FileActionVerb}-${FileActionFormat}`;
 
-export const FILE_ACTIONS: readonly FileAction[] = FILE_ACTION_VERBS.flatMap(
-  (verb) => FILE_ACTION_FORMATS.map((format) => `${verb}-${format}` as const),
-)
+export const FILE_ACTIONS: readonly FileAction[] = FILE_ACTION_VERBS.flatMap((verb) =>
+  FILE_ACTION_FORMATS.map((format) => `${verb}-${format}` as const),
+);
 
-export const DEFAULT_FILE_ACTION: FileAction = 'download-webp'
+export const DEFAULT_FILE_ACTION: FileAction = "download-webp";
 
-export const FILE_ACTION_STORAGE_KEY = 'afe:file-action'
+export const FILE_ACTION_STORAGE_KEY = "afe:file-action";
 
-const FILE_ACTION_EVENT = 'afe:file-action-change'
+const FILE_ACTION_EVENT = "afe:file-action-change";
 
 /**
  * Narrows a stored or user-provided value to a supported file action.
@@ -30,7 +30,7 @@ const FILE_ACTION_EVENT = 'afe:file-action-change'
  * @returns Whether it names a supported file action.
  */
 export function isFileAction(value: unknown): value is FileAction {
-  return FILE_ACTIONS.includes(value as FileAction)
+  return FILE_ACTIONS.includes(value as FileAction);
 }
 
 /**
@@ -39,11 +39,11 @@ export function isFileAction(value: unknown): value is FileAction {
  * @returns The verb (`download` or `copy`) and the format.
  */
 export function parseFileAction(action: FileAction): {
-  verb: FileActionVerb
-  format: FileActionFormat
+  verb: FileActionVerb;
+  format: FileActionFormat;
 } {
-  const [verb, format] = action.split('-') as [FileActionVerb, FileActionFormat]
-  return { verb, format }
+  const [verb, format] = action.split("-") as [FileActionVerb, FileActionFormat];
+  return { verb, format };
 }
 
 /**
@@ -64,20 +64,20 @@ export function createFileActionStore(
       isValue: isFileAction,
     },
     environment,
-  )
+  );
 }
 
 export interface FileActionTarget {
-  filenameBase: string
-  urlFor: (format: FileActionFormat) => string
+  filenameBase: string;
+  urlFor: (format: FileActionFormat) => string;
 }
 
 export interface FileActionIo {
-  download: (url: string, filename: string) => Promise<void>
-  copy: (text: string) => Promise<void>
+  download: (url: string, filename: string) => Promise<void>;
+  copy: (text: string) => Promise<void>;
 }
 
-export type FileActionOutcome = 'downloaded' | 'copied' | 'failed'
+export type FileActionOutcome = "downloaded" | "copied" | "failed";
 
 /**
  * Downloads a public file through fetch and a blob, so the browser saves it
@@ -85,22 +85,19 @@ export type FileActionOutcome = 'downloaded' | 'copied' | 'failed'
  * @param url - Absolute file URL.
  * @param filename - Name to save the file as.
  */
-export async function downloadFile(
-  url: string,
-  filename: string,
-): Promise<void> {
-  const response = await fetch(url)
+export async function downloadFile(url: string, filename: string): Promise<void> {
+  const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(`${url} answered ${String(response.status)}`)
+    throw new Error(`${url} answered ${String(response.status)}`);
   }
-  const objectUrl = URL.createObjectURL(await response.blob())
-  const link = document.createElement('a')
-  link.href = objectUrl
-  link.download = filename
-  document.body.append(link)
-  link.click()
-  link.remove()
-  URL.revokeObjectURL(objectUrl)
+  const objectUrl = URL.createObjectURL(await response.blob());
+  const link = document.createElement("a");
+  link.href = objectUrl;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(objectUrl);
 }
 
 /**
@@ -116,16 +113,16 @@ export async function runFileAction(
   target: FileActionTarget,
   io: FileActionIo,
 ): Promise<FileActionOutcome> {
-  const { verb, format } = parseFileAction(action)
-  const url = target.urlFor(format)
+  const { verb, format } = parseFileAction(action);
+  const url = target.urlFor(format);
   try {
-    if (verb === 'copy') {
-      await io.copy(url)
-      return 'copied'
+    if (verb === "copy") {
+      await io.copy(url);
+      return "copied";
     }
-    await io.download(url, `${target.filenameBase}.${format}`)
-    return 'downloaded'
+    await io.download(url, `${target.filenameBase}.${format}`);
+    return "downloaded";
   } catch {
-    return 'failed'
+    return "failed";
   }
 }

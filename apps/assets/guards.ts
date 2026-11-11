@@ -1,20 +1,20 @@
-import { appendFileSync } from 'node:fs'
-import { readdir } from 'node:fs/promises'
-import path from 'node:path'
+import { appendFileSync } from "node:fs";
+import { readdir } from "node:fs/promises";
+import path from "node:path";
 
-import type { Manifest } from '../../packages/animated-fluent-emojis/src/utils/types.js'
-import type { ManifestDiff } from './manifest-ops.js'
-import type { TeamsDiscovery } from './teams.js'
+import type { Manifest } from "../../packages/animated-fluent-emojis/src/utils/types.js";
+import type { ManifestDiff } from "./manifest-ops.js";
+import type { TeamsDiscovery } from "./teams.js";
 
 /**
  * Largest fraction of the previous catalog a single run may remove.
  */
-const MAX_REMOVED_FRACTION = 0.05
+const MAX_REMOVED_FRACTION = 0.05;
 
 /**
  * Most files the output may hold. Cloudflare Pages allows 20,000.
  */
-export const MAX_OUTPUT_FILES = 19_000
+export const MAX_OUTPUT_FILES = 19_000;
 
 /**
  * Fails when both advertised Teams discovery sources yielded nothing, which
@@ -23,21 +23,18 @@ export const MAX_OUTPUT_FILES = 19_000
  * @param bypassGuards Whether the guard is bypassed.
  */
 export function assertDiscoveryHealthy(
-  discovery: Pick<TeamsDiscovery, 'advertisedSourcesFailed'>,
+  discovery: Pick<TeamsDiscovery, "advertisedSourcesFailed">,
   bypassGuards: boolean,
 ): void {
   if (!bypassGuards && discovery.advertisedSourcesFailed) {
     throw new Error(
-      'Teams discovery failed: neither the web client bundle nor ECS advertised a metadata hash. Re-run with bypass_guards to fall back to the known hashes.',
-    )
+      "Teams discovery failed: neither the web client bundle nor ECS advertised a metadata hash. Re-run with bypass_guards to fall back to the known hashes.",
+    );
   }
 }
 
 function countEmoticons(manifest: Manifest): number {
-  return manifest.categories.reduce(
-    (total, category) => total + category.emoticons.length,
-    0,
-  )
+  return manifest.categories.reduce((total, category) => total + category.emoticons.length, 0);
 }
 
 /**
@@ -49,15 +46,15 @@ function countEmoticons(manifest: Manifest): number {
  */
 export function assertRemovalsWithinLimit(
   previous: Manifest,
-  diff: Pick<ManifestDiff, 'removed'>,
+  diff: Pick<ManifestDiff, "removed">,
   bypassGuards: boolean,
 ): void {
-  const previousCount = countEmoticons(previous)
-  const limit = previousCount * MAX_REMOVED_FRACTION
+  const previousCount = countEmoticons(previous);
+  const limit = previousCount * MAX_REMOVED_FRACTION;
   if (!bypassGuards && diff.removed.length > limit) {
     throw new Error(
       `Refusing to publish: ${String(diff.removed.length)} of ${String(previousCount)} emoji would be removed (limit ${String(MAX_REMOVED_FRACTION * 100)}%). Re-run with bypass_guards if this is intended.`,
-    )
+    );
   }
 }
 
@@ -70,8 +67,8 @@ export async function countFiles(directory: string): Promise<number> {
   const entries = await readdir(path.resolve(directory), {
     recursive: true,
     withFileTypes: true,
-  })
-  return entries.filter((entry) => entry.isFile()).length
+  });
+  return entries.filter((entry) => entry.isFile()).length;
 }
 
 /**
@@ -83,11 +80,11 @@ export async function assertFileCountWithinLimit(
   directory: string,
   limit = MAX_OUTPUT_FILES,
 ): Promise<void> {
-  const total = await countFiles(directory)
+  const total = await countFiles(directory);
   if (total > limit) {
     throw new Error(
       `Output holds ${String(total)} files, over the ${String(limit)} limit (Cloudflare Pages allows 20,000).`,
-    )
+    );
   }
 }
 
@@ -102,9 +99,6 @@ export function appendStepSummary(
   lines: readonly string[],
   summaryPath = process.env.GITHUB_STEP_SUMMARY,
 ): void {
-  if (!summaryPath || lines.length === 0) return
-  appendFileSync(
-    summaryPath,
-    `### ${title}\n\n${lines.map((line) => `- ${line}`).join('\n')}\n\n`,
-  )
+  if (!summaryPath || lines.length === 0) return;
+  appendFileSync(summaryPath, `### ${title}\n\n${lines.map((line) => `- ${line}`).join("\n")}\n\n`);
 }

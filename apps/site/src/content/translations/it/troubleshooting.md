@@ -39,7 +39,7 @@ Altri casi sembrano identici e non sono bug:
 **Soluzione:** Importa il foglio di stile una sola volta, alla radice dell'app:
 
 ```js
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 ```
 
 Se lo hai già importato e l'emoji resta ferma, controlla l'impostazione di
@@ -170,15 +170,14 @@ tra un test e l'altro. Questo repository lo fa con MSW in
 `src/utils/emoji-manifest.test.ts`:
 
 ```ts
-import { http, HttpResponse } from 'msw/http'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from "msw/http";
+import { setupServer } from "msw/node";
 
 const server = setupServer(
-  http.get(
-    'https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json',
-    () => HttpResponse.json(compactManifest),
+  http.get("https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json", () =>
+    HttpResponse.json(compactManifest),
   ),
-)
+);
 ```
 
 `compactManifest` è la forma compatta del manifest slim; la fixture usata qui è

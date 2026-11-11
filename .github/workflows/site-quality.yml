@@ -3,15 +3,15 @@ name: Site Quality
 on:
   pull_request:
     paths:
-      - 'apps/site/**'
-      - 'docs/**'
-      - 'packages/animated-fluent-emojis/**'
-      - 'bun.lock'
-      - 'tsconfig.base.json'
-      - 'bunfig.toml'
-      - 'turbo.json'
-      - 'package.json'
-      - '.github/workflows/site-quality.yml'
+      - "apps/site/**"
+      - "docs/**"
+      - "packages/animated-fluent-emojis/**"
+      - "bun.lock"
+      - "tsconfig.base.json"
+      - "bunfig.toml"
+      - "turbo.json"
+      - "package.json"
+      - ".github/workflows/site-quality.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -35,8 +35,7 @@ jobs:
 
       - name: Compute last-modified dates
         id: dates
-        run:
-          echo "map=$(bash apps/site/docker/last-modified.sh)" >>
+        run: echo "map=$(bash apps/site/docker/last-modified.sh)" >>
           "$GITHUB_OUTPUT"
 
       - name: Build and save the image

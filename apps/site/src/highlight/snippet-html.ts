@@ -1,19 +1,16 @@
-import type { SnippetSlot } from './snippet-template'
+import type { SnippetSlot } from "./snippet-template";
 
-const HIGHLIGHT_CLASS = 'ec-line-highlight'
+const HIGHLIGHT_CLASS = "ec-line-highlight";
 
 const HTML_ESCAPES: Record<string, string> = {
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;',
-  '"': '&quot;',
-}
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+};
 
 function escapeHtml(value: string): string {
-  return value.replaceAll(
-    /[&<>"]/g,
-    (character) => HTML_ESCAPES[character] ?? '',
-  )
+  return value.replaceAll(/[&<>"]/g, (character) => HTML_ESCAPES[character] ?? "");
 }
 
 /**
@@ -30,10 +27,10 @@ export function fillSnippetSlots(
   return html.replaceAll(
     /(<span[^>]* data-snippet-slot="(\w+)"[^>]*>)[^<]*(<\/span>)/g,
     (match, open: string, slot: string, close: string) => {
-      const value = values[slot as SnippetSlot]
-      return value === undefined ? match : `${open}${escapeHtml(value)}${close}`
+      const value = values[slot as SnippetSlot];
+      return value === undefined ? match : `${open}${escapeHtml(value)}${close}`;
     },
-  )
+  );
 }
 
 /**
@@ -44,9 +41,9 @@ export function fillSnippetSlots(
  * markup unchanged when the line does not exist.
  */
 export function markHighlightedLine(html: string, line: number): string {
-  let seen = 0
+  let seen = 0;
   return html.replaceAll('<div class="ec-line"', (match) => {
-    seen += 1
-    return seen === line ? `<div class="ec-line ${HIGHLIGHT_CLASS}"` : match
-  })
+    seen += 1;
+    return seen === line ? `<div class="ec-line ${HIGHLIGHT_CLASS}"` : match;
+  });
 }

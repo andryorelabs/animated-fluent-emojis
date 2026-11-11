@@ -1,32 +1,32 @@
-import { CheckIcon, CopyIcon } from 'lucide-react'
-import { useState } from 'react'
+import { CheckIcon, CopyIcon } from "lucide-react";
+import { useState } from "react";
 
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { copyWithFeedback } from '@/lib/copy-feedback'
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { copyWithFeedback } from "@/lib/copy-feedback";
 import {
   installCommand,
   isPackageManager,
   PACKAGE_MANAGERS,
   type PackageManagerStore,
-} from '@/lib/package-manager'
-import { usePackageManager } from '@/lib/use-package-manager'
-import { cn } from '@/lib/utilities'
+} from "@/lib/package-manager";
+import { usePackageManager } from "@/lib/use-package-manager";
+import { cn } from "@/lib/utilities";
 
 const ICON_FADE =
-  'transition-opacity-scale-filter duration-150 ease-(--ease-out-strong) motion-reduce:scale-100 motion-reduce:blur-none motion-reduce:duration-100'
-const ICON_HIDDEN = 'scale-80 opacity-0 blur-xs'
+  "transition-opacity-scale-filter duration-150 ease-(--ease-out-strong) motion-reduce:scale-100 motion-reduce:blur-none motion-reduce:duration-100";
+const ICON_HIDDEN = "scale-80 opacity-0 blur-xs";
 
 interface DockInstallLabels {
-  label: string
-  tabsLabel: string
-  copy: string
-  copied: string
+  label: string;
+  tabsLabel: string;
+  copy: string;
+  copied: string;
 }
 
 export interface DockInstallProps {
-  labels: DockInstallLabels
-  store?: PackageManagerStore
+  labels: DockInstallLabels;
+  store?: PackageManagerStore;
 }
 
 /**
@@ -41,12 +41,9 @@ export interface DockInstallProps {
  * @param props.store - The shared preference; defaults to the page-wide store.
  * @returns The dock controls.
  */
-export default function DockInstall({
-  labels,
-  store: providedStore,
-}: DockInstallProps) {
-  const [manager, setManager] = usePackageManager(providedStore)
-  const [copied, setCopied] = useState(false)
+export default function DockInstall({ labels, store: providedStore }: DockInstallProps) {
+  const [manager, setManager] = usePackageManager(providedStore);
+  const [copied, setCopied] = useState(false);
 
   return (
     <div
@@ -58,7 +55,7 @@ export default function DockInstall({
         variant="dock"
         value={manager}
         onValueChange={(value) => {
-          if (isPackageManager(value)) setManager(value)
+          if (isPackageManager(value)) setManager(value);
         }}
         className="min-w-0 flex-1"
       >
@@ -70,11 +67,7 @@ export default function DockInstall({
           className="min-w-0 scrollbar-none [&::-webkit-scrollbar]:hidden"
         >
           {PACKAGE_MANAGERS.map((id) => (
-            <TabsTrigger
-              key={id}
-              value={id}
-              className="min-w-11 touch-manipulation select-none"
-            >
+            <TabsTrigger key={id} value={id} className="min-w-11 touch-manipulation select-none">
               {id}
             </TabsTrigger>
           ))}
@@ -92,9 +85,7 @@ export default function DockInstall({
         shape="pill"
         className="size-11 shrink-0 touch-manipulation select-none"
         aria-label={copied ? labels.copied : labels.copy}
-        onClick={() =>
-          void copyWithFeedback(installCommand(manager), setCopied)
-        }
+        onClick={() => void copyWithFeedback(installCommand(manager), setCopied)}
       >
         <span className="grid *:col-start-1 *:row-start-1">
           <CopyIcon className={cn(ICON_FADE, copied && ICON_HIDDEN)} />
@@ -102,8 +93,8 @@ export default function DockInstall({
         </span>
       </Button>
       <span role="status" className="sr-only">
-        {copied ? labels.copied : ''}
+        {copied ? labels.copied : ""}
       </span>
     </div>
-  )
+  );
 }

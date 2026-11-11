@@ -88,10 +88,7 @@
       "outputs": []
     },
     "//#check:root": {
-      "dependsOn": [
-        "animated-fluent-emojis#build",
-        "@animated-fluent-emojis/site#sync"
-      ],
+      "dependsOn": ["animated-fluent-emojis#build", "@animated-fluent-emojis/site#sync"],
       "inputs": [
         "$TURBO_DEFAULT$",
         "!**/dist/**",

@@ -1,4 +1,4 @@
-import { defineConformanceSuite } from './suite.js'
-import { createSvelteDriver } from './svelte-driver.svelte.js'
+import { defineConformanceSuite } from "./suite.js";
+import { createSvelteDriver } from "./svelte-driver.svelte.js";
 
-defineConformanceSuite('svelte', createSvelteDriver)
+defineConformanceSuite("svelte", createSvelteDriver);

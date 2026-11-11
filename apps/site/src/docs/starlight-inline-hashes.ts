@@ -1,15 +1,15 @@
-import { createHash } from 'node:crypto'
-import { readFileSync } from 'node:fs'
-import { createRequire } from 'node:module'
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 
-const requireFromHere = createRequire(import.meta.url)
+const requireFromHere = createRequire(import.meta.url);
 
 const COMPONENTS_WITH_INLINE_SCRIPTS = [
-  '@astrojs/starlight/components/SidebarPersister.astro',
-  '@astrojs/starlight/components/Search.astro',
-] as const
+  "@astrojs/starlight/components/SidebarPersister.astro",
+  "@astrojs/starlight/components/Search.astro",
+] as const;
 
-const INLINE_SCRIPT = /<script is:inline[^>]*>(?<body>[\s\S]*?)<\/script>/g
+const INLINE_SCRIPT = /<script is:inline[^>]*>(?<body>[\s\S]*?)<\/script>/g;
 
 /**
  * CSP hash sources (without quotes) for the inline scripts Starlight ships in
@@ -20,16 +20,16 @@ const INLINE_SCRIPT = /<script is:inline[^>]*>(?<body>[\s\S]*?)<\/script>/g
  */
 export function collectStarlightInlineScriptHashes(): `sha256-${string}`[] {
   const hashes = COMPONENTS_WITH_INLINE_SCRIPTS.flatMap((specifier) => {
-    const source = readFileSync(requireFromHere.resolve(specifier), 'utf8')
+    const source = readFileSync(requireFromHere.resolve(specifier), "utf8");
     return source
       .matchAll(INLINE_SCRIPT)
       .map(
         ({ groups }) =>
-          `sha256-${createHash('sha256')
-            .update(groups?.body ?? '')
-            .digest('base64')}` as const,
+          `sha256-${createHash("sha256")
+            .update(groups?.body ?? "")
+            .digest("base64")}` as const,
       )
-      .toArray()
-  })
-  return [...new Set(hashes)]
+      .toArray();
+  });
+  return [...new Set(hashes)];
 }

@@ -12,14 +12,14 @@ Preact で絵文字を使う方法は二つあります。`<fluent-emoji>`
 が登録され、スタイルシートは不要です。
 
 ```tsx
-import 'animated-fluent-emojis/element'
+import "animated-fluent-emojis/element";
 ```
 
 パッケージは、要素のケバブケースの属性で `preact` の JSX 型を拡張します。
 
 ```tsx
 export function Greeting() {
-  return <fluent-emoji id="1f44b_wavinghand" size={64} play-on-hover />
+  return <fluent-emoji id="1f44b_wavinghand" size={64} play-on-hover />;
 }
 ```
 
@@ -28,25 +28,25 @@ export function Greeting() {
 に反応するには、`ref` から要素に対して `addEventListener` を呼び出します。
 
 ```tsx
-import { useEffect, useRef } from 'preact/hooks'
+import { useEffect, useRef } from "preact/hooks";
 
 export function Greeting() {
-  const emoji = useRef<HTMLElementTagNameMap['fluent-emoji']>(null)
+  const emoji = useRef<HTMLElementTagNameMap["fluent-emoji"]>(null);
 
   useEffect(() => {
-    const element = emoji.current
+    const element = emoji.current;
     const onEnd = () => {
-      console.log('done')
-    }
-    element?.addEventListener('playback-end', onEnd)
-    return () => element?.removeEventListener('playback-end', onEnd)
-  }, [])
+      console.log("done");
+    };
+    element?.addEventListener("playback-end", onEnd);
+    return () => element?.removeEventListener("playback-end", onEnd);
+  }, []);
 
   return (
     <fluent-emoji id="1f44b_wavinghand" ref={emoji}>
       <span slot="fallback">👋</span>
     </fluent-emoji>
-  )
+  );
 }
 ```
 

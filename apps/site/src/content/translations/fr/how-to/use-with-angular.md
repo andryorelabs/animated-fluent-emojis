@@ -14,7 +14,7 @@ import enregistre `<fluent-emoji>`. L'élément embarque ses propres styles dans
 un shadow root, il n'y a donc aucune feuille de style à importer :
 
 ```ts
-import 'animated-fluent-emojis/element'
+import "animated-fluent-emojis/element";
 ```
 
 ## Autoriser la balise dans vos composants
@@ -23,10 +23,10 @@ Angular rejette les balises inconnues, sauf si le composant autorise les
 éléments personnalisés :
 
 ```ts
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 
 @Component({
-  selector: 'app-greeting',
+  selector: "app-greeting",
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `<fluent-emoji id="1f44b_wavinghand" size="64" play-on-hover />`,
@@ -41,12 +41,7 @@ définisse les propriétés de l'élément au lieu de réécrire les attributs. 
 événements sont `emoji-load`, `emoji-error` et `playback-end` :
 
 ```html
-<fluent-emoji
-  [id]="emojiId"
-  [size]="64"
-  [playOnHover]="true"
-  (playback-end)="onDone()"
->
+<fluent-emoji [id]="emojiId" [size]="64" [playOnHover]="true" (playback-end)="onDone()">
   <span slot="fallback">👋</span>
 </fluent-emoji>
 ```

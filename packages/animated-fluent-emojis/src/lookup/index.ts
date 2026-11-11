@@ -1,14 +1,14 @@
-import { loadEmojiManifest } from '../utils/emoji-manifest.js'
-import type { EmojiManifest, SkinTone } from '../utils/types.js'
+import { loadEmojiManifest } from "../utils/emoji-manifest.js";
+import type { EmojiManifest, SkinTone } from "../utils/types.js";
 
 /**
  * An emoji of the catalog resolved from text.
  */
 export interface EmojiMatch {
   /** The catalog id of the emoji. */
-  id: string
+  id: string;
   /** The skin tone found in the text; only set for emojis with skin tone variants. */
-  skinTone?: SkinTone
+  skinTone?: SkinTone;
 }
 
 /**
@@ -16,11 +16,11 @@ export interface EmojiMatch {
  */
 export interface ExtractedEmoji extends EmojiMatch {
   /** The matched emoji text, as written in the input. */
-  text: string
+  text: string;
   /** UTF-16 offset of the match in the input. */
-  index: number
+  index: number;
   /** UTF-16 length of the match. */
-  length: number
+  length: number;
 }
 
 /**
@@ -28,51 +28,45 @@ export interface ExtractedEmoji extends EmojiMatch {
  */
 export interface SearchEmojisOptions {
   /** Maximum number of results; defaults to 20. */
-  limit?: number
+  limit?: number;
 }
 
-type ManifestRecord = Record<string, EmojiManifest>
-type NonEmptyGroup = [EmojiManifest, ...EmojiManifest[]]
+type ManifestRecord = Record<string, EmojiManifest>;
+type NonEmptyGroup = [EmojiManifest, ...EmojiManifest[]];
 
-const DEFAULT_SEARCH_LIMIT = 20
-const VARIATION_SELECTOR_16 = /\u{FE0F}/gu
-const SKIN_TONE_MODIFIERS = /[\u{1F3FB}-\u{1F3FF}]/gu
+const DEFAULT_SEARCH_LIMIT = 20;
+const VARIATION_SELECTOR_16 = /\u{FE0F}/gu;
+const SKIN_TONE_MODIFIERS = /[\u{1F3FB}-\u{1F3FF}]/gu;
 const EMOJI_CLUSTER =
-  /[\u{1F1E6}-\u{1F1FF}]{2}|.(?:[\u{FE0E}\u{FE0F}\u{20E3}\u{1F3FB}-\u{1F3FF}\u{E0020}-\u{E007F}]|\u{200D}.)*/gsu
+  /[\u{1F1E6}-\u{1F1FF}]{2}|.(?:[\u{FE0E}\u{FE0F}\u{20E3}\u{1F3FB}-\u{1F3FF}\u{E0020}-\u{E007F}]|\u{200D}.)*/gsu;
 
-const ZERO_WIDTH_JOINER = '\u{200D}'
-const CODE_POINT_PREFIX = /^[\da-f]+(?:_[\da-f]+)*_/
-const SHORTCODE = /^:([^\s:]+):$/
-const SHORTCODES_IN_TEXT = /:[^\s:]+:/g
+const ZERO_WIDTH_JOINER = "\u{200D}";
+const CODE_POINT_PREFIX = /^[\da-f]+(?:_[\da-f]+)*_/;
+const SHORTCODE = /^:([^\s:]+):$/;
+const SHORTCODES_IN_TEXT = /:[^\s:]+:/g;
 
 /**
  * Glyphs whose first entry in catalog order is the wrong emoji, mapped to the
  * id that should represent them. Applied only when the id is in the manifest.
  */
 const CANONICAL_OVERRIDES: Readonly<Record<string, string>> = {
-  '\u{267B}': 'recycle',
-  '\u{26BD}': 'soccerball',
-  '\u{1F44F}': 'clap',
-  '\u{1F64C}': 'handsinair',
-  '\u{1F428}': 'koala',
-  '\u{1F436}': 'smiledog',
-  '\u{1FABD}': 'wing',
-}
+  "\u{267B}": "recycle",
+  "\u{26BD}": "soccerball",
+  "\u{1F44F}": "clap",
+  "\u{1F64C}": "handsinair",
+  "\u{1F428}": "koala",
+  "\u{1F436}": "smiledog",
+  "\u{1FABD}": "wing",
+};
 
-const TONES: readonly SkinTone[] = [
-  'light',
-  'medium-light',
-  'medium',
-  'medium-dark',
-  'dark',
-]
+const TONES: readonly SkinTone[] = ["light", "medium-light", "medium", "medium-dark", "dark"];
 
 interface UnicodeIndex {
-  readonly canonical: Map<string, EmojiManifest>
-  readonly diverse: Map<string, EmojiManifest>
+  readonly canonical: Map<string, EmojiManifest>;
+  readonly diverse: Map<string, EmojiManifest>;
 }
 
-const indexCache = new WeakMap<ManifestRecord, UnicodeIndex>()
+const indexCache = new WeakMap<ManifestRecord, UnicodeIndex>();
 
 /**
  * Removes the variation selector so text and catalog glyphs share one key.
@@ -80,7 +74,7 @@ const indexCache = new WeakMap<ManifestRecord, UnicodeIndex>()
  * @returns The text without VS16.
  */
 function stripVariationSelector(text: string): string {
-  return text.replaceAll(VARIATION_SELECTOR_16, '')
+  return text.replaceAll(VARIATION_SELECTOR_16, "");
 }
 
 /**
@@ -90,9 +84,9 @@ function stripVariationSelector(text: string): string {
  * @returns Whether the second code point is VS16.
  */
 function hasVariationSelectorAfterBase(text: string | undefined): boolean {
-  const base = text?.codePointAt(0)
-  if (base === undefined) return false
-  return text?.codePointAt(base > 0xff_ff ? 2 : 1) === 0xfe_0f
+  const base = text?.codePointAt(0);
+  if (base === undefined) return false;
+  return text?.codePointAt(base > 0xff_ff ? 2 : 1) === 0xfe_0f;
 }
 
 /**
@@ -109,19 +103,18 @@ function pickCanonicalEmoji(
   group: NonEmptyGroup,
   manifest: ManifestRecord,
 ): EmojiManifest {
-  if (group.length === 1) return group[0]
+  if (group.length === 1) return group[0];
   const prefix = Array.from(
     glyph,
-    (character) => character.codePointAt(0)?.toString(16) ?? '',
-  ).join('_')
+    (character) => character.codePointAt(0)?.toString(16) ?? "",
+  ).join("_");
   const prefixed = group.find(
-    (emoji) =>
-      CODE_POINT_PREFIX.test(emoji.id) && emoji.id.startsWith(`${prefix}_`),
-  )
-  if (prefixed) return prefixed
-  const overrideId = CANONICAL_OVERRIDES[glyph]
-  const override = overrideId ? manifest[overrideId] : undefined
-  return override && group.includes(override) ? override : group[0]
+    (emoji) => CODE_POINT_PREFIX.test(emoji.id) && emoji.id.startsWith(`${prefix}_`),
+  );
+  if (prefixed) return prefixed;
+  const overrideId = CANONICAL_OVERRIDES[glyph];
+  const override = overrideId ? manifest[overrideId] : undefined;
+  return override && group.includes(override) ? override : group[0];
 }
 
 /**
@@ -133,27 +126,27 @@ function pickCanonicalEmoji(
  * @returns Maps from VS16-free unicode to the canonical and the diverse entry.
  */
 function indexByUnicode(manifest: ManifestRecord): UnicodeIndex {
-  const cached = indexCache.get(manifest)
-  if (cached) return cached
-  const groups = new Map<string, NonEmptyGroup>()
+  const cached = indexCache.get(manifest);
+  if (cached) return cached;
+  const groups = new Map<string, NonEmptyGroup>();
   for (const emoji of Object.values(manifest)) {
-    if (!emoji.unicode) continue
-    const key = stripVariationSelector(emoji.unicode)
-    const group = groups.get(key)
-    if (group) group.push(emoji)
-    else groups.set(key, [emoji])
+    if (!emoji.unicode) continue;
+    const key = stripVariationSelector(emoji.unicode);
+    const group = groups.get(key);
+    if (group) group.push(emoji);
+    else groups.set(key, [emoji]);
   }
-  const canonical = new Map<string, EmojiManifest>()
-  const diverse = new Map<string, EmojiManifest>()
+  const canonical = new Map<string, EmojiManifest>();
+  const diverse = new Map<string, EmojiManifest>();
   for (const [key, group] of groups) {
-    const picked = pickCanonicalEmoji(key, group, manifest)
-    canonical.set(key, picked)
-    const toned = picked.diverse ? picked : group.find((emoji) => emoji.diverse)
-    if (toned) diverse.set(key, toned)
+    const picked = pickCanonicalEmoji(key, group, manifest);
+    canonical.set(key, picked);
+    const toned = picked.diverse ? picked : group.find((emoji) => emoji.diverse);
+    if (toned) diverse.set(key, toned);
   }
-  const index = { canonical, diverse }
-  indexCache.set(manifest, index)
-  return index
+  const index = { canonical, diverse };
+  indexCache.set(manifest, index);
+  return index;
 }
 
 /**
@@ -163,26 +156,23 @@ function indexByUnicode(manifest: ManifestRecord): UnicodeIndex {
  * @param text - A single emoji, with optional VS16 and skin tone modifiers.
  * @returns The match, or undefined when the text is not a catalog emoji.
  */
-function resolveEmoji(
-  manifest: ManifestRecord,
-  text: string,
-): EmojiMatch | undefined {
-  const index = indexByUnicode(manifest)
-  const plain = stripVariationSelector(text)
-  const direct = index.canonical.get(plain)
+function resolveEmoji(manifest: ManifestRecord, text: string): EmojiMatch | undefined {
+  const index = indexByUnicode(manifest);
+  const plain = stripVariationSelector(text);
+  const direct = index.canonical.get(plain);
   if (direct) {
     return !direct.unicode?.includes(ZERO_WIDTH_JOINER) &&
       hasVariationSelectorAfterBase(direct.unicode) &&
       !hasVariationSelectorAfterBase(text)
       ? undefined
-      : { id: direct.id }
+      : { id: direct.id };
   }
-  const modifiers = plain.match(SKIN_TONE_MODIFIERS)
-  const base = index.diverse.get(plain.replaceAll(SKIN_TONE_MODIFIERS, ''))
-  if (!modifiers || !base) return undefined
-  if (new Set(modifiers).size > 1) return { id: base.id }
-  const skinTone = TONES[(modifiers[0].codePointAt(0) ?? 0) - 0x1_f3_fb]
-  return skinTone === undefined ? { id: base.id } : { id: base.id, skinTone }
+  const modifiers = plain.match(SKIN_TONE_MODIFIERS);
+  const base = index.diverse.get(plain.replaceAll(SKIN_TONE_MODIFIERS, ""));
+  if (!modifiers || !base) return undefined;
+  if (new Set(modifiers).size > 1) return { id: base.id };
+  const skinTone = TONES[(modifiers[0].codePointAt(0) ?? 0) - 0x1_f3_fb];
+  return skinTone === undefined ? { id: base.id } : { id: base.id, skinTone };
 }
 
 /**
@@ -193,18 +183,15 @@ function resolveEmoji(
  * @param text - A shortcode with both colons.
  * @returns The match, or undefined when the text is not a known shortcode.
  */
-function resolveShortcode(
-  manifest: ManifestRecord,
-  text: string,
-): EmojiMatch | undefined {
-  const name = SHORTCODE.exec(text)?.[1]?.toLowerCase()
-  if (!name) return undefined
-  let stripped: string | undefined
+function resolveShortcode(manifest: ManifestRecord, text: string): EmojiMatch | undefined {
+  const name = SHORTCODE.exec(text)?.[1]?.toLowerCase();
+  if (!name) return undefined;
+  let stripped: string | undefined;
   for (const { id } of Object.values(manifest)) {
-    if (id === name) return { id }
-    if (!stripped && id.replace(CODE_POINT_PREFIX, '') === name) stripped = id
+    if (id === name) return { id };
+    if (!stripped && id.replace(CODE_POINT_PREFIX, "") === name) stripped = id;
   }
-  return stripped ? { id: stripped } : undefined
+  return stripped ? { id: stripped } : undefined;
 }
 
 /**
@@ -215,17 +202,13 @@ function resolveShortcode(
  * @returns The segments with their UTF-16 offsets.
  */
 function segmentText(text: string): { segment: string; index: number }[] {
-  if (typeof Intl.Segmenter === 'function') {
-    return [
-      ...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(
-        text,
-      ),
-    ]
+  if (typeof Intl.Segmenter === "function") {
+    return [...new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(text)];
   }
   return Array.from(text.matchAll(EMOJI_CLUSTER), (match) => ({
     segment: match[0],
     index: match.index,
-  }))
+  }));
 }
 
 /**
@@ -234,9 +217,9 @@ function segmentText(text: string): { segment: string; index: number }[] {
  */
 async function loadManifestOrUndefined(): Promise<ManifestRecord | undefined> {
   try {
-    return await loadEmojiManifest()
+    return await loadEmojiManifest();
   } catch {
-    return undefined
+    return undefined;
   }
 }
 
@@ -246,11 +229,9 @@ async function loadManifestOrUndefined(): Promise<ManifestRecord | undefined> {
  * @param text - One emoji, optionally with VS16 or skin tone modifiers.
  * @returns The match, or undefined when unknown or when the manifest failed to load.
  */
-export async function findEmojiByUnicode(
-  text: string,
-): Promise<EmojiMatch | undefined> {
-  const manifest = await loadManifestOrUndefined()
-  return manifest ? resolveEmoji(manifest, text) : undefined
+export async function findEmojiByUnicode(text: string): Promise<EmojiMatch | undefined> {
+  const manifest = await loadManifestOrUndefined();
+  return manifest ? resolveEmoji(manifest, text) : undefined;
 }
 
 /**
@@ -260,11 +241,9 @@ export async function findEmojiByUnicode(
  * @param shortcode - A shortcode with both colons, such as `:fire:`.
  * @returns The match, or undefined when unknown or when the manifest failed to load.
  */
-export async function findEmojiByShortcode(
-  shortcode: string,
-): Promise<EmojiMatch | undefined> {
-  const manifest = await loadManifestOrUndefined()
-  return manifest ? resolveShortcode(manifest, shortcode) : undefined
+export async function findEmojiByShortcode(shortcode: string): Promise<EmojiMatch | undefined> {
+  const manifest = await loadManifestOrUndefined();
+  return manifest ? resolveShortcode(manifest, shortcode) : undefined;
 }
 
 /**
@@ -275,20 +254,20 @@ export async function findEmojiByShortcode(
  * @returns The emojis in order of appearance; empty when there are none or the manifest failed to load.
  */
 export async function extractEmojis(text: string): Promise<ExtractedEmoji[]> {
-  const manifest = await loadManifestOrUndefined()
-  if (!manifest) return []
-  const found: ExtractedEmoji[] = []
+  const manifest = await loadManifestOrUndefined();
+  if (!manifest) return [];
+  const found: ExtractedEmoji[] = [];
   const add = (match: EmojiMatch | undefined, part: string, index: number) => {
-    if (match) found.push({ ...match, text: part, index, length: part.length })
-  }
+    if (match) found.push({ ...match, text: part, index, length: part.length });
+  };
   for (const { segment, index } of segmentText(text)) {
-    add(resolveEmoji(manifest, segment), segment, index)
+    add(resolveEmoji(manifest, segment), segment, index);
   }
   for (const { 0: code, index } of text.matchAll(SHORTCODES_IN_TEXT)) {
-    add(resolveShortcode(manifest, code), code, index)
+    add(resolveShortcode(manifest, code), code, index);
   }
   // eslint-disable-next-line unicorn/no-array-sort -- sorts a fresh array; toSorted is outside the ES2022 build lib
-  return found.sort((left, right) => left.index - right.index)
+  return found.sort((left, right) => left.index - right.index);
 }
 
 /**
@@ -301,18 +280,18 @@ export async function searchEmojis(
   query: string,
   options: SearchEmojisOptions = {},
 ): Promise<EmojiMatch[]> {
-  const manifest = await loadManifestOrUndefined()
-  const needle = query.trim().toLowerCase()
-  if (!manifest || needle === '') return []
-  const requested = options.limit ?? DEFAULT_SEARCH_LIMIT
-  if (requested === 0) return []
-  const limit = requested > 0 ? Math.floor(requested) : Infinity
-  const results: EmojiMatch[] = []
+  const manifest = await loadManifestOrUndefined();
+  const needle = query.trim().toLowerCase();
+  if (!manifest || needle === "") return [];
+  const requested = options.limit ?? DEFAULT_SEARCH_LIMIT;
+  if (requested === 0) return [];
+  const limit = requested > 0 ? Math.floor(requested) : Infinity;
+  const results: EmojiMatch[] = [];
   for (const emoji of Object.values(manifest)) {
-    if (results.length >= limit) break
+    if (results.length >= limit) break;
     if (emoji.description.toLowerCase().includes(needle)) {
-      results.push({ id: emoji.id })
+      results.push({ id: emoji.id });
     }
   }
-  return results
+  return results;
 }

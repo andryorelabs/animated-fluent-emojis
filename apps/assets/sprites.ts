@@ -1,37 +1,37 @@
-import { execFile } from 'node:child_process'
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
-import path from 'node:path'
-import { promisify } from 'node:util'
-import sharp from 'sharp'
+import { execFile } from "node:child_process";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { promisify } from "node:util";
+import sharp from "sharp";
 
-const execFileAsync = promisify(execFile)
+const execFileAsync = promisify(execFile);
 
 /**
  * The frame size, in pixels, of the standard sprite sheets.
  */
-const SPRITE_SIZE = 100
+const SPRITE_SIZE = 100;
 
 /**
  * A sprite sheet and the animation data derived from it.
  */
 export interface ConvertedSprite {
-  readonly png: Buffer
-  readonly framesCount: number
-  readonly fps: number
+  readonly png: Buffer;
+  readonly framesCount: number;
+  readonly fps: number;
 }
 
 /**
  * The frame rate used when ffprobe reports no usable rate.
  */
-const DEFAULT_FRAME_RATE = 24
+const DEFAULT_FRAME_RATE = 24;
 
 function tryParseFrameRate(rate: string | undefined): number | undefined {
-  if (rate === undefined) return undefined
-  const [numerator, denominator] = rate.split('/').map(Number)
-  if (numerator === undefined || denominator === undefined) return undefined
-  const frameRate = numerator / denominator
-  return Number.isFinite(frameRate) && frameRate > 0 ? frameRate : undefined
+  if (rate === undefined) return undefined;
+  const [numerator, denominator] = rate.split("/").map(Number);
+  if (numerator === undefined || denominator === undefined) return undefined;
+  const frameRate = numerator / denominator;
+  return Number.isFinite(frameRate) && frameRate > 0 ? frameRate : undefined;
 }
 
 /**
@@ -40,9 +40,9 @@ function tryParseFrameRate(rate: string | undefined): number | undefined {
  * @returns The exact, possibly fractional, frames per second.
  */
 export function parseFrameRate(rate: string): number {
-  const parsed = tryParseFrameRate(rate)
-  if (parsed === undefined) throw new Error(`Invalid frame rate "${rate}"`)
-  return parsed
+  const parsed = tryParseFrameRate(rate);
+  if (parsed === undefined) throw new Error(`Invalid frame rate "${rate}"`);
+  return parsed;
 }
 
 /**
@@ -56,14 +56,10 @@ export function resolveFrameRate(
   averageRate: string | undefined,
   baseRate: string | undefined,
 ): number {
-  return (
-    tryParseFrameRate(averageRate) ??
-    tryParseFrameRate(baseRate) ??
-    DEFAULT_FRAME_RATE
-  )
+  return tryParseFrameRate(averageRate) ?? tryParseFrameRate(baseRate) ?? DEFAULT_FRAME_RATE;
 }
 
-const PNG_SIGNATURE_LENGTH = 8
+const PNG_SIGNATURE_LENGTH = 8;
 
 /**
  * Reads the animation frame count from the `acTL` chunk of an animated PNG,
@@ -72,34 +68,28 @@ const PNG_SIGNATURE_LENGTH = 8
  * @returns The number of frames declared by the `acTL` chunk.
  */
 export function readApngFrameCount(animatedPng: Buffer): number {
-  let offset = PNG_SIGNATURE_LENGTH
+  let offset = PNG_SIGNATURE_LENGTH;
   while (offset + 8 <= animatedPng.length) {
-    const chunkLength = animatedPng.readUInt32BE(offset)
-    const chunkType = animatedPng.toString('latin1', offset + 4, offset + 8)
-    if (chunkType === 'acTL' && chunkLength >= 8) {
-      const framesCount = animatedPng.readUInt32BE(offset + 8)
-      if (framesCount < 1) break
-      return framesCount
+    const chunkLength = animatedPng.readUInt32BE(offset);
+    const chunkType = animatedPng.toString("latin1", offset + 4, offset + 8);
+    if (chunkType === "acTL" && chunkLength >= 8) {
+      const framesCount = animatedPng.readUInt32BE(offset + 8);
+      if (framesCount < 1) break;
+      return framesCount;
     }
-    if (chunkType === 'IDAT') break
-    offset += 12 + chunkLength
+    if (chunkType === "IDAT") break;
+    offset += 12 + chunkLength;
   }
-  throw new Error('Animated PNG has no valid acTL frame count')
+  throw new Error("Animated PNG has no valid acTL frame count");
 }
 
-function buildFilterGraph(
-  frameSizes: readonly number[],
-  framesCount: number,
-): string {
+function buildFilterGraph(frameSizes: readonly number[], framesCount: number): string {
   const branches = frameSizes.map(
     (frameSize, index) =>
       `[branch${String(index)}]scale=${String(frameSize)}:${String(frameSize)}:flags=lanczos,tile=1x${String(framesCount)}[sheet${String(index)}]`,
-  )
-  const labels = frameSizes.map((_, index) => `[branch${String(index)}]`)
-  return [
-    `[0:v]split=${String(frameSizes.length)}${labels.join('')}`,
-    ...branches,
-  ].join(';')
+  );
+  const labels = frameSizes.map((_, index) => `[branch${String(index)}]`);
+  return [`[0:v]split=${String(frameSizes.length)}${labels.join("")}`, ...branches].join(";");
 }
 
 /**
@@ -115,58 +105,58 @@ export async function convertAnimatedPng(
   animatedPng: Buffer,
   frameSizes: readonly number[] = [SPRITE_SIZE],
 ): Promise<ConvertedSprite[]> {
-  if (frameSizes.length === 0) throw new Error('No sprite frame sizes given')
+  if (frameSizes.length === 0) throw new Error("No sprite frame sizes given");
   for (const frameSize of frameSizes) {
     if (!Number.isSafeInteger(frameSize) || frameSize < 1) {
-      throw new Error(`Invalid sprite frame size ${String(frameSize)}`)
+      throw new Error(`Invalid sprite frame size ${String(frameSize)}`);
     }
   }
-  const framesCount = readApngFrameCount(animatedPng)
-  const workingDirectory = await mkdtemp(path.join(tmpdir(), 'emoji-sprite-'))
+  const framesCount = readApngFrameCount(animatedPng);
+  const workingDirectory = await mkdtemp(path.join(tmpdir(), "emoji-sprite-"));
   try {
-    const inputPath = path.join(workingDirectory, 'input.png')
-    await writeFile(inputPath, animatedPng)
+    const inputPath = path.join(workingDirectory, "input.png");
+    await writeFile(inputPath, animatedPng);
 
-    const probe = await execFileAsync('ffprobe', [
-      '-v',
-      'error',
-      '-select_streams',
-      'v:0',
-      '-show_entries',
-      'stream=avg_frame_rate,r_frame_rate',
-      '-of',
-      'json',
+    const probe = await execFileAsync("ffprobe", [
+      "-v",
+      "error",
+      "-select_streams",
+      "v:0",
+      "-show_entries",
+      "stream=avg_frame_rate,r_frame_rate",
+      "-of",
+      "json",
       inputPath,
-    ])
+    ]);
     const stream = (
       JSON.parse(probe.stdout) as {
-        streams: { avg_frame_rate?: string; r_frame_rate?: string }[]
+        streams: { avg_frame_rate?: string; r_frame_rate?: string }[];
       }
-    ).streams[0]
-    if (!stream) throw new Error('ffprobe did not report a video stream')
-    const fps = resolveFrameRate(stream.avg_frame_rate, stream.r_frame_rate)
+    ).streams[0];
+    if (!stream) throw new Error("ffprobe did not report a video stream");
+    const fps = resolveFrameRate(stream.avg_frame_rate, stream.r_frame_rate);
 
     const outputPaths = frameSizes.map((_, index) =>
       path.join(workingDirectory, `sprite-${String(index)}.png`),
-    )
-    await execFileAsync('ffmpeg', [
-      '-v',
-      'error',
-      '-y',
-      '-i',
+    );
+    await execFileAsync("ffmpeg", [
+      "-v",
+      "error",
+      "-y",
+      "-i",
       inputPath,
-      '-filter_complex',
+      "-filter_complex",
       buildFilterGraph(frameSizes, framesCount),
       ...outputPaths.flatMap((outputPath, index) => [
-        '-map',
+        "-map",
         `[sheet${String(index)}]`,
-        '-frames:v',
-        '1',
-        '-update',
-        '1',
+        "-frames:v",
+        "1",
+        "-update",
+        "1",
         outputPath,
       ]),
-    ])
+    ]);
     return await Promise.all(
       outputPaths.map(async (outputPath) => ({
         png: await sharp(await readFile(outputPath))
@@ -175,8 +165,8 @@ export async function convertAnimatedPng(
         framesCount,
         fps,
       })),
-    )
+    );
   } finally {
-    await rm(workingDirectory, { recursive: true, force: true })
+    await rm(workingDirectory, { recursive: true, force: true });
   }
 }

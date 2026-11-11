@@ -27,9 +27,9 @@ Asset site генерирует `apps/assets` в `apps/assets/dist-assets/`; н�
 слэш в URL игнорируется:
 
 ```jsx
-import { configureEmojis } from 'animated-fluent-emojis'
+import { configureEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
 ```
 
 Если вызвать его после запроса manifest, manifest сбрасывается, а в режиме

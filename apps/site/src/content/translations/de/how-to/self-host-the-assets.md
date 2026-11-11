@@ -29,9 +29,9 @@ Rufe `configureEmojis` einmal auf, bevor das erste `Emoji` gerendert wird. Ein
 abschließender Schrägstrich in der URL wird ignoriert:
 
 ```jsx
-import { configureEmojis } from 'animated-fluent-emojis'
+import { configureEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
 ```
 
 Wird es aufgerufen, nachdem das Manifest angefordert wurde, setzt es das

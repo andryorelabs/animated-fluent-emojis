@@ -22,10 +22,10 @@ sheet `@2x`.
 отклоняется:
 
 ```js
-import { preloadEmojis } from 'animated-fluent-emojis'
+import { preloadEmojis } from "animated-fluent-emojis";
 
-void preloadEmojis()
-void preloadEmojis(['1f44b_wavinghand', '1f525_fire'], { skinTone: 'medium' })
+void preloadEmojis();
+void preloadEmojis(["1f44b_wavinghand", "1f525_fire"], { skinTone: "medium" });
 ```
 
 `skinTone` выбирает вариант, который нужно прогреть, для эмодзи с оттенками
@@ -40,7 +40,7 @@ void preloadEmojis(['1f44b_wavinghand', '1f525_fire'], { skinTone: 'medium' })
 `Emoji`:
 
 ```js
-import { configureEmojis } from 'animated-fluent-emojis'
+import { configureEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
 ```

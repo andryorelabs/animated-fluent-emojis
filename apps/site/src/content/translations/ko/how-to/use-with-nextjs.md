@@ -11,14 +11,14 @@ App Router에서 `Emoji`를 렌더링합니다. Server Component에서도 동작
 sprite sheet로 보입니다. 루트 레이아웃에서 한 번만 import하세요.
 
 ```jsx
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>{children}</body>
     </html>
-  )
+  );
 }
 ```
 
@@ -28,10 +28,10 @@ export default function RootLayout({ children }) {
 `Emoji`를 바로 import할 수 있습니다.
 
 ```jsx
-import { Emoji } from 'animated-fluent-emojis/react'
+import { Emoji } from "animated-fluent-emojis/react";
 
 export default function Page() {
-  return <Emoji id="1f44b_wavinghand" size={64} />
+  return <Emoji id="1f44b_wavinghand" size={64} />;
 }
 ```
 
@@ -48,15 +48,15 @@ export default function Page() {
 작은 컴포넌트면 충분합니다.
 
 ```jsx
-'use client'
+"use client";
 
-import { configureEmojis, preloadEmojis } from 'animated-fluent-emojis'
+import { configureEmojis, preloadEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
-void preloadEmojis()
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
+void preloadEmojis();
 
 export function EmojiSetup() {
-  return null
+  return null;
 }
 ```
 

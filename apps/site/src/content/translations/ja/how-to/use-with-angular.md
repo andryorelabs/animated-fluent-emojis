@@ -13,7 +13,7 @@ Angular では `<fluent-emoji>`
 root 内に独自のスタイルを持つため、インポートするスタイルシートはありません。
 
 ```ts
-import 'animated-fluent-emojis/element'
+import "animated-fluent-emojis/element";
 ```
 
 ## コンポーネントでタグを許可する
@@ -21,10 +21,10 @@ import 'animated-fluent-emojis/element'
 コンポーネントでカスタム要素を許可しないと、Angular は未知のタグを拒否します。
 
 ```ts
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 
 @Component({
-  selector: 'app-greeting',
+  selector: "app-greeting",
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `<fluent-emoji id="1f44b_wavinghand" size="64" play-on-hover />`,
@@ -38,12 +38,7 @@ export class GreetingComponent {}
 `emoji-load`、`emoji-error`、`playback-end` です。
 
 ```html
-<fluent-emoji
-  [id]="emojiId"
-  [size]="64"
-  [playOnHover]="true"
-  (playback-end)="onDone()"
->
+<fluent-emoji [id]="emojiId" [size]="64" [playOnHover]="true" (playback-end)="onDone()">
   <span slot="fallback">👋</span>
 </fluent-emoji>
 ```

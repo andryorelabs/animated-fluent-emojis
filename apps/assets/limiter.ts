@@ -1,7 +1,7 @@
 /**
  * Runs an async task, queueing it when the concurrency limit is reached.
  */
-export type Limiter = <Result>(task: () => Promise<Result>) => Promise<Result>
+export type Limiter = <Result>(task: () => Promise<Result>) => Promise<Result>;
 
 /**
  * Creates a limiter that runs at most `limit` tasks at the same time. Tasks
@@ -12,24 +12,24 @@ export type Limiter = <Result>(task: () => Promise<Result>) => Promise<Result>
  */
 export function createLimiter(limit: number): Limiter {
   if (!Number.isSafeInteger(limit) || limit < 1) {
-    throw new Error(`Invalid concurrency limit ${String(limit)}`)
+    throw new Error(`Invalid concurrency limit ${String(limit)}`);
   }
-  let active = 0
-  const waiting: (() => void)[] = []
+  let active = 0;
+  const waiting: (() => void)[] = [];
   return async (task) => {
     if (active >= limit) {
       await new Promise<void>((resolve) => {
-        waiting.push(resolve)
-      })
+        waiting.push(resolve);
+      });
     } else {
-      active += 1
+      active += 1;
     }
     try {
-      return await task()
+      return await task();
     } finally {
-      const next = waiting.shift()
-      if (next) next()
-      else active -= 1
+      const next = waiting.shift();
+      if (next) next();
+      else active -= 1;
     }
-  }
+  };
 }

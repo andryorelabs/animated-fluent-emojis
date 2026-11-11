@@ -1,27 +1,27 @@
 ---
-import PageTitle from '@astrojs/starlight/components/PageTitle.astro'
-import Check from '@lucide/astro/icons/check'
-import Copy from '@lucide/astro/icons/copy'
+import PageTitle from "@astrojs/starlight/components/PageTitle.astro";
+import Check from "@lucide/astro/icons/check";
+import Copy from "@lucide/astro/icons/copy";
 
-import { buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from "@/components/ui/button";
 
-import { splitLocalePath } from '../../i18n/locales'
-import { getUi } from '../../i18n/ui'
+import { splitLocalePath } from "../../i18n/locales";
+import { getUi } from "../../i18n/ui";
 
-const { locale } = splitLocalePath(Astro.url.pathname)
-const { translationStatus } = Astro.locals.starlightRoute.entry.data
-const { notices, copyMarkdown, copiedMarkdown } = getUi(locale).docs
-const markdownPath = `${Astro.url.pathname.replace(/\/$/, '')}.md`
+const { locale } = splitLocalePath(Astro.url.pathname);
+const { translationStatus } = Astro.locals.starlightRoute.entry.data;
+const { notices, copyMarkdown, copiedMarkdown } = getUi(locale).docs;
+const markdownPath = `${Astro.url.pathname.replace(/\/$/, "")}.md`;
 const copyButtonClass = buttonVariants({
-  variant: 'outline',
-  size: 'sm',
-  className: 'mt-3',
-})
+  variant: "outline",
+  size: "sm",
+  className: "mt-3",
+});
 ---
 
-{translationStatus !== 'translated' && (
+{translationStatus !== "translated" && (
   <p
-    class:list={['translation-notice', translationStatus]}
+    class:list={["translation-notice", translationStatus]}
     role="note"
     data-translation-status={translationStatus}
   >
@@ -41,32 +41,28 @@ const copyButtonClass = buttonVariants({
 </button>
 
 <script>
-  document
-    .querySelectorAll<HTMLButtonElement>('[data-copy-markdown]')
-    .forEach((button) => {
-      const labelElement = button.querySelector<HTMLElement>('[data-label]')
-      const copyIcon = button.querySelector<SVGElement>('[data-icon="copy"]')
-      const checkIcon = button.querySelector<SVGElement>('[data-icon="check"]')
-      const label = labelElement?.textContent ?? ''
-      const showCopied = (copied: boolean) => {
-        if (labelElement) {
-          labelElement.textContent = copied
-            ? (button.dataset.copiedLabel ?? label)
-            : label
-        }
-        copyIcon?.classList.toggle('hidden', copied)
-        checkIcon?.classList.toggle('hidden', !copied)
+  document.querySelectorAll<HTMLButtonElement>("[data-copy-markdown]").forEach((button) => {
+    const labelElement = button.querySelector<HTMLElement>("[data-label]");
+    const copyIcon = button.querySelector<SVGElement>('[data-icon="copy"]');
+    const checkIcon = button.querySelector<SVGElement>('[data-icon="check"]');
+    const label = labelElement?.textContent ?? "";
+    const showCopied = (copied: boolean) => {
+      if (labelElement) {
+        labelElement.textContent = copied ? (button.dataset.copiedLabel ?? label) : label;
       }
-      button.addEventListener('click', async () => {
-        try {
-          const response = await fetch(button.dataset.copyMarkdown ?? '')
-          if (!response.ok) throw new Error(String(response.status))
-          await navigator.clipboard.writeText(await response.text())
-          showCopied(true)
-          setTimeout(() => showCopied(false), 2000)
-        } catch {
-          button.dataset.failed = 'true'
-        }
-      })
-    })
+      copyIcon?.classList.toggle("hidden", copied);
+      checkIcon?.classList.toggle("hidden", !copied);
+    };
+    button.addEventListener("click", async () => {
+      try {
+        const response = await fetch(button.dataset.copyMarkdown ?? "");
+        if (!response.ok) throw new Error(String(response.status));
+        await navigator.clipboard.writeText(await response.text());
+        showCopied(true);
+        setTimeout(() => showCopied(false), 2000);
+      } catch {
+        button.dataset.failed = "true";
+      }
+    });
+  });
 </script>

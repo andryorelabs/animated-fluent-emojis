@@ -1,48 +1,47 @@
 ---
 name: Animated Fluent Emojis site
-description:
-  Light and dark, mint-accented site that stages the animated emojis, inheriting
+description: Light and dark, mint-accented site that stages the animated emojis, inheriting
   the shipped brand kit.
 colors:
-  background-light: 'oklch(0.983 0.003 174.5)'
-  background-dark: 'oklch(0.194 0.015 180.8)'
-  card-light: 'oklch(1 0 0)'
-  card-dark: 'oklch(0.235 0.019 178.6)'
-  foreground-light: 'oklch(0.228 0.023 176.5)'
-  foreground-dark: 'oklch(0.959 0.011 176.3)'
-  primary: 'oklch(0.736 0.132 172.1)'
-  primary-text-light: 'oklch(0.518 0.097 173.1)'
-  muted-foreground-light: 'oklch(0.467 0.026 178.2)'
-  muted-foreground-dark: 'oklch(0.739 0.026 177.3)'
-  border-light: 'oklch(0.917 0.011 176.3)'
-  border-dark: 'oklch(0.315 0.026 167.4)'
+  background-light: "oklch(0.983 0.003 174.5)"
+  background-dark: "oklch(0.194 0.015 180.8)"
+  card-light: "oklch(1 0 0)"
+  card-dark: "oklch(0.235 0.019 178.6)"
+  foreground-light: "oklch(0.228 0.023 176.5)"
+  foreground-dark: "oklch(0.959 0.011 176.3)"
+  primary: "oklch(0.736 0.132 172.1)"
+  primary-text-light: "oklch(0.518 0.097 173.1)"
+  muted-foreground-light: "oklch(0.467 0.026 178.2)"
+  muted-foreground-dark: "oklch(0.739 0.026 177.3)"
+  border-light: "oklch(0.917 0.011 176.3)"
+  border-dark: "oklch(0.315 0.026 167.4)"
 typography:
   sans:
-    fontFamily: 'Figtree Variable, sans-serif'
+    fontFamily: "Figtree Variable, sans-serif"
     fontWeight: 400
   headline:
-    fontFamily: 'Figtree Variable, sans-serif'
+    fontFamily: "Figtree Variable, sans-serif"
     fontWeight: 800
-    letterSpacing: '-0.03em'
+    letterSpacing: "-0.03em"
   mono:
-    fontFamily: 'Geist Mono Variable, monospace'
+    fontFamily: "Geist Mono Variable, monospace"
     fontWeight: 400
 rounded:
-  brand: '1rem'
+  brand: "1rem"
 spacing:
-  gutter-mobile: '1rem'
-  gutter-tablet: '1.5rem'
-  gutter-desktop: '2rem'
-  header: '65px'
+  gutter-mobile: "1rem"
+  gutter-tablet: "1.5rem"
+  gutter-desktop: "2rem"
+  header: "65px"
 components:
   button-primary:
-    backgroundColor: '{colors.primary}'
-    textColor: 'oklch(0.223 0.024 177.2)'
-    rounded: '{rounded.brand}'
+    backgroundColor: "{colors.primary}"
+    textColor: "oklch(0.223 0.024 177.2)"
+    rounded: "{rounded.brand}"
   card:
-    backgroundColor: '{colors.card-light}'
-    textColor: '{colors.foreground-light}'
-    rounded: '{rounded.brand}'
+    backgroundColor: "{colors.card-light}"
+    textColor: "{colors.foreground-light}"
+    rounded: "{rounded.brand}"
 ---
 
 # Design System: Animated Fluent Emojis site

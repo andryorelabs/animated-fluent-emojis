@@ -1,16 +1,16 @@
-import type { Locale } from './locales'
-import { de } from './ui/de'
-import { en, type UiStrings } from './ui/en'
-import { es } from './ui/es'
-import { fr } from './ui/fr'
-import { it } from './ui/it'
-import { ja } from './ui/ja'
-import { ko } from './ui/ko'
-import { pt_BR } from './ui/pt-br'
-import { ru } from './ui/ru'
-import { zh_CN } from './ui/zh-cn'
+import type { Locale } from "./locales";
+import { de } from "./ui/de";
+import { en, type UiStrings } from "./ui/en";
+import { es } from "./ui/es";
+import { fr } from "./ui/fr";
+import { it } from "./ui/it";
+import { ja } from "./ui/ja";
+import { ko } from "./ui/ko";
+import { pt_BR } from "./ui/pt-br";
+import { ru } from "./ui/ru";
+import { zh_CN } from "./ui/zh-cn";
 
-export type { UiStrings } from './ui/en'
+export type { UiStrings } from "./ui/en";
 
 /**
  * UI strings for every locale. The `Record<Locale, ...>` type makes a missing
@@ -24,10 +24,10 @@ export const UI_STRINGS: Record<Locale, UiStrings> = {
   it,
   ja,
   ko,
-  'pt-BR': pt_BR,
+  "pt-BR": pt_BR,
   ru,
-  'zh-CN': zh_CN,
-}
+  "zh-CN": zh_CN,
+};
 
 /**
  * Returns the UI strings for a locale.
@@ -35,7 +35,7 @@ export const UI_STRINGS: Record<Locale, UiStrings> = {
  * @returns The locale's strings.
  */
 export function getUi(locale: Locale): UiStrings {
-  return UI_STRINGS[locale]
+  return UI_STRINGS[locale];
 }
 
 /**
@@ -44,13 +44,11 @@ export function getUi(locale: Locale): UiStrings {
  * @param prefix - Dotted path of the parent node.
  * @returns Sorted dotted key paths.
  */
-export function flattenKeys(tree: object, prefix = ''): string[] {
+export function flattenKeys(tree: object, prefix = ""): string[] {
   return Object.entries(tree)
     .flatMap(([key, value]: [string, unknown]) => {
-      const path = prefix === '' ? key : `${prefix}.${key}`
-      return typeof value === 'string'
-        ? path
-        : flattenKeys(value as object, path)
+      const path = prefix === "" ? key : `${prefix}.${key}`;
+      return typeof value === "string" ? path : flattenKeys(value as object, path);
     })
-    .toSorted((a, b) => a.localeCompare(b))
+    .toSorted((a, b) => a.localeCompare(b));
 }

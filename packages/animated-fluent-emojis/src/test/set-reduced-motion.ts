@@ -1,4 +1,4 @@
-import { cdp, commands, server } from 'vitest/browser'
+import { cdp, commands, server } from "vitest/browser";
 
 /**
  * Switches `prefers-reduced-motion` for the current test file. Chromium keeps
@@ -7,14 +7,12 @@ import { cdp, commands, server } from 'vitest/browser'
  * they use the page-level browser command.
  * @param value - The media value to emulate.
  */
-export const setReducedMotion = async (
-  value: 'reduce' | 'no-preference',
-): Promise<void> => {
-  if (server.browser === 'chromium') {
-    await cdp().send('Emulation.setEmulatedMedia', {
-      features: [{ name: 'prefers-reduced-motion', value }],
-    })
-    return
+export const setReducedMotion = async (value: "reduce" | "no-preference"): Promise<void> => {
+  if (server.browser === "chromium") {
+    await cdp().send("Emulation.setEmulatedMedia", {
+      features: [{ name: "prefers-reduced-motion", value }],
+    });
+    return;
   }
-  await commands.emulateReducedMotion(value)
-}
+  await commands.emulateReducedMotion(value);
+};

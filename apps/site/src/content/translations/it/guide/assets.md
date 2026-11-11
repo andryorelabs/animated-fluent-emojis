@@ -22,10 +22,10 @@ qualsiasi `Emoji` e, quando riceve degli id, richiede i loro sprite sheet una
 volta che è pronto. Non rifiuta mai:
 
 ```js
-import { preloadEmojis } from 'animated-fluent-emojis'
+import { preloadEmojis } from "animated-fluent-emojis";
 
-void preloadEmojis()
-void preloadEmojis(['1f44b_wavinghand', '1f525_fire'], { skinTone: 'medium' })
+void preloadEmojis();
+void preloadEmojis(["1f44b_wavinghand", "1f525_fire"], { skinTone: "medium" });
 ```
 
 `skinTone` sceglie la variante da preriscaldare per gli emoji che hanno toni
@@ -40,7 +40,7 @@ dalla tua copia, chiama `configureEmojis` una volta, prima che venga
 renderizzato il primo `Emoji`:
 
 ```js
-import { configureEmojis } from 'animated-fluent-emojis'
+import { configureEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
 ```

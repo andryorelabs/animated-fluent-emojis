@@ -20,8 +20,8 @@ e o componente do Astro trazem seus próprios estilos.
 Importe `Emoji` do subcaminho do React:
 
 ```jsx
-import { Emoji } from 'animated-fluent-emojis/react'
-import 'animated-fluent-emojis/style.css'
+import { Emoji } from "animated-fluent-emojis/react";
+import "animated-fluent-emojis/style.css";
 ```
 
 Migrando da versão 0.6 ou anterior: a exportação `Emoji` da raiz foi
@@ -39,22 +39,17 @@ Outros atributos, como `class`, `style` e `data-*`, vão para o span raiz.
 
 ```vue
 <script setup lang="ts">
-import { Emoji } from 'animated-fluent-emojis/vue'
+import { Emoji } from "animated-fluent-emojis/vue";
 
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 
 const handlePlaybackEnd = () => {
-  console.log('done')
-}
+  console.log("done");
+};
 </script>
 
 <template>
-  <Emoji
-    id="1f44b_wavinghand"
-    :size="64"
-    play-on-hover
-    @playback-end="handlePlaybackEnd"
-  >
+  <Emoji id="1f44b_wavinghand" :size="64" play-on-hover @playback-end="handlePlaybackEnd">
     <template #fallback><span>👋</span></template>
   </Emoji>
 </template>
@@ -95,7 +90,7 @@ quando o id é desconhecido ou a imagem falha.
 
 ```astro
 ---
-import Emoji from 'animated-fluent-emojis/astro'
+import Emoji from "animated-fluent-emojis/astro";
 ---
 
 <Emoji id="1f44b_wavinghand" size={64} playOnHover>
@@ -117,7 +112,7 @@ precisa de folha de estilo: os keyframes ficam no seu shadow root.
 
 ```html
 <script type="module">
-  import 'animated-fluent-emojis/element'
+  import "animated-fluent-emojis/element";
 </script>
 
 <fluent-emoji id="1f44b_wavinghand" size="64" play-on-hover>
@@ -158,17 +153,17 @@ núcleo, independente de framework, de todos os adaptadores. Importá-lo não to
 no DOM.
 
 ```js
-import { createEmoji } from 'animated-fluent-emojis'
-import 'animated-fluent-emojis/style.css'
+import { createEmoji } from "animated-fluent-emojis";
+import "animated-fluent-emojis/style.css";
 
-const controller = createEmoji(document.querySelector('#slot'), {
-  id: '1f44b_wavinghand',
+const controller = createEmoji(document.querySelector("#slot"), {
+  id: "1f44b_wavinghand",
   size: 64,
-  fallback: () => document.createTextNode('👋'),
-})
+  fallback: () => document.createTextNode("👋"),
+});
 
-controller.update({ playing: false })
-controller.destroy()
+controller.update({ playing: false });
+controller.destroy();
 ```
 
 Suas opções são as props abaixo, com `className`, `style` e `attributes` para o

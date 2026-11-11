@@ -1,18 +1,18 @@
 ---
-import ExternalLink from '@lucide/astro/icons/external-link'
+import ExternalLink from "@lucide/astro/icons/external-link";
 
-import type { Locale } from '../i18n/locales'
-import { getUi } from '../i18n/ui'
-import { AUTHOR_NAME, AUTHOR_URL, externalLinkAttributes } from '../site-links'
+import type { Locale } from "../i18n/locales";
+import { getUi } from "../i18n/ui";
+import { AUTHOR_NAME, AUTHOR_URL, externalLinkAttributes } from "../site-links";
 
 interface Props {
-  locale: Locale
+  locale: Locale;
 }
 
-const { locale } = Astro.props
-const { common, footer } = getUi(locale)
-const [before = '', after = ''] = footer.builtBy.split('{name}', 2)
-const authorAttributes = externalLinkAttributes('author')
+const { locale } = Astro.props;
+const { common, footer } = getUi(locale);
+const [before = "", after = ""] = footer.builtBy.split("{name}", 2);
+const authorAttributes = externalLinkAttributes("author");
 ---
 
 <p class="text-meta text-foreground">

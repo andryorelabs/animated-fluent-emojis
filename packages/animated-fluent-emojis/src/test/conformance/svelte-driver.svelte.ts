@@ -1,7 +1,7 @@
-import { flushSync, mount, unmount } from 'svelte'
+import { flushSync, mount, unmount } from "svelte";
 
-import Emoji from '../../svelte/Emoji.svelte'
-import type { ConformanceDriver, ConformanceOptions } from './driver.js'
+import Emoji from "../../svelte/Emoji.svelte";
+import type { ConformanceDriver, ConformanceOptions } from "./driver.js";
 
 /**
  * Creates a driver that mounts the Svelte `Emoji` with reactive props, so
@@ -11,49 +11,49 @@ import type { ConformanceDriver, ConformanceOptions } from './driver.js'
 export const createSvelteDriver = (): ConformanceDriver => {
   const state = $state<{ options: ConformanceOptions | undefined }>({
     options: undefined,
-  })
-  let instance: Record<string, unknown> | undefined
+  });
+  let instance: Record<string, unknown> | undefined;
   return {
     mount: (container, options) => {
-      state.options = options
+      state.options = options;
       instance = mount(Emoji, {
         target: container,
         props: {
           get id() {
-            return state.options?.id ?? options.id
+            return state.options?.id ?? options.id;
           },
           get size() {
-            return state.options?.size
+            return state.options?.size;
           },
           get animationIterations() {
-            return state.options?.animationIterations
+            return state.options?.animationIterations;
           },
           get autoPlay() {
-            return state.options?.autoPlay
+            return state.options?.autoPlay;
           },
           get playing() {
-            return state.options?.playing
+            return state.options?.playing;
           },
           get alt() {
-            return state.options?.alt
+            return state.options?.alt;
           },
           get onPlaybackEnd() {
-            return state.options?.onPlaybackEnd
+            return state.options?.onPlaybackEnd;
           },
           get onError() {
-            return state.options?.onError
+            return state.options?.onError;
           },
         },
-      })
-      flushSync()
+      });
+      flushSync();
     },
     update: (options) => {
-      state.options = options
-      flushSync()
+      state.options = options;
+      flushSync();
     },
     unmount: () => {
-      if (instance) void unmount(instance)
-      instance = undefined
+      if (instance) void unmount(instance);
+      instance = undefined;
     },
-  }
-}
+  };
+};

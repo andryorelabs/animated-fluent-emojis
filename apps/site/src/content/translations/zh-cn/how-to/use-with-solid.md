@@ -10,7 +10,7 @@ sourceHash: 7d4f24852e28d756
 只需导入一次元素入口，例如在入口模块中。它会注册 `<fluent-emoji>`，无需样式表：
 
 ```tsx
-import 'animated-fluent-emojis/element'
+import "animated-fluent-emojis/element";
 ```
 
 ## 使用标签
@@ -26,10 +26,10 @@ export function Greeting() {
       size={64}
       play-on-hover
       on:playback-end={() => {
-        console.log('done')
+        console.log("done");
       }}
     />
-  )
+  );
 }
 ```
 
@@ -39,7 +39,7 @@ fallback 作为带有 `slot="fallback"` 的子元素传入，`ref` 可以拿到�
 <fluent-emoji
   id="1f44b_wavinghand"
   ref={(element) => {
-    element.playing = false
+    element.playing = false;
   }}
 >
   <span slot="fallback">👋</span>

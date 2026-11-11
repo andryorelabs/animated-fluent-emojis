@@ -1,7 +1,7 @@
-import 'astro'
+import "astro";
 
-declare module 'astro' {
+declare module "astro" {
   interface AstroClientDirectives {
-    'client:interaction'?: boolean
+    "client:interaction"?: boolean;
   }
 }

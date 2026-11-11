@@ -1,4 +1,4 @@
-const VARIATION_SELECTOR = 0xfe_0f
+const VARIATION_SELECTOR = 0xfe_0f;
 
 /**
  * Converts an emoji glyph to its codepoint key, dropping variation selectors.
@@ -12,7 +12,7 @@ export function glyphToCodepoints(glyph: string): string {
         codepoint !== undefined && codepoint !== VARIATION_SELECTOR,
     )
     .map((codepoint) => codepoint.toString(16))
-    .join('-')
+    .join("-");
 }
 
 /**
@@ -25,6 +25,6 @@ export function hexToCodepoints(hexSequence: string): string {
   return hexSequence
     .toLowerCase()
     .split(/[\s-]+/)
-    .filter((part) => part !== '' && part !== 'fe0f')
-    .join('-')
+    .filter((part) => part !== "" && part !== "fe0f")
+    .join("-");
 }

@@ -1,4 +1,4 @@
-declare const process: { env: { NODE_ENV?: string } }
+declare const process: { env: { NODE_ENV?: string } };
 
 /**
  * Tells whether the consumer's bundler left development checks enabled.
@@ -6,8 +6,8 @@ declare const process: { env: { NODE_ENV?: string } }
  */
 export function isDevelopment(): boolean {
   try {
-    return process.env.NODE_ENV !== 'production'
+    return process.env.NODE_ENV !== "production";
   } catch {
-    return false
+    return false;
   }
 }

@@ -22,10 +22,10 @@ und fordert, wenn IDs übergeben werden, deren Sprite Sheets an, sobald es berei
 ist. Es lehnt nie ab (rejects):
 
 ```js
-import { preloadEmojis } from 'animated-fluent-emojis'
+import { preloadEmojis } from "animated-fluent-emojis";
 
-void preloadEmojis()
-void preloadEmojis(['1f44b_wavinghand', '1f525_fire'], { skinTone: 'medium' })
+void preloadEmojis();
+void preloadEmojis(["1f44b_wavinghand", "1f525_fire"], { skinTone: "medium" });
 ```
 
 `skinTone` wählt die Variante, die für Emojis mit Hauttönen vorgewärmt wird.
@@ -39,7 +39,7 @@ deiner eigenen Kopie auszuliefern, rufe `configureEmojis` einmal auf, bevor das
 erste `Emoji` gerendert wird:
 
 ```js
-import { configureEmojis } from 'animated-fluent-emojis'
+import { configureEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
 ```

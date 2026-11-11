@@ -19,8 +19,8 @@ sourceHash: a1c57a5023d0a080
 Импортируйте `Emoji` из подпути React:
 
 ```jsx
-import { Emoji } from 'animated-fluent-emojis/react'
-import 'animated-fluent-emojis/style.css'
+import { Emoji } from "animated-fluent-emojis/react";
+import "animated-fluent-emojis/style.css";
 ```
 
 Миграция с версии 0.6 и ранее: экспорт `Emoji` из корня был объявлен устаревшим
@@ -39,22 +39,17 @@ span.
 
 ```vue
 <script setup lang="ts">
-import { Emoji } from 'animated-fluent-emojis/vue'
+import { Emoji } from "animated-fluent-emojis/vue";
 
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 
 const handlePlaybackEnd = () => {
-  console.log('done')
-}
+  console.log("done");
+};
 </script>
 
 <template>
-  <Emoji
-    id="1f44b_wavinghand"
-    :size="64"
-    play-on-hover
-    @playback-end="handlePlaybackEnd"
-  >
+  <Emoji id="1f44b_wavinghand" :size="64" play-on-hover @playback-end="handlePlaybackEnd">
     <template #fallback><span>👋</span></template>
   </Emoji>
 </template>
@@ -95,7 +90,7 @@ Astro 5 или новее. Компонент рендерит разметку 
 
 ```astro
 ---
-import Emoji from 'animated-fluent-emojis/astro'
+import Emoji from "animated-fluent-emojis/astro";
 ---
 
 <Emoji id="1f44b_wavinghand" size={64} playOnHover>
@@ -117,7 +112,7 @@ Props те же, что описаны ниже, кроме колбэков, п
 
 ```html
 <script type="module">
-  import 'animated-fluent-emojis/element'
+  import "animated-fluent-emojis/element";
 </script>
 
 <fluent-emoji id="1f44b_wavinghand" size="64" play-on-hover>
@@ -155,17 +150,17 @@ composed-события.
 каждого адаптера, не зависящее от фреймворков. Его импорт не затрагивает DOM.
 
 ```js
-import { createEmoji } from 'animated-fluent-emojis'
-import 'animated-fluent-emojis/style.css'
+import { createEmoji } from "animated-fluent-emojis";
+import "animated-fluent-emojis/style.css";
 
-const controller = createEmoji(document.querySelector('#slot'), {
-  id: '1f44b_wavinghand',
+const controller = createEmoji(document.querySelector("#slot"), {
+  id: "1f44b_wavinghand",
   size: 64,
-  fallback: () => document.createTextNode('👋'),
-})
+  fallback: () => document.createTextNode("👋"),
+});
 
-controller.update({ playing: false })
-controller.destroy()
+controller.update({ playing: false });
+controller.destroy();
 ```
 
 Его опции — это props, описанные ниже, плюс `className`, `style` и `attributes`

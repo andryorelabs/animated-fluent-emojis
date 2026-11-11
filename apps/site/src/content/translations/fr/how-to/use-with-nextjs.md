@@ -12,14 +12,14 @@ s'affichent comme des sprite sheets statiques. Importez-la une seule fois, dans
 le layout racine :
 
 ```jsx
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>{children}</body>
     </html>
-  )
+  );
 }
 ```
 
@@ -29,10 +29,10 @@ Le bundle commence par `"use client";`, un Server Component peut donc importer
 `Emoji` directement, sans fichier intermédiaire :
 
 ```jsx
-import { Emoji } from 'animated-fluent-emojis/react'
+import { Emoji } from "animated-fluent-emojis/react";
 
 export default function Page() {
-  return <Emoji id="1f44b_wavinghand" size={64} />
+  return <Emoji id="1f44b_wavinghand" size={64} />;
 }
 ```
 
@@ -50,15 +50,15 @@ appelez-les depuis un module qui commence par `"use client"`, pas depuis un
 Server Component. Un petit composant monté dans le layout racine suffit :
 
 ```jsx
-'use client'
+"use client";
 
-import { configureEmojis, preloadEmojis } from 'animated-fluent-emojis'
+import { configureEmojis, preloadEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
-void preloadEmojis()
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
+void preloadEmojis();
 
 export function EmojiSetup() {
-  return null
+  return null;
 }
 ```
 

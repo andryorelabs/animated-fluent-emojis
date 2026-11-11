@@ -1,4 +1,4 @@
-import { Search, SlidersHorizontal } from 'lucide-react'
+import { Search, SlidersHorizontal } from "lucide-react";
 import {
   useEffect,
   useMemo,
@@ -8,73 +8,66 @@ import {
   type CSSProperties,
   type KeyboardEvent,
   type SyntheticEvent,
-} from 'react'
+} from "react";
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Sheet, SheetClose, SheetContent } from '@/components/ui/sheet'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetClose, SheetContent } from "@/components/ui/sheet";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-import { filterEmojis, listCategories } from '../../gallery/filter'
-import { fillTemplate } from '../../gallery/template'
-import { parseGalleryUrl, serializeGalleryUrl } from '../../gallery/url-state'
-import type { Locale } from '../../i18n/locales'
-import type { UiStrings } from '../../i18n/ui'
-import { EmojiSheet } from './EmojiSheet'
-import { GallerySidebar } from './GallerySidebar'
-import { GallerySkeleton, GRID_COLUMNS } from './GallerySkeleton'
-import { GalleryTileEmoji } from './GalleryTileEmoji'
-import { useGalleryData } from './use-gallery-data'
+import { filterEmojis, listCategories } from "../../gallery/filter";
+import { fillTemplate } from "../../gallery/template";
+import { parseGalleryUrl, serializeGalleryUrl } from "../../gallery/url-state";
+import type { Locale } from "../../i18n/locales";
+import type { UiStrings } from "../../i18n/ui";
+import { EmojiSheet } from "./EmojiSheet";
+import { GallerySidebar } from "./GallerySidebar";
+import { GallerySkeleton, GRID_COLUMNS } from "./GallerySkeleton";
+import { GalleryTileEmoji } from "./GalleryTileEmoji";
+import { useGalleryData } from "./use-gallery-data";
 
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 
-const PAGE_SIZE = 96
-const DESKTOP_QUERY = '(min-width: 860px)'
-const TOOLTIP_DELAY = 300
+const PAGE_SIZE = 96;
+const DESKTOP_QUERY = "(min-width: 860px)";
+const TOOLTIP_DELAY = 300;
 
 /**
  * Properties of {@link Gallery}.
  */
 export interface GalleryProps {
-  locale: Locale
-  searchIndexUrl: string
-  strings: UiStrings['gallery']
+  locale: Locale;
+  searchIndexUrl: string;
+  strings: UiStrings["gallery"];
 }
 
 function useMediaQuery(query: string): boolean {
   return useSyncExternalStore(
     (onChange) => {
-      const list = globalThis.matchMedia(query)
-      list.addEventListener('change', onChange)
+      const list = globalThis.matchMedia(query);
+      list.addEventListener("change", onChange);
       return () => {
-        list.removeEventListener('change', onChange)
-      }
+        list.removeEventListener("change", onChange);
+      };
     },
     () => globalThis.matchMedia(query).matches,
     () => true,
-  )
+  );
 }
 
 function getShortcutHint(): string {
-  return /mac|iphone|ipad/i.test(globalThis.navigator.userAgent)
-    ? '⌘K'
-    : 'Ctrl K'
+  return /mac|iphone|ipad/i.test(globalThis.navigator.userAgent) ? "⌘K" : "Ctrl K";
 }
 
 function readInitialFilters() {
-  return parseGalleryUrl(globalThis.location.search)
+  return parseGalleryUrl(globalThis.location.search);
 }
 
 interface MessageProps {
-  title: string
-  hint: string
-  action: string
-  onAction: () => void
+  title: string;
+  hint: string;
+  action: string;
+  onAction: () => void;
 }
 
 function Message({ title, hint, action, onAction }: MessageProps) {
@@ -86,7 +79,7 @@ function Message({ title, hint, action, onAction }: MessageProps) {
         {action}
       </Button>
     </div>
-  )
+  );
 }
 
 /**
@@ -95,67 +88,60 @@ function Message({ title, hint, action, onAction }: MessageProps) {
  * @returns The search controls, results grid and emoji sheet.
  */
 export function Gallery(props: GalleryProps) {
-  const { locale, searchIndexUrl, strings } = props
-  const { state, retry } = useGalleryData(searchIndexUrl)
-  const [filters, setFilters] = useState(readInitialFilters)
-  const [filtersOpen, setFiltersOpen] = useState(false)
-  const [selectedSlug, setSelectedSlug] = useState<string | undefined>()
-  const [sheetOpen, setSheetOpen] = useState(false)
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
-  const [focusedSlug, setFocusedSlug] = useState<string | undefined>()
-  const [armedSlugs, setArmedSlugs] = useState<ReadonlySet<string>>(
-    () => new Set(),
-  )
-  const isDesktop = useMediaQuery(DESKTOP_QUERY)
-  const [sheetHeight, setSheetHeight] = useState(0)
-  const searchRef = useRef<HTMLInputElement>(null)
-  const filtersButtonRef = useRef<HTMLButtonElement>(null)
-  const shortcutHint = useMemo(() => getShortcutHint(), [])
+  const { locale, searchIndexUrl, strings } = props;
+  const { state, retry } = useGalleryData(searchIndexUrl);
+  const [filters, setFilters] = useState(readInitialFilters);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [selectedSlug, setSelectedSlug] = useState<string | undefined>();
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [focusedSlug, setFocusedSlug] = useState<string | undefined>();
+  const [armedSlugs, setArmedSlugs] = useState<ReadonlySet<string>>(() => new Set());
+  const isDesktop = useMediaQuery(DESKTOP_QUERY);
+  const [sheetHeight, setSheetHeight] = useState(0);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const filtersButtonRef = useRef<HTMLButtonElement>(null);
+  const shortcutHint = useMemo(() => getShortcutHint(), []);
 
   useEffect(() => {
     function focusSearch(event: globalThis.KeyboardEvent) {
-      const isShortcut =
-        (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k'
-      if (!isShortcut) return
-      event.preventDefault()
-      searchRef.current?.focus()
-      searchRef.current?.select()
+      const isShortcut = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k";
+      if (!isShortcut) return;
+      event.preventDefault();
+      searchRef.current?.focus();
+      searchRef.current?.select();
     }
-    globalThis.addEventListener('keydown', focusSearch)
+    globalThis.addEventListener("keydown", focusSearch);
     return () => {
-      globalThis.removeEventListener('keydown', focusSearch)
-    }
-  }, [])
-  const gridRef = useRef<HTMLDivElement>(null)
-  const lastTriggerRef = useRef<HTMLElement | null>(null)
+      globalThis.removeEventListener("keydown", focusSearch);
+    };
+  }, []);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const lastTriggerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    const query = serializeGalleryUrl(filters)
+    const query = serializeGalleryUrl(filters);
     globalThis.history.replaceState(
       null,
-      '',
+      "",
       `${globalThis.location.pathname}${query}${globalThis.location.hash}`,
-    )
-  }, [filters])
+    );
+  }, [filters]);
 
-  const data = state.status === 'ready' ? state.data : undefined
-  const categories = useMemo(
-    () => (data ? listCategories(data.emojis) : []),
-    [data],
-  )
+  const data = state.status === "ready" ? state.data : undefined;
+  const categories = useMemo(() => (data ? listCategories(data.emojis) : []), [data]);
   const categoryCounts = useMemo(
     () =>
       categories.map((name) => ({
         name,
-        count:
-          data?.emojis.filter((emoji) => emoji.category === name).length ?? 0,
+        count: data?.emojis.filter((emoji) => emoji.category === name).length ?? 0,
       })),
     [categories, data],
-  )
+  );
   const names = useMemo(
     () => new Map(data?.searchIndex.map((entry) => [entry.slug, entry.name])),
     [data],
-  )
+  );
   const results = useMemo(
     () =>
       data
@@ -165,64 +151,59 @@ export function Gallery(props: GalleryProps) {
           })
         : [],
     [data, filters.query, filters.category],
-  )
+  );
 
-  const shown = results.slice(0, visibleCount)
-  const selected = results.find((emoji) => emoji.slug === selectedSlug)
-  const tabStop = shown.find((emoji) => emoji.slug === focusedSlug) ?? shown[0]
-  const tone = filters.tone
-  const size = filters.size
+  const shown = results.slice(0, visibleCount);
+  const selected = results.find((emoji) => emoji.slug === selectedSlug);
+  const tabStop = shown.find((emoji) => emoji.slug === focusedSlug) ?? shown[0];
+  const tone = filters.tone;
+  const size = filters.size;
 
   function updateFilters(change: Partial<typeof filters>) {
-    setFilters((current) => ({ ...current, ...change }))
-    if ('query' in change || 'category' in change) setSheetOpen(false)
-    if (!('size' in change)) setVisibleCount(PAGE_SIZE)
+    setFilters((current) => ({ ...current, ...change }));
+    if ("query" in change || "category" in change) setSheetOpen(false);
+    if (!("size" in change)) setVisibleCount(PAGE_SIZE);
   }
 
   function armTile(event: SyntheticEvent) {
-    if (!(event.target instanceof Element)) return
-    const slug = event.target.closest<HTMLElement>('[data-slug]')?.dataset.slug
-    if (slug === undefined) return
-    setArmedSlugs((armed) =>
-      armed.has(slug) ? armed : new Set(armed).add(slug),
-    )
+    if (!(event.target instanceof Element)) return;
+    const slug = event.target.closest<HTMLElement>("[data-slug]")?.dataset.slug;
+    if (slug === undefined) return;
+    setArmedSlugs((armed) => (armed.has(slug) ? armed : new Set(armed).add(slug)));
   }
 
   function select(slug: string, trigger: HTMLElement) {
-    setSelectedSlug(slug)
-    setFocusedSlug(slug)
-    lastTriggerRef.current = trigger
-    setSheetOpen(true)
+    setSelectedSlug(slug);
+    setFocusedSlug(slug);
+    lastTriggerRef.current = trigger;
+    setSheetOpen(true);
   }
 
   function moveFocus(event: KeyboardEvent<HTMLElement>, position: number) {
-    const grid = gridRef.current
-    if (!grid) return
-    const columns = getComputedStyle(grid).gridTemplateColumns.split(' ').length
+    const grid = gridRef.current;
+    if (!grid) return;
+    const columns = getComputedStyle(grid).gridTemplateColumns.split(" ").length;
     const offsets: Record<string, number> = {
       ArrowRight: 1,
       ArrowLeft: -1,
       ArrowDown: columns,
       ArrowUp: -columns,
-    }
+    };
     const target =
-      event.key === 'Home'
+      event.key === "Home"
         ? 0
-        : event.key === 'End'
+        : event.key === "End"
           ? shown.length - 1
-          : position + (offsets[event.key] ?? NaN)
-    const next = shown[target]
-    if (!next) return
-    event.preventDefault()
-    setFocusedSlug(next.slug)
-    grid
-      .querySelector<HTMLElement>(`[data-slug="${CSS.escape(next.slug)}"]`)
-      ?.focus()
+          : position + (offsets[event.key] ?? NaN);
+    const next = shown[target];
+    if (!next) return;
+    event.preventDefault();
+    setFocusedSlug(next.slug);
+    grid.querySelector<HTMLElement>(`[data-slug="${CSS.escape(next.slug)}"]`)?.focus();
   }
 
-  if (state.status === 'loading')
-    return <GallerySkeleton label={strings.loading} size={size} />
-  if (!data || state.status === 'error') {
+  if (state.status === "loading") return <GallerySkeleton label={strings.loading} size={size} />;
+  if (!data || state.status === "error") {
     return (
       <Message
         title={strings.errorTitle}
@@ -230,14 +211,14 @@ export function Gallery(props: GalleryProps) {
         action={strings.retry}
         onAction={retry}
       />
-    )
+    );
   }
 
   const placeholder = fillTemplate(
     strings.searchPlaceholder,
-    'count',
+    "count",
     data.emojis.length.toLocaleString(),
-  )
+  );
   const sidebar = (
     <GallerySidebar
       strings={strings}
@@ -245,28 +226,25 @@ export function Gallery(props: GalleryProps) {
       totalCount={data.emojis.length}
       category={filters.category}
       onCategory={(category) => {
-        updateFilters({ category })
+        updateFilters({ category });
       }}
       tone={tone}
       onTone={(next) => {
-        updateFilters({ tone: next })
+        updateFilters({ tone: next });
       }}
       toneDisabled={selected?.tones.length === 0}
       size={size}
       onSize={(next) => {
-        updateFilters({ size: next })
+        updateFilters({ size: next });
       }}
     />
-  )
+  );
 
   return (
     <TooltipProvider delay={TOOLTIP_DELAY}>
       <div className="grid gap-6 split:grid-cols-sidebar">
         {isDesktop && (
-          <aside
-            aria-label={strings.filtersButton}
-            className="sticky top-18 self-start"
-          >
+          <aside aria-label={strings.filtersButton} className="sticky top-18 self-start">
             {sidebar}
           </aside>
         )}
@@ -278,7 +256,7 @@ export function Gallery(props: GalleryProps) {
                 variant="outline"
                 size="lg"
                 onClick={() => {
-                  setFiltersOpen(true)
+                  setFiltersOpen(true);
                 }}
               >
                 <SlidersHorizontal aria-hidden="true" />
@@ -295,7 +273,7 @@ export function Gallery(props: GalleryProps) {
                 type="search"
                 value={filters.query}
                 onChange={(event) => {
-                  updateFilters({ query: event.target.value })
+                  updateFilters({ query: event.target.value });
                 }}
                 aria-label={strings.searchLabel}
                 aria-keyshortcuts="Control+K Meta+K"
@@ -314,25 +292,17 @@ export function Gallery(props: GalleryProps) {
               role="status"
               className="sr-only shrink-0 font-mono text-xs text-muted-foreground tabular-nums min-[480px]:not-sr-only"
             >
-              {fillTemplate(
-                strings.resultsCount,
-                'count',
-                String(results.length),
-              )}
+              {fillTemplate(strings.resultsCount, "count", String(results.length))}
             </p>
           </div>
           <div className="transition-opacity duration-200 ease-(--ease-out-strong) starting:opacity-0">
             {results.length === 0 ? (
               <Message
-                title={fillTemplate(
-                  strings.noResultsTitle,
-                  'query',
-                  filters.query,
-                )}
+                title={fillTemplate(strings.noResultsTitle, "query", filters.query)}
                 hint={strings.noResultsHint}
                 action={strings.clearSearch}
                 onAction={() => {
-                  updateFilters({ query: '', category: undefined })
+                  updateFilters({ query: "", category: undefined });
                 }}
               />
             ) : (
@@ -340,7 +310,7 @@ export function Gallery(props: GalleryProps) {
                 className="flex flex-col items-center gap-4 pb-(--sheet-clearance)"
                 style={
                   {
-                    '--sheet-clearance': `${String(sheetOpen ? sheetHeight : 0)}px`,
+                    "--sheet-clearance": `${String(sheetOpen ? sheetHeight : 0)}px`,
                   } as CSSProperties
                 }
               >
@@ -353,9 +323,8 @@ export function Gallery(props: GalleryProps) {
                   onFocus={armTile}
                 >
                   {shown.map((emoji) => {
-                    const name = names.get(emoji.slug) ?? emoji.description
-                    const isSelected =
-                      sheetOpen && selected?.slug === emoji.slug
+                    const name = names.get(emoji.slug) ?? emoji.description;
+                    const isSelected = sheetOpen && selected?.slug === emoji.slug;
                     return (
                       <Tooltip key={emoji.slug}>
                         <TooltipTrigger
@@ -367,23 +336,20 @@ export function Gallery(props: GalleryProps) {
                               aria-label={name}
                               tabIndex={tabStop?.slug === emoji.slug ? 0 : -1}
                               onClick={(event) => {
-                                select(emoji.slug, event.currentTarget)
+                                select(emoji.slug, event.currentTarget);
                               }}
                               onFocus={() => {
-                                setFocusedSlug(emoji.slug)
+                                setFocusedSlug(emoji.slug);
                               }}
                               onKeyDown={(event) => {
-                                moveFocus(event, shown.indexOf(emoji))
+                                moveFocus(event, shown.indexOf(emoji));
                               }}
 
                               className="flex aspect-square cursor-pointer items-center justify-center rounded-10 border border-transparent p-1 transition-bg-transform duration-100 ease-(--ease-out-strong) select-none touch-callout-none hover:bg-muted active:scale-96 active:bg-muted aria-pressed:border-primary"
                             />
                           }
                         >
-                          <span
-                            data-transition-target=""
-                            className="view-transition-class-emoji"
-                          >
+                          <span data-transition-target="" className="view-transition-class-emoji">
                             <GalleryTileEmoji
                               emoji={emoji}
                               tone={tone}
@@ -394,7 +360,7 @@ export function Gallery(props: GalleryProps) {
                         </TooltipTrigger>
                         <TooltipContent>{name}</TooltipContent>
                       </Tooltip>
-                    )
+                    );
                   })}
                 </div>
                 {shown.length < results.length && (
@@ -402,7 +368,7 @@ export function Gallery(props: GalleryProps) {
                     variant="outline"
                     size="lg"
                     onClick={() => {
-                      setVisibleCount((count) => count + PAGE_SIZE)
+                      setVisibleCount((count) => count + PAGE_SIZE);
                     }}
                   >
                     {strings.showMore}
@@ -445,5 +411,5 @@ export function Gallery(props: GalleryProps) {
         </Sheet>
       )}
     </TooltipProvider>
-  )
+  );
 }

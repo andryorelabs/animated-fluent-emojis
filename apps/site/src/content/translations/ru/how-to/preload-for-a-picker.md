@@ -12,9 +12,9 @@ sourceHash: 727a2637d064bf30
 `Emoji`. Он никогда не отклоняется, поэтому достаточно `void`:
 
 ```jsx
-import { preloadEmojis } from 'animated-fluent-emojis'
+import { preloadEmojis } from "animated-fluent-emojis";
 
-void preloadEmojis()
+void preloadEmojis();
 ```
 
 Вызывайте его, когда пользователь, вероятно, откроет пикер: например, при
@@ -28,10 +28,10 @@ void preloadEmojis()
 пользователь:
 
 ```jsx
-const quickReactions = ['1f44b_wavinghand', '1f525_fire', '1f389_partypopper']
+const quickReactions = ["1f44b_wavinghand", "1f525_fire", "1f389_partypopper"];
 
 function handlePickerTriggerHover() {
-  void preloadEmojis(quickReactions, { skinTone: 'medium' })
+  void preloadEmojis(quickReactions, { skinTone: "medium" });
 }
 ```
 

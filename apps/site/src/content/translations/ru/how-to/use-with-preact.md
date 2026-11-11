@@ -12,14 +12,14 @@ sourceHash: 690f9a4ab5451009
 таблица стилей не нужна:
 
 ```tsx
-import 'animated-fluent-emojis/element'
+import "animated-fluent-emojis/element";
 ```
 
 Пакет дополняет типы JSX из `preact` атрибутами элемента в kebab-case:
 
 ```tsx
 export function Greeting() {
-  return <fluent-emoji id="1f44b_wavinghand" size={64} play-on-hover />
+  return <fluent-emoji id="1f44b_wavinghand" size={64} play-on-hover />;
 }
 ```
 
@@ -28,25 +28,25 @@ Fallback передаётся дочерним элементом с `slot="fall
 элемента через `ref`:
 
 ```tsx
-import { useEffect, useRef } from 'preact/hooks'
+import { useEffect, useRef } from "preact/hooks";
 
 export function Greeting() {
-  const emoji = useRef<HTMLElementTagNameMap['fluent-emoji']>(null)
+  const emoji = useRef<HTMLElementTagNameMap["fluent-emoji"]>(null);
 
   useEffect(() => {
-    const element = emoji.current
+    const element = emoji.current;
     const onEnd = () => {
-      console.log('done')
-    }
-    element?.addEventListener('playback-end', onEnd)
-    return () => element?.removeEventListener('playback-end', onEnd)
-  }, [])
+      console.log("done");
+    };
+    element?.addEventListener("playback-end", onEnd);
+    return () => element?.removeEventListener("playback-end", onEnd);
+  }, []);
 
   return (
     <fluent-emoji id="1f44b_wavinghand" ref={emoji}>
       <span slot="fallback">👋</span>
     </fluent-emoji>
-  )
+  );
 }
 ```
 

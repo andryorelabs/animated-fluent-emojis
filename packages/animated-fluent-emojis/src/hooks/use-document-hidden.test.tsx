@@ -1,31 +1,31 @@
-import { Profiler } from 'react'
-import { afterEach, expect, test, vi } from 'vitest'
-import { render } from 'vitest-browser-react'
+import { Profiler } from "react";
+import { afterEach, expect, test, vi } from "vitest";
+import { render } from "vitest-browser-react";
 
-import { useDocumentHidden } from './use-document-hidden.js'
+import { useDocumentHidden } from "./use-document-hidden.js";
 
 const setDocumentHidden = (hidden: boolean) => {
-  Object.defineProperty(document, 'hidden', {
+  Object.defineProperty(document, "hidden", {
     configurable: true,
     get: () => hidden,
-  })
-  document.dispatchEvent(new Event('visibilitychange'))
-}
+  });
+  document.dispatchEvent(new Event("visibilitychange"));
+};
 
 afterEach(() => {
-  Reflect.deleteProperty(document, 'hidden')
-  vi.restoreAllMocks()
-})
+  Reflect.deleteProperty(document, "hidden");
+  vi.restoreAllMocks();
+});
 
 const Probe = ({ isActive }: { isActive: boolean }) => {
-  useDocumentHidden(isActive)
-  return null
-}
+  useDocumentHidden(isActive);
+  return null;
+};
 
-const fifty = Array.from({ length: 50 }, (_, index) => index)
+const fifty = Array.from({ length: 50 }, (_, index) => index);
 
-test('registers one visibilitychange listener for 50 active consumers', async () => {
-  const addSpy = vi.spyOn(document, 'addEventListener')
+test("registers one visibilitychange listener for 50 active consumers", async () => {
+  const addSpy = vi.spyOn(document, "addEventListener");
 
   await render(
     <div>
@@ -33,23 +33,21 @@ test('registers one visibilitychange listener for 50 active consumers', async ()
         <Probe key={key} isActive />
       ))}
     </div>,
-  )
+  );
 
-  const calls = addSpy.mock.calls.filter(
-    ([type]) => type === 'visibilitychange',
-  )
-  expect(calls).toHaveLength(1)
-})
+  const calls = addSpy.mock.calls.filter(([type]) => type === "visibilitychange");
+  expect(calls).toHaveLength(1);
+});
 
-test('inactive consumers do not re-render on visibility changes', async () => {
-  let activeRenders = 0
-  let inactiveRenders = 0
+test("inactive consumers do not re-render on visibility changes", async () => {
+  let activeRenders = 0;
+  let inactiveRenders = 0;
   const countActive = () => {
-    activeRenders += 1
-  }
+    activeRenders += 1;
+  };
   const countInactive = () => {
-    inactiveRenders += 1
-  }
+    inactiveRenders += 1;
+  };
   await render(
     <div>
       <Profiler id="active" onRender={countActive}>
@@ -59,14 +57,14 @@ test('inactive consumers do not re-render on visibility changes', async () => {
         <Probe isActive={false} />
       </Profiler>
     </div>,
-  )
-  const activeBefore = activeRenders
-  const inactiveBefore = inactiveRenders
+  );
+  const activeBefore = activeRenders;
+  const inactiveBefore = inactiveRenders;
 
-  setDocumentHidden(true)
+  setDocumentHidden(true);
   await vi.waitFor(() => {
-    expect(activeRenders).toBeGreaterThan(activeBefore)
-  })
+    expect(activeRenders).toBeGreaterThan(activeBefore);
+  });
 
-  expect(inactiveRenders).toBe(inactiveBefore)
-})
+  expect(inactiveRenders).toBe(inactiveBefore);
+});

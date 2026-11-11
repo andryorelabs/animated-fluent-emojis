@@ -1,5 +1,5 @@
-import type { FileUrls, PublicEmoji, SkinTone } from './public-index'
-import { searchEmojis, type SearchEntry } from './search'
+import type { FileUrls, PublicEmoji, SkinTone } from "./public-index";
+import { searchEmojis, type SearchEntry } from "./search";
 
 /**
  * Distinct categories in first-seen order.
@@ -7,7 +7,7 @@ import { searchEmojis, type SearchEntry } from './search'
  * @returns The category names.
  */
 export function listCategories(emojis: readonly PublicEmoji[]): string[] {
-  return [...new Set(emojis.map((emoji) => emoji.category))]
+  return [...new Set(emojis.map((emoji) => emoji.category))];
 }
 
 /**
@@ -26,15 +26,15 @@ export function filterEmojis(
   filters: { query: string; category: string | undefined },
 ): PublicEmoji[] {
   const inCategory = (emoji: PublicEmoji) =>
-    filters.category === undefined || emoji.category === filters.category
-  if (filters.query.trim() === '') {
-    return emojis.filter((emoji) => inCategory(emoji))
+    filters.category === undefined || emoji.category === filters.category;
+  if (filters.query.trim() === "") {
+    return emojis.filter((emoji) => inCategory(emoji));
   }
-  const bySlug = new Map(emojis.map((emoji) => [emoji.slug, emoji]))
+  const bySlug = new Map(emojis.map((emoji) => [emoji.slug, emoji]));
   return searchEmojis(searchIndex, filters.query).flatMap((slug) => {
-    const emoji = bySlug.get(slug)
-    return emoji && inCategory(emoji) ? [emoji] : []
-  })
+    const emoji = bySlug.get(slug);
+    return emoji && inCategory(emoji) ? [emoji] : [];
+  });
 }
 
 /**
@@ -47,10 +47,9 @@ export function effectiveTone(
   emoji: PublicEmoji,
   tone: SkinTone | undefined,
 ): SkinTone | undefined {
-  return tone !== undefined &&
-    emoji.tones.some((variant) => variant.tone === tone)
+  return tone !== undefined && emoji.tones.some((variant) => variant.tone === tone)
     ? tone
-    : undefined
+    : undefined;
 }
 
 /**
@@ -59,13 +58,7 @@ export function effectiveTone(
  * @param tone - The global tone, if any.
  * @returns The URLs of the tone variant, or of the base emoji when it has none.
  */
-export function urlsForTone(
-  emoji: PublicEmoji,
-  tone: SkinTone | undefined,
-): FileUrls {
-  const appliedTone = effectiveTone(emoji, tone)
-  return (
-    emoji.tones.find((variant) => variant.tone === appliedTone)?.urls ??
-    emoji.urls
-  )
+export function urlsForTone(emoji: PublicEmoji, tone: SkinTone | undefined): FileUrls {
+  const appliedTone = effectiveTone(emoji, tone);
+  return emoji.tones.find((variant) => variant.tone === appliedTone)?.urls ?? emoji.urls;
 }

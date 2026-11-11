@@ -1,20 +1,20 @@
-import type { Manifest } from '../../packages/animated-fluent-emojis/src/utils/types.js'
+import type { Manifest } from "../../packages/animated-fluent-emojis/src/utils/types.js";
 
 /**
  * The runtime-facing subset of an emoji entry: no shortcuts, keywords or
  * unicode, which keeps the published payload about a third of the full size.
  */
 interface SlimEmoticon {
-  readonly id: string
-  readonly description: string
-  readonly etag: string
-  readonly diverse: boolean
+  readonly id: string;
+  readonly description: string;
+  readonly etag: string;
+  readonly diverse: boolean;
   readonly animation: {
-    readonly fps: number
-    readonly framesCount: number
-    readonly firstFrame: number
-  }
-  readonly hd?: unknown
+    readonly fps: number;
+    readonly framesCount: number;
+    readonly firstFrame: number;
+  };
+  readonly hd?: unknown;
 }
 
 /**
@@ -22,11 +22,11 @@ interface SlimEmoticon {
  */
 export interface SlimManifest {
   readonly categories: readonly {
-    readonly id: string
-    readonly title: string
-    readonly description: string
-    readonly emoticons: readonly SlimEmoticon[]
-  }[]
+    readonly id: string;
+    readonly title: string;
+    readonly description: string;
+    readonly emoticons: readonly SlimEmoticon[];
+  }[];
 }
 
 /**
@@ -42,7 +42,7 @@ export function toSlimManifest(manifest: Manifest): SlimManifest {
       title: category.title,
       description: category.description,
       emoticons: category.emoticons.map((emoticon) => {
-        const { hd } = emoticon as { hd?: unknown }
+        const { hd } = emoticon as { hd?: unknown };
         return {
           id: emoticon.id,
           description: emoticon.description,
@@ -50,8 +50,8 @@ export function toSlimManifest(manifest: Manifest): SlimManifest {
           diverse: emoticon.diverse,
           animation: emoticon.animation,
           ...(hd !== undefined && { hd }),
-        }
+        };
       }),
     })),
-  }
+  };
 }

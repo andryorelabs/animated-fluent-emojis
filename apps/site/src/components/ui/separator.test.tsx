@@ -1,17 +1,17 @@
-import { renderToString } from 'react-dom/server'
-import { expect, test } from 'vitest'
+import { renderToString } from "react-dom/server";
+import { expect, test } from "vitest";
 
-import { Separator } from './separator'
+import { Separator } from "./separator";
 
-test('Separator renders a horizontal rule by default', () => {
-  const html = renderToString(<Separator />)
+test("Separator renders a horizontal rule by default", () => {
+  const html = renderToString(<Separator />);
 
-  expect(html).toContain('role="separator"')
-  expect(html).toContain('data-horizontal')
-})
+  expect(html).toContain('role="separator"');
+  expect(html).toContain("data-horizontal");
+});
 
-test('Separator supports the vertical orientation', () => {
-  const html = renderToString(<Separator orientation="vertical" />)
+test("Separator supports the vertical orientation", () => {
+  const html = renderToString(<Separator orientation="vertical" />);
 
-  expect(html).toContain('data-vertical')
-})
+  expect(html).toContain("data-vertical");
+});

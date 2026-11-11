@@ -3,32 +3,32 @@ import {
   type PreferenceEnvironment,
   type PreferenceStorage,
   type PreferenceStore,
-} from './persisted-preference'
+} from "./persisted-preference";
 
-export const PACKAGE_MANAGERS = ['bun', 'pnpm', 'npm', 'yarn'] as const
+export const PACKAGE_MANAGERS = ["bun", "pnpm", "npm", "yarn"] as const;
 
-export type PackageManager = (typeof PACKAGE_MANAGERS)[number]
+export type PackageManager = (typeof PACKAGE_MANAGERS)[number];
 
-export const DEFAULT_PACKAGE_MANAGER: PackageManager = 'bun'
+export const DEFAULT_PACKAGE_MANAGER: PackageManager = "bun";
 
-export const PACKAGE_MANAGER_STORAGE_KEY = 'afe:pm'
+export const PACKAGE_MANAGER_STORAGE_KEY = "afe:pm";
 
-const PACKAGE_MANAGER_EVENT = 'afe:pm-change'
+const PACKAGE_MANAGER_EVENT = "afe:pm-change";
 
-const PACKAGE_NAME = 'animated-fluent-emojis'
+const PACKAGE_NAME = "animated-fluent-emojis";
 
 const INSTALL_VERBS: Record<PackageManager, string> = {
-  bun: 'bun add',
-  npm: 'npm install',
-  pnpm: 'pnpm add',
-  yarn: 'yarn add',
-}
+  bun: "bun add",
+  npm: "npm install",
+  pnpm: "pnpm add",
+  yarn: "yarn add",
+};
 
-export type PackageManagerStorage = PreferenceStorage
+export type PackageManagerStorage = PreferenceStorage;
 
-export type PackageManagerEnvironment = PreferenceEnvironment
+export type PackageManagerEnvironment = PreferenceEnvironment;
 
-export type PackageManagerStore = PreferenceStore<PackageManager>
+export type PackageManagerStore = PreferenceStore<PackageManager>;
 
 /**
  * Narrows a stored or user-provided value to a supported package manager.
@@ -36,7 +36,7 @@ export type PackageManagerStore = PreferenceStore<PackageManager>
  * @returns Whether it names a supported package manager.
  */
 export function isPackageManager(value: unknown): value is PackageManager {
-  return PACKAGE_MANAGERS.includes(value as PackageManager)
+  return PACKAGE_MANAGERS.includes(value as PackageManager);
 }
 
 /**
@@ -45,7 +45,7 @@ export function isPackageManager(value: unknown): value is PackageManager {
  * @returns A shell command to run in the project root.
  */
 export function installCommand(manager: PackageManager): string {
-  return `${INSTALL_VERBS[manager]} ${PACKAGE_NAME}`
+  return `${INSTALL_VERBS[manager]} ${PACKAGE_NAME}`;
 }
 
 /**
@@ -65,7 +65,7 @@ export function createPackageManagerStore(
       isValue: isPackageManager,
     },
     environment,
-  )
+  );
 }
 
 /**
@@ -73,5 +73,4 @@ export function createPackageManagerStore(
  * `localStorage` only when queried, so creating it during server rendering is
  * safe.
  */
-export const sharedPackageManagerStore: PackageManagerStore =
-  createPackageManagerStore()
+export const sharedPackageManagerStore: PackageManagerStore = createPackageManagerStore();

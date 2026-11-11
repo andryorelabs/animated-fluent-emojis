@@ -9,7 +9,7 @@ Import the element entry once. It registers `<fluent-emoji>` and needs no
 stylesheet:
 
 ```tsx
-import 'animated-fluent-emojis/element'
+import "animated-fluent-emojis/element";
 ```
 
 The package augments the `preact` JSX types with the element's kebab-case
@@ -17,7 +17,7 @@ attributes:
 
 ```tsx
 export function Greeting() {
-  return <fluent-emoji id="1f44b_wavinghand" size={64} play-on-hover />
+  return <fluent-emoji id="1f44b_wavinghand" size={64} play-on-hover />;
 }
 ```
 
@@ -26,25 +26,25 @@ The fallback goes in as a child with `slot="fallback"`. To react to
 element from a `ref`:
 
 ```tsx
-import { useEffect, useRef } from 'preact/hooks'
+import { useEffect, useRef } from "preact/hooks";
 
 export function Greeting() {
-  const emoji = useRef<HTMLElementTagNameMap['fluent-emoji']>(null)
+  const emoji = useRef<HTMLElementTagNameMap["fluent-emoji"]>(null);
 
   useEffect(() => {
-    const element = emoji.current
+    const element = emoji.current;
     const onEnd = () => {
-      console.log('done')
-    }
-    element?.addEventListener('playback-end', onEnd)
-    return () => element?.removeEventListener('playback-end', onEnd)
-  }, [])
+      console.log("done");
+    };
+    element?.addEventListener("playback-end", onEnd);
+    return () => element?.removeEventListener("playback-end", onEnd);
+  }, []);
 
   return (
     <fluent-emoji id="1f44b_wavinghand" ref={emoji}>
       <span slot="fallback">👋</span>
     </fluent-emoji>
-  )
+  );
 }
 ```
 

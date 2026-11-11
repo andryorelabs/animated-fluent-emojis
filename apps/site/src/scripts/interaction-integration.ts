@@ -1,5 +1,5 @@
-import { fileURLToPath } from 'node:url'
-import type { AstroIntegration } from 'astro'
+import { fileURLToPath } from "node:url";
+import type { AstroIntegration } from "astro";
 
 /**
  * Astro integration that registers the `client:interaction` directive, which
@@ -8,16 +8,14 @@ import type { AstroIntegration } from 'astro'
  */
 export function interactionDirective(): AstroIntegration {
   return {
-    name: 'interaction-directive',
+    name: "interaction-directive",
     hooks: {
-      'astro:config:setup': ({ addClientDirective }) => {
+      "astro:config:setup": ({ addClientDirective }) => {
         addClientDirective({
-          name: 'interaction',
-          entrypoint: fileURLToPath(
-            new URL('interaction-directive.ts', import.meta.url),
-          ),
-        })
+          name: "interaction",
+          entrypoint: fileURLToPath(new URL("interaction-directive.ts", import.meta.url)),
+        });
       },
     },
-  }
+  };
 }

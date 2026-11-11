@@ -4,52 +4,43 @@ import {
   type FileUrls,
   type PublicEmoji,
   type SkinTone,
-} from './public-index'
+} from "./public-index";
 
-export const SNIPPET_KINDS = [
-  'react',
-  'vue',
-  'svelte',
-  'astro',
-  'element',
-  'no-code',
-] as const
+export const SNIPPET_KINDS = ["react", "vue", "svelte", "astro", "element", "no-code"] as const;
 
-export type SnippetKind = (typeof SNIPPET_KINDS)[number]
+export type SnippetKind = (typeof SNIPPET_KINDS)[number];
 
-export const PLAY_MODES = ['load', 'hover', 'loop'] as const
+export const PLAY_MODES = ["load", "hover", "loop"] as const;
 
-export type PlayMode = (typeof PLAY_MODES)[number]
+export type PlayMode = (typeof PLAY_MODES)[number];
 
 export interface SnippetOptions {
-  size?: number | undefined
-  tone?: SkinTone | undefined
-  play?: PlayMode | undefined
+  size?: number | undefined;
+  tone?: SkinTone | undefined;
+  play?: PlayMode | undefined;
 }
 
-type AttributeStyle = 'jsx' | 'vue' | 'element'
+type AttributeStyle = "jsx" | "vue" | "element";
 
-const DEFAULT_SIZE = 64
+const DEFAULT_SIZE = 64;
 
 function toneAttribute(tone: SkinTone | undefined, name: string): string {
-  return tone ? ` ${name}="${tone}"` : ''
+  return tone ? ` ${name}="${tone}"` : "";
 }
 
 function playAttributes(play: PlayMode, style: AttributeStyle): string {
-  if (play === 'hover') {
+  if (play === "hover") {
     const attributes: Record<AttributeStyle, string> = {
-      jsx: ' playOnHover autoPlay={false}',
+      jsx: " playOnHover autoPlay={false}",
       vue: ' play-on-hover :auto-play="false"',
       element: ' play-on-hover auto-play="false"',
-    }
-    return attributes[style]
+    };
+    return attributes[style];
   }
-  if (play === 'loop') {
-    return style === 'jsx'
-      ? ' animationIterations="infinite"'
-      : ' animation-iterations="infinite"'
+  if (play === "loop") {
+    return style === "jsx" ? ' animationIterations="infinite"' : ' animation-iterations="infinite"';
   }
-  return ''
+  return "";
 }
 
 /**
@@ -59,18 +50,15 @@ function playAttributes(play: PlayMode, style: AttributeStyle): string {
  * @returns The slug and file URLs to use.
  * @throws {Error} When the emoji has no variant for the tone.
  */
-function resolveFiles(
-  emoji: PublicEmoji,
-  tone?: SkinTone,
-): { slug: string; urls: FileUrls } {
+function resolveFiles(emoji: PublicEmoji, tone?: SkinTone): { slug: string; urls: FileUrls } {
   if (!tone) {
-    return { slug: emoji.slug, urls: emoji.urls }
+    return { slug: emoji.slug, urls: emoji.urls };
   }
-  const variant = emoji.tones.find((candidate) => candidate.tone === tone)
+  const variant = emoji.tones.find((candidate) => candidate.tone === tone);
   if (!variant) {
-    throw new Error(`${emoji.slug} has no "${tone}" tone`)
+    throw new Error(`${emoji.slug} has no "${tone}" tone`);
   }
-  return { slug: variant.slug, urls: variant.urls }
+  return { slug: variant.slug, urls: variant.urls };
 }
 
 /**
@@ -89,70 +77,70 @@ function resolveFiles(
 export function generateSnippet(
   emoji: PublicEmoji,
   kind: SnippetKind,
-  { size = DEFAULT_SIZE, tone, play = 'load' }: SnippetOptions = {},
+  { size = DEFAULT_SIZE, tone, play = "load" }: SnippetOptions = {},
 ): string {
   if (tone) {
-    resolveFiles(emoji, tone)
+    resolveFiles(emoji, tone);
   }
   switch (kind) {
-    case 'react': {
+    case "react": {
       return [
         `import { Emoji } from 'animated-fluent-emojis/react'`,
-        '',
+        "",
         `import 'animated-fluent-emojis/style.css'`,
-        '',
-        `<Emoji id="${emoji.id}" size={${String(size)}}${playAttributes(play, 'jsx')}${toneAttribute(tone, 'skinTone')} />`,
-      ].join('\n')
+        "",
+        `<Emoji id="${emoji.id}" size={${String(size)}}${playAttributes(play, "jsx")}${toneAttribute(tone, "skinTone")} />`,
+      ].join("\n");
     }
-    case 'vue': {
+    case "vue": {
       return [
         '<script setup lang="ts">',
         `import { Emoji } from 'animated-fluent-emojis/vue'`,
-        '',
+        "",
         `import 'animated-fluent-emojis/style.css'`,
-        '</script>',
-        '',
-        '<template>',
-        `  <Emoji id="${emoji.id}" :size="${String(size)}"${playAttributes(play, 'vue')}${toneAttribute(tone, 'skin-tone')} />`,
-        '</template>',
-      ].join('\n')
+        "</script>",
+        "",
+        "<template>",
+        `  <Emoji id="${emoji.id}" :size="${String(size)}"${playAttributes(play, "vue")}${toneAttribute(tone, "skin-tone")} />`,
+        "</template>",
+      ].join("\n");
     }
-    case 'svelte': {
+    case "svelte": {
       return [
         '<script lang="ts">',
         `  import { Emoji } from 'animated-fluent-emojis/svelte'`,
-        '',
+        "",
         `  import 'animated-fluent-emojis/style.css'`,
-        '</script>',
-        '',
-        `<Emoji id="${emoji.id}" size={${String(size)}}${playAttributes(play, 'jsx')}${toneAttribute(tone, 'skinTone')} />`,
-      ].join('\n')
+        "</script>",
+        "",
+        `<Emoji id="${emoji.id}" size={${String(size)}}${playAttributes(play, "jsx")}${toneAttribute(tone, "skinTone")} />`,
+      ].join("\n");
     }
-    case 'astro': {
+    case "astro": {
       return [
-        '---',
+        "---",
         `import Emoji from 'animated-fluent-emojis/astro'`,
-        '---',
-        '',
-        `<Emoji id="${emoji.id}" size={${String(size)}}${playAttributes(play, 'jsx')}${toneAttribute(tone, 'skinTone')}>`,
+        "---",
+        "",
+        `<Emoji id="${emoji.id}" size={${String(size)}}${playAttributes(play, "jsx")}${toneAttribute(tone, "skinTone")}>`,
         `  <span slot="fallback">${emoji.unicode}</span>`,
-        '</Emoji>',
-      ].join('\n')
+        "</Emoji>",
+      ].join("\n");
     }
-    case 'element': {
+    case "element": {
       return [
         '<script type="module">',
         `  import 'animated-fluent-emojis/element'`,
-        '</script>',
-        '',
-        `<fluent-emoji id="${emoji.id}" size="${String(size)}"${playAttributes(play, 'element')}${toneAttribute(tone, 'skin-tone')}>`,
+        "</script>",
+        "",
+        `<fluent-emoji id="${emoji.id}" size="${String(size)}"${playAttributes(play, "element")}${toneAttribute(tone, "skin-tone")}>`,
         `  <span slot="fallback">${emoji.unicode}</span>`,
-        '</fluent-emoji>',
-      ].join('\n')
+        "</fluent-emoji>",
+      ].join("\n");
     }
-    case 'no-code': {
-      const { urls } = resolveFiles(emoji, tone)
-      return FILE_FORMATS.map((format) => fileUrl(urls[format])).join('\n')
+    case "no-code": {
+      const { urls } = resolveFiles(emoji, tone);
+      return FILE_FORMATS.map((format) => fileUrl(urls[format])).join("\n");
     }
   }
 }

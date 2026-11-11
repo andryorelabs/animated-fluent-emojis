@@ -1,25 +1,25 @@
 ---
-import ClosingPanel from '../home/sections/ClosingPanel.astro'
-import Dock from '../home/sections/Dock.astro'
-import FaqSection from '../home/sections/FaqSection.astro'
-import HeroSection from '../home/sections/HeroSection.astro'
-import InstallSection from '../home/sections/InstallSection.astro'
-import MarqueeDivider from '../home/sections/MarqueeDivider.astro'
-import PillarsSection from '../home/sections/PillarsSection.astro'
-import PlaygroundSection from '../home/sections/PlaygroundSection.astro'
-import StatsBar from '../home/sections/StatsBar.astro'
-import TeaserSection from '../home/sections/TeaserSection.astro'
-import { type Locale } from '../i18n/locales'
-import { getUi } from '../i18n/ui'
-import Layout from '../layouts/Layout.astro'
-import '../styles/home.css'
+import ClosingPanel from "../home/sections/ClosingPanel.astro";
+import Dock from "../home/sections/Dock.astro";
+import FaqSection from "../home/sections/FaqSection.astro";
+import HeroSection from "../home/sections/HeroSection.astro";
+import InstallSection from "../home/sections/InstallSection.astro";
+import MarqueeDivider from "../home/sections/MarqueeDivider.astro";
+import PillarsSection from "../home/sections/PillarsSection.astro";
+import PlaygroundSection from "../home/sections/PlaygroundSection.astro";
+import StatsBar from "../home/sections/StatsBar.astro";
+import TeaserSection from "../home/sections/TeaserSection.astro";
+import { type Locale } from "../i18n/locales";
+import { getUi } from "../i18n/ui";
+import Layout from "../layouts/Layout.astro";
+import "../styles/home.css";
 
 interface Props {
-  locale: Locale
+  locale: Locale;
 }
 
-const { locale } = Astro.props
-const { meta } = getUi(locale)
+const { locale } = Astro.props;
+const { meta } = getUi(locale);
 ---
 
 <Layout locale={locale} title={meta.siteName} description={meta.description}>

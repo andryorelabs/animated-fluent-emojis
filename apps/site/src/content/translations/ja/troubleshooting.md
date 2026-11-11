@@ -39,7 +39,7 @@ sourceHash: c3ad7fa99dc76181
 **対処法:** スタイルシートを、アプリのルートで一度だけインポートします。
 
 ```js
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 ```
 
 インポート済みなのに絵文字が静止したままなら、オペレーティングシステムのモーション低減の設定を確認してください。
@@ -162,15 +162,14 @@ CommonJS からパッケージを読み込むときに、`ERR_PACKAGE_PATH_NOT_E
 で MSW を使っています。
 
 ```ts
-import { http, HttpResponse } from 'msw/http'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from "msw/http";
+import { setupServer } from "msw/node";
 
 const server = setupServer(
-  http.get(
-    'https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json',
-    () => HttpResponse.json(compactManifest),
+  http.get("https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json", () =>
+    HttpResponse.json(compactManifest),
   ),
-)
+);
 ```
 
 `compactManifest`

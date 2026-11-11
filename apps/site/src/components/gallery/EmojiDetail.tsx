@@ -1,49 +1,45 @@
-import { Emoji } from 'animated-fluent-emojis/react'
-import { CopyIcon } from 'lucide-react'
-import { useState, type CSSProperties } from 'react'
+import { Emoji } from "animated-fluent-emojis/react";
+import { CopyIcon } from "lucide-react";
+import { useState, type CSSProperties } from "react";
 
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utilities'
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utilities";
 
-import { effectiveTone } from '../../gallery/filter'
-import {
-  fileUrl,
-  type PublicEmoji,
-  type SkinTone,
-} from '../../gallery/public-index'
-import { generateSnippet, type SnippetKind } from '../../gallery/snippets'
-import type { EmojiPageTabs } from '../../home/content'
-import type { UiStrings } from '../../i18n/ui'
-import CodeBlock, { type CodeBlockTab } from '../CodeBlock'
-import { FileActionButton } from './FileActionButton'
+import { effectiveTone } from "../../gallery/filter";
+import { fileUrl, type PublicEmoji, type SkinTone } from "../../gallery/public-index";
+import { generateSnippet, type SnippetKind } from "../../gallery/snippets";
+import type { EmojiPageTabs } from "../../home/content";
+import type { UiStrings } from "../../i18n/ui";
+import CodeBlock, { type CodeBlockTab } from "../CodeBlock";
+import { FileActionButton } from "./FileActionButton";
 import {
   resolvePlaying,
   STAGE_BACKGROUND_CLASSES,
   StageToolbarControls,
   usePrefersReducedMotion,
   type StageBackground,
-} from './StageToolbar'
-import { StatusToast, useStatusAnnouncer } from './StatusToast'
+} from "./StageToolbar";
+import { StatusToast, useStatusAnnouncer } from "./StatusToast";
 
-export type GalleryStrings = UiStrings['gallery']
+export type GalleryStrings = UiStrings["gallery"];
 
 const TABS: readonly { kind: SnippetKind; label: keyof GalleryStrings }[] = [
-  { kind: 'react', label: 'tabReact' },
-  { kind: 'vue', label: 'tabVue' },
-  { kind: 'svelte', label: 'tabSvelte' },
-  { kind: 'astro', label: 'tabAstro' },
-  { kind: 'element', label: 'tabHtml' },
-  { kind: 'no-code', label: 'tabNoCode' },
-]
+  { kind: "react", label: "tabReact" },
+  { kind: "vue", label: "tabVue" },
+  { kind: "svelte", label: "tabSvelte" },
+  { kind: "astro", label: "tabAstro" },
+  { kind: "element", label: "tabHtml" },
+  { kind: "no-code", label: "tabNoCode" },
+];
 
-const ZOOMS = [1, 2] as const
+const ZOOMS = [1, 2] as const;
 
 const HTML_ESCAPES: Record<string, string> = {
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;',
-  '"': '&quot;',
-}
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+};
 
 /**
  * Wraps plain snippet text in the same line markup the build-time highlighter
@@ -53,20 +49,18 @@ const HTML_ESCAPES: Record<string, string> = {
  */
 function plainCodeHtml(code: string): string {
   const lines = code
-    .split('\n')
+    .split("\n")
     .map((line) => {
-      const escaped = line.replaceAll(
-        /[&<>"]/g,
-        (character) => HTML_ESCAPES[character] ?? '',
-      )
-      return `<div class="ec-line"><span class="code">${escaped}</span></div>`
+      const escaped = line.replaceAll(/[&<>"]/g, (character) => HTML_ESCAPES[character] ?? "");
+      return `<div class="ec-line"><span class="code">${escaped}</span></div>`;
     })
-    .join('')
-  return `<pre><code>${lines}</code></pre>`
+    .join("");
+  return `<pre><code>${lines}</code></pre>`;
 }
 
-const HIGHLIGHTED_LABELS: Partial<Record<SnippetKind, keyof GalleryStrings>> =
-  Object.fromEntries(TABS.map((tab) => [tab.kind, tab.label]))
+const HIGHLIGHTED_LABELS: Partial<Record<SnippetKind, keyof GalleryStrings>> = Object.fromEntries(
+  TABS.map((tab) => [tab.kind, tab.label]),
+);
 
 /**
  * Picks the build-time highlighted tabs that match the current tone and gives
@@ -85,25 +79,24 @@ function highlightedTabs(
   size: number,
   strings: GalleryStrings,
 ): CodeBlockTab[] {
-  const source =
-    tone && snippetTabs.toned.length > 0 ? snippetTabs.toned : snippetTabs.plain
+  const source = tone && snippetTabs.toned.length > 0 ? snippetTabs.toned : snippetTabs.plain;
   return source.map((tab) => {
-    const labelKey = HIGHLIGHTED_LABELS[tab.id as SnippetKind]
+    const labelKey = HIGHLIGHTED_LABELS[tab.id as SnippetKind];
     return {
       ...tab,
       label: labelKey ? strings[labelKey] : tab.label,
       code: generateSnippet(emoji, tab.id as SnippetKind, { size, tone }),
-    }
-  })
+    };
+  });
 }
 
 /**
  * Properties of {@link EmojiIdRow}.
  */
 export interface EmojiIdRowProps {
-  id: string
-  strings: GalleryStrings
-  onCopy: (text: string) => Promise<void>
+  id: string;
+  strings: GalleryStrings;
+  onCopy: (text: string) => Promise<void>;
 }
 
 /**
@@ -112,7 +105,7 @@ export interface EmojiIdRowProps {
  * @returns The mono id text beside a button that copies it.
  */
 export function EmojiIdRow(props: EmojiIdRowProps) {
-  const { id, strings, onCopy } = props
+  const { id, strings, onCopy } = props;
   return (
     <div className="flex items-center gap-1">
       <p className="min-w-0 truncate font-mono text-xs text-muted-foreground">
@@ -129,21 +122,21 @@ export function EmojiIdRow(props: EmojiIdRowProps) {
         <CopyIcon />
       </Button>
     </div>
-  )
+  );
 }
 
 /**
  * Properties of {@link EmojiDetail}.
  */
 export interface EmojiDetailProps {
-  emoji: PublicEmoji
-  name: string
-  tone: SkinTone | undefined
-  size: number
-  strings: GalleryStrings
-  headingId?: string
-  page?: boolean
-  snippetTabs?: EmojiPageTabs
+  emoji: PublicEmoji;
+  name: string;
+  tone: SkinTone | undefined;
+  size: number;
+  strings: GalleryStrings;
+  headingId?: string;
+  page?: boolean;
+  snippetTabs?: EmojiPageTabs;
 }
 
 /**
@@ -154,48 +147,38 @@ export interface EmojiDetailProps {
  * @returns The detail view.
  */
 export function EmojiDetail(props: EmojiDetailProps) {
-  const {
-    emoji,
-    name,
-    tone,
-    size,
-    strings,
-    headingId,
-    page = false,
-    snippetTabs,
-  } = props
-  const [kind, setKind] = useState<SnippetKind>('react')
-  const { message, visible, copy, handleNotice } = useStatusAnnouncer(strings)
-  const [zoom, setZoom] = useState<(typeof ZOOMS)[number]>(1)
-  const [loadedKey, setLoadedKey] = useState<string>()
-  const [background, setBackground] = useState<StageBackground>('dots')
+  const { emoji, name, tone, size, strings, headingId, page = false, snippetTabs } = props;
+  const [kind, setKind] = useState<SnippetKind>("react");
+  const { message, visible, copy, handleNotice } = useStatusAnnouncer(strings);
+  const [zoom, setZoom] = useState<(typeof ZOOMS)[number]>(1);
+  const [loadedKey, setLoadedKey] = useState<string>();
+  const [background, setBackground] = useState<StageBackground>("dots");
   const [playback, setPlayback] = useState<{
-    key: string
-    playing: boolean
-  }>()
-  const reducedMotion = usePrefersReducedMotion()
+    key: string;
+    playing: boolean;
+  }>();
+  const reducedMotion = usePrefersReducedMotion();
 
-  const appliedTone = effectiveTone(emoji, tone)
-  const files =
-    emoji.tones.find((variant) => variant.tone === appliedTone) ?? emoji
-  const previewKey = `${emoji.id}-${appliedTone ?? 'default'}`
-  const playing = playback?.key === previewKey ? playback.playing : undefined
-  const running = resolvePlaying(playing, reducedMotion)
-  const animated = loadedKey === previewKey
+  const appliedTone = effectiveTone(emoji, tone);
+  const files = emoji.tones.find((variant) => variant.tone === appliedTone) ?? emoji;
+  const previewKey = `${emoji.id}-${appliedTone ?? "default"}`;
+  const playing = playback?.key === previewKey ? playback.playing : undefined;
+  const running = resolvePlaying(playing, reducedMotion);
+  const animated = loadedKey === previewKey;
   const tabs = snippetTabs
     ? highlightedTabs(snippetTabs, emoji, appliedTone, size, strings)
     : TABS.map((tab) => {
         const code = generateSnippet(emoji, tab.kind, {
           size,
           tone: appliedTone,
-        })
+        });
         return {
           id: tab.kind,
           label: strings[tab.label],
           code,
           html: plainCodeHtml(code),
-        }
-      })
+        };
+      });
   const slotValues = snippetTabs
     ? {
         id: emoji.id,
@@ -203,19 +186,17 @@ export function EmojiDetail(props: EmojiDetailProps) {
         unicode: emoji.unicode,
         ...(appliedTone && { tone: appliedTone }),
       }
-    : undefined
+    : undefined;
 
-  const transitionName = page ? `emoji-${emoji.slug}` : undefined
+  const transitionName = page ? `emoji-${emoji.slug}` : undefined;
 
   return (
     <div className="flex flex-col gap-4">
       <div
         className={cn(
-          'relative flex items-center justify-center overflow-hidden rounded-xl',
+          "relative flex items-center justify-center overflow-hidden rounded-xl",
           STAGE_BACKGROUND_CLASSES[background],
-          page
-            ? 'aspect-square split:aspect-auto split:h-110'
-            : 'aspect-square max-h-72 w-full',
+          page ? "aspect-square split:aspect-auto split:h-110" : "aspect-square max-h-72 w-full",
         )}
       >
         <div className="absolute top-2 right-2 left-2 z-10 flex flex-wrap items-center justify-end gap-1.5">
@@ -225,7 +206,7 @@ export function EmojiDetail(props: EmojiDetailProps) {
             onBackgroundChange={setBackground}
             running={running}
             onToggleRunning={() => {
-              setPlayback({ key: previewKey, playing: !running })
+              setPlayback({ key: previewKey, playing: !running });
             }}
           />
           <div
@@ -239,7 +220,7 @@ export function EmojiDetail(props: EmojiDetailProps) {
                 type="button"
                 aria-pressed={zoom === level}
                 onClick={() => {
-                  setZoom(level)
+                  setZoom(level);
                 }}
                 className="h-6 min-w-8 cursor-pointer rounded-md px-1.5 font-mono text-xs text-muted-foreground transition-transform-color-bg duration-150 ease-(--ease-out-strong) outline-none select-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-97 aria-pressed:bg-muted aria-pressed:text-foreground pointer-coarse:size-9"
               >
@@ -252,10 +233,10 @@ export function EmojiDetail(props: EmojiDetailProps) {
           className="relative size-(--stage-size) transform-(--stage-transform) transition-transform duration-200 ease-(--ease-out-strong) view-transition-class-current view-transition-name-current"
           style={
             {
-              '--stage-size': `${String(size)}px`,
-              '--stage-transform': `scale(${String(zoom)})`,
-              '--view-transition-name': transitionName,
-              '--view-transition-class': transitionName ? 'emoji' : undefined,
+              "--stage-size": `${String(size)}px`,
+              "--stage-transform": `scale(${String(zoom)})`,
+              "--view-transition-name": transitionName,
+              "--view-transition-class": transitionName ? "emoji" : undefined,
             } as CSSProperties
           }
         >
@@ -279,7 +260,7 @@ export function EmojiDetail(props: EmojiDetailProps) {
             {...(playing !== undefined && { playing })}
             alt={name}
             onLoad={() => {
-              setLoadedKey(previewKey)
+              setLoadedKey(previewKey);
             }}
           />
         </div>
@@ -287,10 +268,7 @@ export function EmojiDetail(props: EmojiDetailProps) {
       {!page && (
         <div className="min-w-0">
           <div className="flex items-center gap-1">
-            <h2
-              id={headingId}
-              className="min-w-0 truncate text-xl font-extrabold"
-            >
+            <h2 id={headingId} className="min-w-0 truncate text-xl font-extrabold">
               {name}
             </h2>
             <Button
@@ -317,7 +295,7 @@ export function EmojiDetail(props: EmojiDetailProps) {
         slotValues={slotValues}
         activeId={kind}
         onActiveChange={(id) => {
-          setKind(id as SnippetKind)
+          setKind(id as SnippetKind);
         }}
       />
       {!page && (
@@ -332,5 +310,5 @@ export function EmojiDetail(props: EmojiDetailProps) {
       )}
       <StatusToast message={message} visible={visible} />
     </div>
-  )
+  );
 }

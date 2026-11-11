@@ -28,9 +28,9 @@ Policy でサードパーティのオリジンを許可できない場合や、�
 を一度呼び出します。URLの末尾のスラッシュは無視されます。
 
 ```jsx
-import { configureEmojis } from 'animated-fluent-emojis'
+import { configureEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
 ```
 
 マニフェストがリクエストされた後に呼び出すと、マニフェストがリセットされ、開発中は警告が出ます。使い方ガイドの[アセットサイト](../guide/assets.md#asset-site)のセクションを参照してください。

@@ -1,63 +1,57 @@
-import { CheckIcon, CopyIcon } from 'lucide-react'
-import {
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type ReactNode,
-} from 'react'
+import { CheckIcon, CopyIcon } from "lucide-react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
   type CanvasTabsVariant,
-} from '@/components/ui/tabs'
-import { copyWithFeedback } from '@/lib/copy-feedback'
-import { trustedCodeHtml } from '@/lib/trusted-code-html'
-import { cn } from '@/lib/utilities'
+} from "@/components/ui/tabs";
+import { copyWithFeedback } from "@/lib/copy-feedback";
+import { trustedCodeHtml } from "@/lib/trusted-code-html";
+import { cn } from "@/lib/utilities";
 
-import { markHighlightedLine } from '../highlight/snippet-html'
-import { swapSnippetSlots } from '../highlight/snippet-swap'
-import type { SnippetSlot } from '../highlight/snippet-template'
+import { markHighlightedLine } from "../highlight/snippet-html";
+import { swapSnippetSlots } from "../highlight/snippet-swap";
+import type { SnippetSlot } from "../highlight/snippet-template";
 
 const ICON_FADE =
-  'transition-opacity-scale-filter duration-150 ease-(--ease-out-strong) motion-reduce:scale-100 motion-reduce:blur-none motion-reduce:duration-100'
-const ICON_HIDDEN = 'scale-80 opacity-0 blur-xs'
+  "transition-opacity-scale-filter duration-150 ease-(--ease-out-strong) motion-reduce:scale-100 motion-reduce:blur-none motion-reduce:duration-100";
+const ICON_HIDDEN = "scale-80 opacity-0 blur-xs";
 
 export interface CodeBlockTab {
-  id: string
-  label: string
-  code: string
-  html: string
-  highlightLine?: number
+  id: string;
+  label: string;
+  code: string;
+  html: string;
+  highlightLine?: number;
 }
 
 export interface CodeBlockLabels {
-  tabsLabel: string
-  copy: string
-  copied: string
+  tabsLabel: string;
+  copy: string;
+  copied: string;
 }
 
 export interface CodeBlockProps {
-  tabs: readonly CodeBlockTab[]
-  labels: CodeBlockLabels
-  lineNumbers?: boolean
-  leading?: ReactNode
-  activeId?: string
-  onActiveChange?: (id: string) => void
-  slotValues?: Partial<Record<SnippetSlot, string>> | undefined
-  onCopied?: () => void
-  copyEffect?: ReactNode
-  pill?: boolean
-  variant?: CanvasTabsVariant
+  tabs: readonly CodeBlockTab[];
+  labels: CodeBlockLabels;
+  lineNumbers?: boolean;
+  leading?: ReactNode;
+  activeId?: string;
+  onActiveChange?: (id: string) => void;
+  slotValues?: Partial<Record<SnippetSlot, string>> | undefined;
+  onCopied?: () => void;
+  copyEffect?: ReactNode;
+  pill?: boolean;
+  variant?: CanvasTabsVariant;
 }
 
-const CODE_LINE_HEIGHT_REM = 1.5
-const CODE_PADDING_LINES = 1
-const SCROLLBAR_ALLOWANCE_REM = 0.5
+const CODE_LINE_HEIGHT_REM = 1.5;
+const CODE_PADDING_LINES = 1;
+const SCROLLBAR_ALLOWANCE_REM = 0.5;
 
 /**
  * The height of the tallest panel, from its line count, so the block keeps its
@@ -69,11 +63,9 @@ const SCROLLBAR_ALLOWANCE_REM = 0.5
  * @returns A CSS length for the body's `min-height`.
  */
 function bodyMinHeight(tabs: readonly CodeBlockTab[]): string {
-  const lines = Math.max(0, ...tabs.map((tab) => tab.code.split('\n').length))
-  const rem =
-    (lines + CODE_PADDING_LINES) * CODE_LINE_HEIGHT_REM +
-    SCROLLBAR_ALLOWANCE_REM
-  return `${String(rem)}rem`
+  const lines = Math.max(0, ...tabs.map((tab) => tab.code.split("\n").length));
+  const rem = (lines + CODE_PADDING_LINES) * CODE_LINE_HEIGHT_REM + SCROLLBAR_ALLOWANCE_REM;
+  return `${String(rem)}rem`;
 }
 
 /**
@@ -115,39 +107,38 @@ export default function CodeBlock({
   pill: pillProperty = false,
   variant,
 }: CodeBlockProps) {
-  const pill = pillProperty || variant !== undefined
-  const [ownActive, setOwnActive] = useState(tabs[0]?.id ?? '')
-  const [copied, setCopied] = useState(false)
-  const bodyRef = useRef<HTMLDivElement>(null)
-  const tabsRef = useRef<HTMLDivElement>(null)
-  const active = activeId ?? ownActive
-  const activeCode = tabs.find((tab) => tab.id === active)?.code ?? ''
-  const showTabs = tabs.length > 1 || leading !== undefined
+  const pill = pillProperty || variant !== undefined;
+  const [ownActive, setOwnActive] = useState(tabs[0]?.id ?? "");
+  const [copied, setCopied] = useState(false);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const active = activeId ?? ownActive;
+  const activeCode = tabs.find((tab) => tab.id === active)?.code ?? "";
+  const showTabs = tabs.length > 1 || leading !== undefined;
 
   useEffect(() => {
-    const list = tabsRef.current?.querySelector<HTMLElement>('[role="tablist"]')
-    const tab = list?.querySelector<HTMLElement>('[aria-selected="true"]')
-    if (!list || !tab) return
-    const listBox = list.getBoundingClientRect()
-    const tabBox = tab.getBoundingClientRect()
-    if (tabBox.left < listBox.left)
-      list.scrollLeft -= listBox.left - tabBox.left
+    const list = tabsRef.current?.querySelector<HTMLElement>('[role="tablist"]');
+    const tab = list?.querySelector<HTMLElement>('[aria-selected="true"]');
+    if (!list || !tab) return;
+    const listBox = list.getBoundingClientRect();
+    const tabBox = tab.getBoundingClientRect();
+    if (tabBox.left < listBox.left) list.scrollLeft -= listBox.left - tabBox.left;
     else if (tabBox.right > listBox.right - 20)
-      list.scrollLeft += tabBox.right - (listBox.right - 20)
-  }, [active])
+      list.scrollLeft += tabBox.right - (listBox.right - 20);
+  }, [active]);
 
   useEffect(() => {
-    if (!slotValues || !bodyRef.current) return
+    if (!slotValues || !bodyRef.current) return;
     swapSnippetSlots(
-      bodyRef.current.querySelectorAll<HTMLElement>('[data-snippet-slot]'),
+      bodyRef.current.querySelectorAll<HTMLElement>("[data-snippet-slot]"),
       slotValues,
-    )
-  }, [slotValues])
+    );
+  }, [slotValues]);
 
   function handleValueChange(value: unknown) {
-    const id = String(value)
-    setOwnActive(id)
-    onActiveChange?.(id)
+    const id = String(value);
+    setOwnActive(id);
+    onActiveChange?.(id);
   }
 
   const copyControl = (
@@ -156,33 +147,20 @@ export default function CodeBlock({
         variant="ghost"
         size="icon-sm"
         aria-label={copied ? labels.copied : labels.copy}
-        onClick={() =>
-          void copyWithFeedback(activeCode, setCopied, setCopied, onCopied)
-        }
+        onClick={() => void copyWithFeedback(activeCode, setCopied, setCopied, onCopied)}
       >
         <span className="grid *:col-start-1 *:row-start-1">
-          <CopyIcon
-            data-copy-icon
-            className={cn(ICON_FADE, copied && ICON_HIDDEN)}
-          />
-          <CheckIcon
-            data-check-icon
-            className={cn(ICON_FADE, !copied && ICON_HIDDEN)}
-          />
+          <CopyIcon data-copy-icon className={cn(ICON_FADE, copied && ICON_HIDDEN)} />
+          <CheckIcon data-check-icon className={cn(ICON_FADE, !copied && ICON_HIDDEN)} />
         </span>
       </Button>
       {copyEffect}
     </span>
-  )
+  );
 
-  if (variant === 'cmd') {
+  if (variant === "cmd") {
     return (
-      <Tabs
-        variant="cmd"
-        value={active}
-        onValueChange={handleValueChange}
-        framed
-      >
+      <Tabs variant="cmd" value={active} onValueChange={handleValueChange} framed>
         <div ref={tabsRef}>
           <TabsList
             pill
@@ -213,23 +191,23 @@ export default function CodeBlock({
           {copyControl}
         </div>
         <span role="status" className="sr-only">
-          {copied ? labels.copied : ''}
+          {copied ? labels.copied : ""}
         </span>
       </Tabs>
-    )
+    );
   }
 
   return (
     <Tabs
-      variant={variant ?? (pill ? 'default' : 'line')}
+      variant={variant ?? (pill ? "default" : "line")}
       value={active}
       onValueChange={handleValueChange}
       framed
     >
       <div
         className={cn(
-          'flex items-center justify-between gap-2 border-b border-border pr-1.5 pl-3',
-          pill ? 'h-12' : 'h-10',
+          "flex items-center justify-between gap-2 border-b border-border pr-1.5 pl-3",
+          pill ? "h-12" : "h-10",
         )}
       >
         <div ref={tabsRef} className="flex min-w-0 items-center gap-2">
@@ -255,9 +233,7 @@ export default function CodeBlock({
       <div
         ref={bodyRef}
         className="grid min-h-(--code-body-min-height)"
-        style={
-          { '--code-body-min-height': bodyMinHeight(tabs) } as CSSProperties
-        }
+        style={{ "--code-body-min-height": bodyMinHeight(tabs) } as CSSProperties}
       >
         {tabs.map((tab) => (
           <TabsContent key={tab.id} value={tab.id} keepMounted crossfade>
@@ -269,9 +245,7 @@ export default function CodeBlock({
               // eslint-disable-next-line @eslint-react/dom-no-dangerously-set-innerhtml -- the markup is trusted build-time output
               dangerouslySetInnerHTML={{
                 __html: trustedCodeHtml(
-                  tab.highlightLine
-                    ? markHighlightedLine(tab.html, tab.highlightLine)
-                    : tab.html,
+                  tab.highlightLine ? markHighlightedLine(tab.html, tab.highlightLine) : tab.html,
                 ),
               }}
             />
@@ -279,8 +253,8 @@ export default function CodeBlock({
         ))}
       </div>
       <span role="status" className="sr-only">
-        {copied ? labels.copied : ''}
+        {copied ? labels.copied : ""}
       </span>
     </Tabs>
-  )
+  );
 }

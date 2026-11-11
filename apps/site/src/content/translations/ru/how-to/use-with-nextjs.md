@@ -11,14 +11,14 @@ sourceHash: 6f92dff657703a74
 статичные sprite sheets. Импортируйте её один раз, в корневом layout:
 
 ```jsx
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>{children}</body>
     </html>
-  )
+  );
 }
 ```
 
@@ -28,10 +28,10 @@ export default function RootLayout({ children }) {
 `Emoji` напрямую, без файла-обёртки:
 
 ```jsx
-import { Emoji } from 'animated-fluent-emojis/react'
+import { Emoji } from "animated-fluent-emojis/react";
 
 export default function Page() {
-  return <Emoji id="1f44b_wavinghand" size={64} />
+  return <Emoji id="1f44b_wavinghand" size={64} />;
 }
 ```
 
@@ -48,15 +48,15 @@ export default function Page() {
 Достаточно небольшого компонента, подключённого в корневом layout:
 
 ```jsx
-'use client'
+"use client";
 
-import { configureEmojis, preloadEmojis } from 'animated-fluent-emojis'
+import { configureEmojis, preloadEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
-void preloadEmojis()
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
+void preloadEmojis();
 
 export function EmojiSetup() {
-  return null
+  return null;
 }
 ```
 

@@ -8,21 +8,21 @@
 export const createSharedSubscription = (
   attach: (notify: () => void) => () => void,
 ): ((onChange: () => void) => () => void) => {
-  const subscribers = new Set<() => void>()
-  let detach: (() => void) | undefined
+  const subscribers = new Set<() => void>();
+  let detach: (() => void) | undefined;
 
   const notify = () => {
-    for (const subscriber of subscribers) subscriber()
-  }
+    for (const subscriber of subscribers) subscriber();
+  };
 
   return (onChange) => {
-    subscribers.add(onChange)
-    detach ??= attach(notify)
+    subscribers.add(onChange);
+    detach ??= attach(notify);
     return () => {
-      subscribers.delete(onChange)
-      if (subscribers.size > 0) return
-      detach?.()
-      detach = undefined
-    }
-  }
-}
+      subscribers.delete(onChange);
+      if (subscribers.size > 0) return;
+      detach?.();
+      detach = undefined;
+    };
+  };
+};

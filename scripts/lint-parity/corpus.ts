@@ -3,10 +3,10 @@
  * `commit` so a run is reproducible.
  */
 export interface CorpusRepository {
-  name: string
-  url: string
-  subdirectory: string
-  commit: string
+  name: string;
+  url: string;
+  subdirectory: string;
+  commit: string;
 }
 
 /**
@@ -15,21 +15,21 @@ export interface CorpusRepository {
  */
 export const CORPUS: readonly CorpusRepository[] = [
   {
-    name: 'vercel-commerce',
-    url: 'https://github.com/vercel/commerce.git',
-    subdirectory: '.',
-    commit: 'f7521d57d29f0eb3d23c1399cf9bb299d61fcd21',
+    name: "vercel-commerce",
+    url: "https://github.com/vercel/commerce.git",
+    subdirectory: ".",
+    commit: "f7521d57d29f0eb3d23c1399cf9bb299d61fcd21",
   },
   {
-    name: 'shadcn-taxonomy',
-    url: 'https://github.com/shadcn-ui/taxonomy.git',
-    subdirectory: '.',
-    commit: '298a8857c7128a0d121e7f699dfd729f23b3966d',
+    name: "shadcn-taxonomy",
+    url: "https://github.com/shadcn-ui/taxonomy.git",
+    subdirectory: ".",
+    commit: "298a8857c7128a0d121e7f699dfd729f23b3966d",
   },
   {
-    name: 'pmndrs-zustand',
-    url: 'https://github.com/pmndrs/zustand.git',
-    subdirectory: 'src',
-    commit: '382d29c485e67018c06e75ec7235130d0968522c',
+    name: "pmndrs-zustand",
+    url: "https://github.com/pmndrs/zustand.git",
+    subdirectory: "src",
+    commit: "382d29c485e67018c06e75ec7235130d0968522c",
   },
-]
+];

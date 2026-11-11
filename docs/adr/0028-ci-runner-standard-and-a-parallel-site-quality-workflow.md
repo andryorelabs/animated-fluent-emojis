@@ -51,8 +51,7 @@ slowest check on every site or docs pull request.
   exactly:
 
   ```yaml
-  runs-on:
-    ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+  runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
     vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
   ```
 

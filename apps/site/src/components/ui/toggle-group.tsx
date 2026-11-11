@@ -1,21 +1,21 @@
-import { Toggle as TogglePrimitive } from '@base-ui/react/toggle'
-import { ToggleGroup as ToggleGroupPrimitive } from '@base-ui/react/toggle-group'
-import { cva, type VariantProps } from 'class-variance-authority'
+import { Toggle as TogglePrimitive } from "@base-ui/react/toggle";
+import { ToggleGroup as ToggleGroupPrimitive } from "@base-ui/react/toggle-group";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { toggleVariants, type ToggleStyleProps } from '@/components/ui/toggle'
-import { cn } from '@/lib/utilities'
+import { toggleVariants, type ToggleStyleProps } from "@/components/ui/toggle";
+import { cn } from "@/lib/utilities";
 
-const toggleGroupStyles = cva('flex w-fit flex-row items-center', {
+const toggleGroupStyles = cva("flex w-fit flex-row items-center", {
   variants: {
     spacing: {
-      default: 'gap-2',
-      tight: 'gap-1',
+      default: "gap-2",
+      tight: "gap-1",
     },
   },
   defaultVariants: {
-    spacing: 'default',
+    spacing: "default",
   },
-})
+});
 
 /**
  * The shadcn toggle group on Base UI. Renders a `role="group"` container for
@@ -24,17 +24,16 @@ const toggleGroupStyles = cva('flex w-fit flex-row items-center', {
  * @returns The toggle group element.
  */
 function ToggleGroup<Value extends string>(
-  props: ToggleGroupPrimitive.Props<Value> &
-    VariantProps<typeof toggleGroupStyles>,
+  props: ToggleGroupPrimitive.Props<Value> & VariantProps<typeof toggleGroupStyles>,
 ) {
-  const { className, spacing, ...rest } = props
+  const { className, spacing, ...rest } = props;
   return (
     <ToggleGroupPrimitive
       data-slot="toggle-group"
       className={cn(toggleGroupStyles({ spacing }), className)}
       {...rest}
     />
-  )
+  );
 }
 
 /**
@@ -46,14 +45,14 @@ function ToggleGroup<Value extends string>(
 function ToggleGroupItem<Value extends string>(
   props: TogglePrimitive.Props<Value> & ToggleStyleProps,
 ) {
-  const { className, variant, size, ...rest } = props
+  const { className, variant, size, ...rest } = props;
   return (
     <TogglePrimitive
       data-slot="toggle-group-item"
       className={cn(toggleVariants({ variant, size }), className)}
       {...rest}
     />
-  )
+  );
 }
 
-export { ToggleGroup, ToggleGroupItem }
+export { ToggleGroup, ToggleGroupItem };

@@ -1,8 +1,8 @@
-import { SITE_ORIGIN } from '../i18n/locales'
-import { rewriteDocumentLink, type LinkContext } from './links'
+import { SITE_ORIGIN } from "../i18n/locales";
+import { rewriteDocumentLink, type LinkContext } from "./links";
 
-const INLINE_LINK = /(\]\()([^)\s]+)(\))/g
-const FENCE = /^\s*(```|~~~)/
+const INLINE_LINK = /(\]\()([^)\s]+)(\))/g;
+const FENCE = /^\s*(```|~~~)/;
 
 /**
  * Rewrites the target of every inline Markdown link outside fenced code with
@@ -19,28 +19,23 @@ export function rewriteMarkdownLinks(
   context: LinkContext,
   options: { absolute?: boolean } = {},
 ): string {
-  let insideFence = false
+  let insideFence = false;
   return body
-    .split('\n')
+    .split("\n")
     .map((line) => {
       if (FENCE.test(line)) {
-        insideFence = !insideFence
-        return line
+        insideFence = !insideFence;
+        return line;
       }
-      if (insideFence) return line
-      return line.replaceAll(
-        INLINE_LINK,
-        (_match, open: string, href: string, close: string) => {
-          const rewritten = rewriteDocumentLink(href, context)
-          const target =
-            options.absolute && rewritten.startsWith('/')
-              ? `${SITE_ORIGIN}${rewritten}`
-              : rewritten
-          return `${open}${target}${close}`
-        },
-      )
+      if (insideFence) return line;
+      return line.replaceAll(INLINE_LINK, (_match, open: string, href: string, close: string) => {
+        const rewritten = rewriteDocumentLink(href, context);
+        const target =
+          options.absolute && rewritten.startsWith("/") ? `${SITE_ORIGIN}${rewritten}` : rewritten;
+        return `${open}${target}${close}`;
+      });
     })
-    .join('\n')
+    .join("\n");
 }
 
 /**
@@ -49,8 +44,6 @@ export function rewriteMarkdownLinks(
  * @param page - The page title, body, locale and doc path.
  * @returns The Markdown text.
  */
-export function toPageMarkdown(
-  page: { title: string; body: string } & LinkContext,
-): string {
-  return `# ${page.title}\n\n${rewriteMarkdownLinks(page.body, page, { absolute: true })}`
+export function toPageMarkdown(page: { title: string; body: string } & LinkContext): string {
+  return `# ${page.title}\n\n${rewriteMarkdownLinks(page.body, page, { absolute: true })}`;
 }

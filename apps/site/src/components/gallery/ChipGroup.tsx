@@ -1,20 +1,20 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react";
 
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface Chip<Value extends string | number> {
-  value: Value
-  label: string
-  leading?: ReactNode
+  value: Value;
+  label: string;
+  leading?: ReactNode;
 }
 
 interface ChipGroupProps<Value extends string | number> {
-  label: string
-  chips: readonly Chip<Value>[]
-  selected: Value
-  onSelect: (value: Value) => void
-  disabled?: boolean
-  disabledHint?: string
+  label: string;
+  chips: readonly Chip<Value>[];
+  selected: Value;
+  onSelect: (value: Value) => void;
+  disabled?: boolean;
+  disabledHint?: string;
 }
 
 /**
@@ -24,32 +24,19 @@ interface ChipGroupProps<Value extends string | number> {
  * @param props - Chip list, selected value, change handler and disabled state.
  * @returns The labelled row of chip buttons.
  */
-export function ChipGroup<Value extends string | number>(
-  props: ChipGroupProps<Value>,
-) {
-  const {
-    label,
-    chips,
-    selected,
-    onSelect,
-    disabled = false,
-    disabledHint,
-  } = props
+export function ChipGroup<Value extends string | number>(props: ChipGroupProps<Value>) {
+  const { label, chips, selected, onSelect, disabled = false, disabledHint } = props;
   return (
     <ToggleGroup
       aria-label={label}
       value={[String(selected)]}
       onValueChange={(next) => {
-        const chip = chips.find(
-          (candidate) => String(candidate.value) === next[0],
-        )
-        if (chip && !disabled) onSelect(chip.value)
+        const chip = chips.find((candidate) => String(candidate.value) === next[0]);
+        if (chip && !disabled) onSelect(chip.value);
       }}
       className="max-w-full overflow-x-auto min-[860px]:flex-wrap"
     >
-      <span className="shrink-0 text-xs font-semibold text-muted-foreground">
-        {label}
-      </span>
+      <span className="shrink-0 text-xs font-semibold text-muted-foreground">{label}</span>
       {chips.map((chip) => (
         <ToggleGroupItem
           key={chip.value}
@@ -70,5 +57,5 @@ export function ChipGroup<Value extends string | number>(
         </ToggleGroupItem>
       ))}
     </ToggleGroup>
-  )
+  );
 }

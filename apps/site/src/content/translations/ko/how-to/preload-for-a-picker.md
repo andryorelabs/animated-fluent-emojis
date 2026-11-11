@@ -12,9 +12,9 @@ emoji 피커가 열리기 전에 manifest와 sprite sheet를 미리 준비해 �
 가져오기를 시작합니다. reject되는 일이 없으므로 `void`만으로 충분합니다.
 
 ```jsx
-import { preloadEmojis } from 'animated-fluent-emojis'
+import { preloadEmojis } from "animated-fluent-emojis";
 
-void preloadEmojis()
+void preloadEmojis();
 ```
 
 사용자가 피커를 열 가능성이 높은 시점에 호출하세요. 예를 들어 트리거 버튼에
@@ -26,10 +26,10 @@ manifest가 준비되면 sprite sheet를 요청하도록 id를 전달하세요. 
 emoji에서 사용자가 보게 될 변형을 미리 준비하려면 `skinTone`을 전달합니다.
 
 ```jsx
-const quickReactions = ['1f44b_wavinghand', '1f525_fire', '1f389_partypopper']
+const quickReactions = ["1f44b_wavinghand", "1f525_fire", "1f389_partypopper"];
 
 function handlePickerTriggerHover() {
-  void preloadEmojis(quickReactions, { skinTone: 'medium' })
+  void preloadEmojis(quickReactions, { skinTone: "medium" });
 }
 ```
 

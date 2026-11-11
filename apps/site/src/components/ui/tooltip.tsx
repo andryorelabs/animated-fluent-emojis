@@ -1,6 +1,6 @@
-import { Tooltip as TooltipPrimitive } from '@base-ui/react/tooltip'
+import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 
-import { cn } from '@/lib/utilities'
+import { cn } from "@/lib/utilities";
 
 /**
  * The shadcn tooltip provider on Base UI. Shares the open delay between the
@@ -9,8 +9,8 @@ import { cn } from '@/lib/utilities'
  * @returns The provider, which renders no element of its own.
  */
 function TooltipProvider(props: TooltipPrimitive.Provider.Props) {
-  const { delay = 300, ...rest } = props
-  return <TooltipPrimitive.Provider delay={delay} {...rest} />
+  const { delay = 300, ...rest } = props;
+  return <TooltipPrimitive.Provider delay={delay} {...rest} />;
 }
 
 /**
@@ -19,7 +19,7 @@ function TooltipProvider(props: TooltipPrimitive.Provider.Props) {
  * @returns The tooltip root, which renders no element of its own.
  */
 function Tooltip(props: TooltipPrimitive.Root.Props) {
-  return <TooltipPrimitive.Root {...props} />
+  return <TooltipPrimitive.Root {...props} />;
 }
 
 /**
@@ -28,14 +28,11 @@ function Tooltip(props: TooltipPrimitive.Root.Props) {
  * @returns The trigger element.
  */
 function TooltipTrigger(props: TooltipPrimitive.Trigger.Props) {
-  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
+  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
 }
 
 type TooltipContentProps = TooltipPrimitive.Popup.Props &
-  Pick<
-    TooltipPrimitive.Positioner.Props,
-    'align' | 'alignOffset' | 'side' | 'sideOffset'
-  >
+  Pick<TooltipPrimitive.Positioner.Props, "align" | "alignOffset" | "side" | "sideOffset">;
 
 /**
  * The tooltip surface, rendered in a portal and positioned against the
@@ -46,14 +43,14 @@ type TooltipContentProps = TooltipPrimitive.Popup.Props &
  */
 function TooltipContent(props: TooltipContentProps) {
   const {
-    side = 'top',
+    side = "top",
     sideOffset = 6,
-    align = 'center',
+    align = "center",
     alignOffset = 0,
     className,
     children,
     ...rest
-  } = props
+  } = props;
   return (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Positioner
@@ -66,7 +63,7 @@ function TooltipContent(props: TooltipContentProps) {
         <TooltipPrimitive.Popup
           data-slot="tooltip-content"
           className={cn(
-            'inline-flex w-fit max-w-xs origin-(--transform-origin) items-center gap-1.5 rounded-md bg-foreground px-2.5 py-1.5 text-xs text-background transition-[opacity,scale] duration-100 ease-(--ease-out-strong) data-ending-style:scale-95 data-ending-style:opacity-0 data-instant:transition-none data-starting-style:scale-95 data-starting-style:opacity-0',
+            "inline-flex w-fit max-w-xs origin-(--transform-origin) items-center gap-1.5 rounded-md bg-foreground px-2.5 py-1.5 text-xs text-background transition-[opacity,scale] duration-100 ease-(--ease-out-strong) data-ending-style:scale-95 data-ending-style:opacity-0 data-instant:transition-none data-starting-style:scale-95 data-starting-style:opacity-0",
             className,
           )}
           {...rest}
@@ -75,7 +72,7 @@ function TooltipContent(props: TooltipContentProps) {
         </TooltipPrimitive.Popup>
       </TooltipPrimitive.Positioner>
     </TooltipPrimitive.Portal>
-  )
+  );
 }
 
-export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger }
+export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger };

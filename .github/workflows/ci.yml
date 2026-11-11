@@ -16,8 +16,7 @@ permissions:
 jobs:
   quality:
     name: Quality (format, lint, typecheck, knip)
-    runs-on:
-      ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
       vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 15
     permissions:
@@ -49,8 +48,7 @@ jobs:
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .eslintcache
-          key:
-            ${{ runner.os }}-eslintcache-${{ hashFiles('bun.lock',
+          key: ${{ runner.os }}-eslintcache-${{ hashFiles('bun.lock',
             'eslint.config.mjs', 'lint-policy.mjs', 'eslint-rules/**') }}
           restore-keys: ${{ runner.os }}-eslintcache-
 
@@ -63,8 +61,7 @@ jobs:
       - name: Check workspaces
         env:
           TURBO_SCM_BASE: origin/${{ github.base_ref }}
-        run:
-          bunx turbo run check ${{ github.event_name == 'pull_request' &&
+        run: bunx turbo run check ${{ github.event_name == 'pull_request' &&
           '--affected' || '' }}
 
       - name: Check root
@@ -102,15 +99,13 @@ jobs:
 
       - name: Resolve the Playwright version
         id: playwright-version
-        run:
-          echo "version=$(bunx playwright --version | awk '{ print $2 }')" >>
+        run: echo "version=$(bunx playwright --version | awk '{ print $2 }')" >>
           "$GITHUB_OUTPUT"
 
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
-          key:
-            ${{ runner.os }}-playwright-${{
+          key: ${{ runner.os }}-playwright-${{
             steps.playwright-version.outputs.version }}
 
       - name: Install Playwright browsers
@@ -132,8 +127,7 @@ jobs:
       - name: Run workspace tests with coverage
         env:
           TURBO_SCM_BASE: origin/${{ github.base_ref }}
-        run:
-          bunx turbo run test:coverage ${{ github.event_name == 'pull_request'
+        run: bunx turbo run test:coverage ${{ github.event_name == 'pull_request'
           && '--affected' || '' }}
 
       - name: Run library browser tests on Firefox and WebKit
@@ -192,8 +186,7 @@ jobs:
       - name: Build, lint package and check size limit
         env:
           TURBO_SCM_BASE: origin/${{ github.base_ref }}
-        run:
-          bunx turbo run build lint:package size --filter=animated-fluent-emojis
+        run: bunx turbo run build lint:package size --filter=animated-fluent-emojis
           ${{ github.event_name == 'pull_request' && '--affected' || '' }}
 
       - name: Report package size
@@ -215,8 +208,7 @@ jobs:
 
   commitlint:
     name: Commitlint
-    runs-on:
-      ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
       vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 5
     permissions:
@@ -254,8 +246,7 @@ jobs:
 
   ci-passed:
     name: CI passed
-    runs-on:
-      ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
       vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 5
     permissions: {}
@@ -264,8 +255,7 @@ jobs:
     steps:
       - name: Check job results
         env:
-          FAILED:
-            ${{ contains(needs.*.result, 'failure') || contains(needs.*.result,
+          FAILED: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result,
             'cancelled') }}
         run: |
           if [[ "${FAILED}" == "true" ]]; then

@@ -3,16 +3,16 @@
  * whether it is currently on screen.
  */
 export interface TransientStatusState {
-  message: string
-  visible: boolean
+  message: string;
+  visible: boolean;
 }
 
 /**
  * A timer-driven status message.
  */
 export interface TransientStatus {
-  show: (message: string) => void
-  dispose: () => void
+  show: (message: string) => void;
+  dispose: () => void;
 }
 
 /**
@@ -28,20 +28,20 @@ export function createTransientStatus(
   onChange: (state: TransientStatusState) => void,
   milliseconds: number,
 ): TransientStatus {
-  let timer: ReturnType<typeof setTimeout> | undefined
-  let message = ''
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let message = "";
 
   return {
     show(next) {
-      clearTimeout(timer)
-      message = next
-      onChange({ message, visible: true })
+      clearTimeout(timer);
+      message = next;
+      onChange({ message, visible: true });
       timer = setTimeout(() => {
-        onChange({ message, visible: false })
-      }, milliseconds)
+        onChange({ message, visible: false });
+      }, milliseconds);
     },
     dispose() {
-      clearTimeout(timer)
+      clearTimeout(timer);
     },
-  }
+  };
 }

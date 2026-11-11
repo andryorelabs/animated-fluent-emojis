@@ -30,9 +30,9 @@ Appelez `configureEmojis` une seule fois, avant le premier rendu d'un `Emoji`.
 Un slash final dans l'URL est ignoré :
 
 ```jsx
-import { configureEmojis } from 'animated-fluent-emojis'
+import { configureEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
 ```
 
 L'appeler après la requête du manifest réinitialise le manifest et émet un

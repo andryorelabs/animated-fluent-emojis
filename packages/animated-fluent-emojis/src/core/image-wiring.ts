@@ -1,9 +1,9 @@
-import { observeVisibility } from '../utils/visibility-observer.js'
+import { observeVisibility } from "../utils/visibility-observer.js";
 
 export interface ImageWiringHandlers {
-  onLoad: () => void
-  onAnimationEnd: () => void
-  onVisibilityChange: (isVisible: boolean) => void
+  onLoad: () => void;
+  onAnimationEnd: () => void;
+  onVisibilityChange: (isVisible: boolean) => void;
 }
 
 /**
@@ -18,15 +18,15 @@ export const wireEmojiImage = (
   image: HTMLImageElement,
   handlers: ImageWiringHandlers,
 ): (() => void) => {
-  image.addEventListener('animationend', handlers.onAnimationEnd)
-  image.addEventListener('load', handlers.onLoad)
+  image.addEventListener("animationend", handlers.onAnimationEnd);
+  image.addEventListener("load", handlers.onLoad);
   const stopObserving = observeVisibility(image, (isVisible) => {
-    handlers.onVisibilityChange(isVisible)
-    if (image.complete && image.naturalWidth > 0) handlers.onLoad()
-  })
+    handlers.onVisibilityChange(isVisible);
+    if (image.complete && image.naturalWidth > 0) handlers.onLoad();
+  });
   return () => {
-    image.removeEventListener('animationend', handlers.onAnimationEnd)
-    image.removeEventListener('load', handlers.onLoad)
-    stopObserving()
-  }
-}
+    image.removeEventListener("animationend", handlers.onAnimationEnd);
+    image.removeEventListener("load", handlers.onLoad);
+    stopObserving();
+  };
+};

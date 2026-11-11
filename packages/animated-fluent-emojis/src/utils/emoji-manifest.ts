@@ -1,48 +1,48 @@
-import { isDevelopment } from './is-development.js'
-import type { CompactManifest, EmojiManifest, SkinTone } from './types.js'
+import { isDevelopment } from "./is-development.js";
+import type { CompactManifest, EmojiManifest, SkinTone } from "./types.js";
 
-const DEFAULT_ASSET_SITE_URL = 'https://animated-fluent-emojis-cdn.andryore.dev'
+const DEFAULT_ASSET_SITE_URL = "https://animated-fluent-emojis-cdn.andryore.dev";
 
-const MANIFEST_TIMEOUT_MS = 15_000
-const DEFAULT_EMOJI_SIZE = 100
-const noop = (): undefined => undefined
+const MANIFEST_TIMEOUT_MS = 15_000;
+const DEFAULT_EMOJI_SIZE = 100;
+const noop = (): undefined => undefined;
 
-type ManifestRecord = Record<string, EmojiManifest>
+type ManifestRecord = Record<string, EmojiManifest>;
 
 export type ManifestSnapshot =
-  | { status: 'idle' | 'loading'; manifest: null }
-  | { status: 'ready'; manifest: ManifestRecord }
-  | { status: 'error'; manifest: null }
+  | { status: "idle" | "loading"; manifest: null }
+  | { status: "ready"; manifest: ManifestRecord }
+  | { status: "error"; manifest: null };
 
-const LOADING_SNAPSHOT: ManifestSnapshot = { status: 'loading', manifest: null }
+const LOADING_SNAPSHOT: ManifestSnapshot = { status: "loading", manifest: null };
 
 const state: {
-  assetSiteUrl: string
-  snapshot: ManifestSnapshot
-  pending: Promise<ManifestSnapshot> | null
-  generation: number
-  lastError: unknown
-  isWaitingForOnline: boolean
-  warmedSources: Set<string>
+  assetSiteUrl: string;
+  snapshot: ManifestSnapshot;
+  pending: Promise<ManifestSnapshot> | null;
+  generation: number;
+  lastError: unknown;
+  isWaitingForOnline: boolean;
+  warmedSources: Set<string>;
 } = {
   assetSiteUrl: DEFAULT_ASSET_SITE_URL,
-  snapshot: { status: 'idle', manifest: null },
+  snapshot: { status: "idle", manifest: null },
   pending: null,
   generation: 0,
   lastError: null,
   isWaitingForOnline: false,
   warmedSources: new Set(),
-}
+};
 
-const listeners = new Set<() => void>()
+const listeners = new Set<() => void>();
 
 /**
  * Replaces the current snapshot and notifies every subscriber.
  * @param snapshot - The new manifest snapshot.
  */
 function publish(snapshot: ManifestSnapshot): void {
-  state.snapshot = snapshot
-  for (const listener of listeners) listener()
+  state.snapshot = snapshot;
+  for (const listener of listeners) listener();
 }
 
 /**
@@ -51,10 +51,10 @@ function publish(snapshot: ManifestSnapshot): void {
  * @returns A function that removes the subscription.
  */
 export function subscribeToManifest(listener: () => void): () => void {
-  listeners.add(listener)
+  listeners.add(listener);
   return () => {
-    listeners.delete(listener)
-  }
+    listeners.delete(listener);
+  };
 }
 
 /**
@@ -62,7 +62,7 @@ export function subscribeToManifest(listener: () => void): () => void {
  * @returns The current snapshot; its identity only changes when the status does.
  */
 export function getManifestSnapshot(): ManifestSnapshot {
-  return state.snapshot
+  return state.snapshot;
 }
 
 /**
@@ -70,7 +70,7 @@ export function getManifestSnapshot(): ManifestSnapshot {
  * @returns Always the `loading` snapshot, so server and client markup match.
  */
 export function getServerManifestSnapshot(): ManifestSnapshot {
-  return LOADING_SNAPSHOT
+  return LOADING_SNAPSHOT;
 }
 
 /**
@@ -83,30 +83,30 @@ export function getServerManifestSnapshot(): ManifestSnapshot {
  * @param options.assetSiteUrl - Origin of the asset site, without or with a trailing slash. Defaults to the published asset site.
  */
 export function configureEmojis(options: { assetSiteUrl?: string }): void {
-  let url = options.assetSiteUrl ?? DEFAULT_ASSET_SITE_URL
-  while (url.endsWith('/')) url = url.slice(0, -1)
-  if (url === state.assetSiteUrl) return
-  if (state.snapshot.status !== 'idle' && isDevelopment()) {
+  let url = options.assetSiteUrl ?? DEFAULT_ASSET_SITE_URL;
+  while (url.endsWith("/")) url = url.slice(0, -1);
+  if (url === state.assetSiteUrl) return;
+  if (state.snapshot.status !== "idle" && isDevelopment()) {
     console.warn(
-      'configureEmojis changed the asset site after the emoji manifest was requested. Call it before the first Emoji renders.',
-    )
+      "configureEmojis changed the asset site after the emoji manifest was requested. Call it before the first Emoji renders.",
+    );
   }
-  state.assetSiteUrl = url
-  state.generation += 1
-  state.pending = null
-  state.warmedSources.clear()
-  publish({ status: 'idle', manifest: null })
-  if (listeners.size > 0) void startManifestLoad()
+  state.assetSiteUrl = url;
+  state.generation += 1;
+  state.pending = null;
+  state.warmedSources.clear();
+  publish({ status: "idle", manifest: null });
+  if (listeners.size > 0) void startManifestLoad();
 }
 
 const SKIN_TONE_SUFFIXES: Readonly<Partial<Record<SkinTone, string>>> = {
-  default: '',
-  light: '_s2',
-  'medium-light': '_s3',
-  medium: '_s4',
-  'medium-dark': '_s5',
-  dark: '_s6',
-}
+  default: "",
+  light: "_s2",
+  "medium-light": "_s3",
+  medium: "_s4",
+  "medium-dark": "_s5",
+  dark: "_s6",
+};
 
 /**
  * Creates an abort signal that fires after a delay. Uses `AbortSignal.timeout`
@@ -116,24 +116,22 @@ const SKIN_TONE_SUFFIXES: Readonly<Partial<Record<SkinTone, string>>> = {
  * @returns The signal and a function that cancels the fallback timer.
  */
 function createTimeoutSignal(milliseconds: number): {
-  signal: AbortSignal
-  clear: () => void
+  signal: AbortSignal;
+  clear: () => void;
 } {
-  if (typeof AbortSignal.timeout === 'function') {
-    return { signal: AbortSignal.timeout(milliseconds), clear: noop }
+  if (typeof AbortSignal.timeout === "function") {
+    return { signal: AbortSignal.timeout(milliseconds), clear: noop };
   }
-  const controller = new AbortController()
+  const controller = new AbortController();
   const timer = setTimeout(() => {
-    controller.abort(
-      new DOMException('The operation timed out.', 'TimeoutError'),
-    )
-  }, milliseconds)
+    controller.abort(new DOMException("The operation timed out.", "TimeoutError"));
+  }, milliseconds);
   return {
     signal: controller.signal,
     clear: () => {
-      clearTimeout(timer)
+      clearTimeout(timer);
     },
-  }
+  };
 }
 
 /**
@@ -141,22 +139,17 @@ function createTimeoutSignal(milliseconds: number): {
  * @returns A promise that resolves to the raw manifest data.
  */
 async function fetchManifest(): Promise<CompactManifest> {
-  const { signal, clear } = createTimeoutSignal(MANIFEST_TIMEOUT_MS)
+  const { signal, clear } = createTimeoutSignal(MANIFEST_TIMEOUT_MS);
   try {
-    const response = await fetch(
-      `${state.assetSiteUrl}/v1/manifest.slim.json`,
-      {
-        signal,
-      },
-    )
+    const response = await fetch(`${state.assetSiteUrl}/v1/manifest.slim.json`, {
+      signal,
+    });
     if (!response.ok) {
-      throw new Error(
-        `Failed to fetch the emoji manifest (${String(response.status)})`,
-      )
+      throw new Error(`Failed to fetch the emoji manifest (${String(response.status)})`);
     }
-    return (await response.json()) as CompactManifest
+    return (await response.json()) as CompactManifest;
   } finally {
-    clear()
+    clear();
   }
 }
 
@@ -165,8 +158,8 @@ async function fetchManifest(): Promise<CompactManifest> {
  * @returns A promise that resolves to the processed emoji manifest.
  */
 async function generateEmojiManifest(): Promise<ManifestRecord> {
-  const rawManifest = await fetchManifest()
-  const manifest: ManifestRecord = Object.create(null) as ManifestRecord
+  const rawManifest = await fetchManifest();
+  const manifest: ManifestRecord = Object.create(null) as ManifestRecord;
   for (const category of rawManifest.categories) {
     for (const emoticon of category.emoticons) {
       manifest[emoticon.id] = {
@@ -175,30 +168,26 @@ async function generateEmojiManifest(): Promise<ManifestRecord> {
         hd: emoticon.hd ?? false,
         animation: { fps: 24, firstFrame: 1, ...emoticon.animation },
         category: category.title,
-      }
+      };
     }
   }
-  return manifest
+  return manifest;
 }
 
 /**
  * Retries a failed load once the browser reports it is back online.
  */
 function retryWhenOnline(): void {
-  if (
-    state.isWaitingForOnline ||
-    typeof globalThis.addEventListener !== 'function'
-  )
-    return
-  state.isWaitingForOnline = true
+  if (state.isWaitingForOnline || typeof globalThis.addEventListener !== "function") return;
+  state.isWaitingForOnline = true;
   globalThis.addEventListener(
-    'online',
+    "online",
     () => {
-      state.isWaitingForOnline = false
-      if (state.snapshot.status === 'error') void startManifestLoad()
+      state.isWaitingForOnline = false;
+      if (state.snapshot.status === "error") void startManifestLoad();
     },
     { once: true },
-  )
+  );
 }
 
 /**
@@ -207,21 +196,21 @@ function retryWhenOnline(): void {
  * @returns The snapshot this load produced, or the current load's when superseded; never rejects.
  */
 async function runManifestLoad(generation: number): Promise<ManifestSnapshot> {
-  let outcome: ManifestSnapshot
+  let outcome: ManifestSnapshot;
   try {
-    outcome = { status: 'ready', manifest: await generateEmojiManifest() }
+    outcome = { status: "ready", manifest: await generateEmojiManifest() };
   } catch (error) {
-    outcome = { status: 'error', manifest: null }
+    outcome = { status: "error", manifest: null };
     if (generation === state.generation) {
-      state.lastError = error
-      console.error('Error fetching emoji data:', error)
+      state.lastError = error;
+      console.error("Error fetching emoji data:", error);
     }
   }
-  if (generation !== state.generation) return startManifestLoad()
-  state.pending = null
-  publish(outcome)
-  if (outcome.status === 'error') retryWhenOnline()
-  return outcome
+  if (generation !== state.generation) return startManifestLoad();
+  state.pending = null;
+  publish(outcome);
+  if (outcome.status === "error") retryWhenOnline();
+  return outcome;
 }
 
 /**
@@ -230,11 +219,11 @@ async function runManifestLoad(generation: number): Promise<ManifestSnapshot> {
  * @returns A promise of the snapshot the load ends in; it never rejects.
  */
 export function startManifestLoad(): Promise<ManifestSnapshot> {
-  if (state.snapshot.status === 'ready') return Promise.resolve(state.snapshot)
-  if (state.pending) return state.pending
-  publish({ status: 'loading', manifest: null })
-  state.pending = runManifestLoad(state.generation)
-  return state.pending
+  if (state.snapshot.status === "ready") return Promise.resolve(state.snapshot);
+  if (state.pending) return state.pending;
+  publish({ status: "loading", manifest: null });
+  state.pending = runManifestLoad(state.generation);
+  return state.pending;
 }
 
 /**
@@ -243,11 +232,11 @@ export function startManifestLoad(): Promise<ManifestSnapshot> {
  * @returns A promise that resolves to the manifest keyed by emoji id.
  */
 export async function loadEmojiManifest(): Promise<ManifestRecord> {
-  const outcome = await startManifestLoad()
-  if (outcome.status === 'ready') return outcome.manifest
+  const outcome = await startManifestLoad();
+  if (outcome.status === "ready") return outcome.manifest;
   throw state.lastError instanceof Error
     ? state.lastError
-    : new Error('Failed to load the emoji manifest')
+    : new Error("Failed to load the emoji manifest");
 }
 
 /**
@@ -262,8 +251,8 @@ function buildSpriteUrl(
   skinTone: SkinTone,
   resolutionSuffix: string,
 ): string {
-  const toneSuffix = emoji.diverse ? (SKIN_TONE_SUFFIXES[skinTone] ?? '') : ''
-  return `${state.assetSiteUrl}/v1/sprites/${encodeURIComponent(emoji.category)}/${emoji.id}${toneSuffix}.${emoji.etag}${resolutionSuffix}.png`
+  const toneSuffix = emoji.diverse ? (SKIN_TONE_SUFFIXES[skinTone] ?? "") : "";
+  return `${state.assetSiteUrl}/v1/sprites/${encodeURIComponent(emoji.category)}/${emoji.id}${toneSuffix}.${emoji.etag}${resolutionSuffix}.png`;
 }
 
 /**
@@ -272,11 +261,8 @@ function buildSpriteUrl(
  * @param skinTone - The requested skin tone; ignored when the emoji has no variants.
  * @returns The sprite sheet URL, named by the emoji etag.
  */
-export function getSpriteUrl(
-  emoji: EmojiManifest,
-  skinTone: SkinTone = 'default',
-): string {
-  return buildSpriteUrl(emoji, skinTone, '')
+export function getSpriteUrl(emoji: EmojiManifest, skinTone: SkinTone = "default"): string {
+  return buildSpriteUrl(emoji, skinTone, "");
 }
 
 /**
@@ -287,11 +273,11 @@ export function getSpriteUrl(
  */
 export function getSpriteSourceSet(
   emoji: EmojiManifest,
-  skinTone: SkinTone = 'default',
+  skinTone: SkinTone = "default",
 ): string | undefined {
   return emoji.hd
-    ? `${buildSpriteUrl(emoji, skinTone, '')} 100w, ${buildSpriteUrl(emoji, skinTone, '@2x')} 200w`
-    : undefined
+    ? `${buildSpriteUrl(emoji, skinTone, "")} 100w, ${buildSpriteUrl(emoji, skinTone, "@2x")} 200w`
+    : undefined;
 }
 
 /**
@@ -307,20 +293,20 @@ export async function preloadEmojis(
   ids?: readonly string[],
   options: { skinTone?: SkinTone } = {},
 ): Promise<void> {
-  const outcome = await startManifestLoad()
-  if (!ids || typeof Image === 'undefined' || outcome.status !== 'ready') return
+  const outcome = await startManifestLoad();
+  if (!ids || typeof Image === "undefined" || outcome.status !== "ready") return;
   for (const id of ids) {
-    const emoji = outcome.manifest[id]
-    if (!emoji) continue
-    const source = getSpriteUrl(emoji, options.skinTone)
-    if (state.warmedSources.has(source)) continue
-    state.warmedSources.add(source)
-    const image = new Image()
-    const sourceSet = getSpriteSourceSet(emoji, options.skinTone)
+    const emoji = outcome.manifest[id];
+    if (!emoji) continue;
+    const source = getSpriteUrl(emoji, options.skinTone);
+    if (state.warmedSources.has(source)) continue;
+    state.warmedSources.add(source);
+    const image = new Image();
+    const sourceSet = getSpriteSourceSet(emoji, options.skinTone);
     if (sourceSet) {
-      image.sizes = `${String(DEFAULT_EMOJI_SIZE)}px`
-      image.srcset = sourceSet
+      image.sizes = `${String(DEFAULT_EMOJI_SIZE)}px`;
+      image.srcset = sourceSet;
     }
-    image.src = source
+    image.src = source;
   }
 }

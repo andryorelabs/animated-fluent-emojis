@@ -14,7 +14,7 @@ registra `<fluent-emoji>`. L'elemento porta con sé i propri stili in uno shadow
 root, quindi non c'è nessun foglio di stile da importare:
 
 ```ts
-import 'animated-fluent-emojis/element'
+import "animated-fluent-emojis/element";
 ```
 
 ## Consenti il tag nei tuoi componenti
@@ -23,10 +23,10 @@ Angular rifiuta i tag sconosciuti, a meno che il componente non consenta i
 custom element:
 
 ```ts
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 
 @Component({
-  selector: 'app-greeting',
+  selector: "app-greeting",
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `<fluent-emoji id="1f44b_wavinghand" size="64" play-on-hover />`,
@@ -41,12 +41,7 @@ proprietà dell'elemento invece di riscrivere gli attributi. Gli eventi sono
 `emoji-load`, `emoji-error` e `playback-end`:
 
 ```html
-<fluent-emoji
-  [id]="emojiId"
-  [size]="64"
-  [playOnHover]="true"
-  (playback-end)="onDone()"
->
+<fluent-emoji [id]="emojiId" [size]="64" [playOnHover]="true" (playback-end)="onDone()">
   <span slot="fallback">👋</span>
 </fluent-emoji>
 ```

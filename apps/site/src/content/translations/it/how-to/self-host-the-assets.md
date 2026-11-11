@@ -27,9 +27,9 @@ Chiama `configureEmojis` una sola volta, prima che venga renderizzato il primo
 `Emoji`. Una barra finale nell'URL viene ignorata:
 
 ```jsx
-import { configureEmojis } from 'animated-fluent-emojis'
+import { configureEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
 ```
 
 Se la chiami dopo che il manifest è stato richiesto, il manifest viene

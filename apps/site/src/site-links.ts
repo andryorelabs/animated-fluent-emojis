@@ -1,30 +1,29 @@
 /**
  * The public GitHub repository.
  */
-export const REPOSITORY_URL =
-  'https://github.com/andryorelabs/animated-fluent-emojis'
+export const REPOSITORY_URL = "https://github.com/andryorelabs/animated-fluent-emojis";
 
 /**
  * The npm package page.
  */
-export const NPM_URL = 'https://www.npmjs.com/package/animated-fluent-emojis'
+export const NPM_URL = "https://www.npmjs.com/package/animated-fluent-emojis";
 
 /**
  * The site author's homepage, linked from the footer credit.
  */
-export const AUTHOR_URL = 'https://andryore.dev/'
+export const AUTHOR_URL = "https://andryore.dev/";
 
 /**
  * The author name shown in the footer credit; never translated.
  */
-export const AUTHOR_NAME = 'AndryOre'
+export const AUTHOR_NAME = "AndryOre";
 
 /**
  * The `target` and `rel` attributes of a link that opens in a new tab.
  */
 export interface ExternalLinkAttributes {
-  target: '_blank'
-  rel: string
+  target: "_blank";
+  rel: string;
 }
 
 /**
@@ -34,7 +33,7 @@ export interface ExternalLinkAttributes {
  * @returns `true` for an absolute `http` or `https` URL.
  */
 export function isExternalHref(href: string): boolean {
-  return /^https?:\/\//i.test(href)
+  return /^https?:\/\//i.test(href);
 }
 
 /**
@@ -44,13 +43,9 @@ export function isExternalHref(href: string): boolean {
  * @param existingRelationship - Space-separated `rel` tokens the link already needs.
  * @returns The `target` and merged `rel` attributes.
  */
-export function externalLinkAttributes(
-  existingRelationship = '',
-): ExternalLinkAttributes {
-  const tokens = [
-    ...existingRelationship.split(/\s+/),
-    'noopener',
-    'noreferrer',
-  ].filter((token) => token !== '')
-  return { target: '_blank', rel: [...new Set(tokens)].join(' ') }
+export function externalLinkAttributes(existingRelationship = ""): ExternalLinkAttributes {
+  const tokens = [...existingRelationship.split(/\s+/), "noopener", "noreferrer"].filter(
+    (token) => token !== "",
+  );
+  return { target: "_blank", rel: [...new Set(tokens)].join(" ") };
 }

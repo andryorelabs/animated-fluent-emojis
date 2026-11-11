@@ -2,137 +2,91 @@
 
 @utility transition-color-bg-border-shadow {
   transition-property: color, background-color, border-color, box-shadow;
-  transition-timing-function: var(
-    --tw-ease,
-    var(--default-transition-timing-function)
-  );
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
 
 @utility transition-color-bg-border-shadow-scale {
   transition-property: color, background-color, border-color, box-shadow, scale;
-  transition-timing-function: var(
-    --tw-ease,
-    var(--default-transition-timing-function)
-  );
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
 
 @utility transition-color-bg-border-shadow-filter-scale {
-  transition-property:
-    color, background-color, border-color, box-shadow, filter, scale;
-  transition-timing-function: var(
-    --tw-ease,
-    var(--default-transition-timing-function)
-  );
+  transition-property: color, background-color, border-color, box-shadow, filter, scale;
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
 
 @utility transition-color-bg-scale {
   transition-property: color, background-color, scale;
-  transition-timing-function: var(
-    --tw-ease,
-    var(--default-transition-timing-function)
-  );
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
 
 @utility transition-transform-color-bg {
   transition-property: transform, color, background-color;
-  transition-timing-function: var(
-    --tw-ease,
-    var(--default-transition-timing-function)
-  );
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
 
 @utility transition-bg-transform {
   transition-property: background-color, transform;
-  transition-timing-function: var(
-    --tw-ease,
-    var(--default-transition-timing-function)
-  );
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
 
 @utility transition-opacity-translate {
   transition-property: opacity, translate;
-  transition-timing-function: var(
-    --tw-ease,
-    var(--default-transition-timing-function)
-  );
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
 
 @utility transition-opacity-translate-visibility {
   transition-property: opacity, translate, visibility;
-  transition-timing-function: var(
-    --tw-ease,
-    var(--default-transition-timing-function)
-  );
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
 
 @utility transition-opacity-scale {
   transition-property: opacity, scale;
-  transition-timing-function: var(
-    --tw-ease,
-    var(--default-transition-timing-function)
-  );
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
 
 @utility transition-opacity-scale-filter {
   transition-property: opacity, scale, filter;
-  transition-timing-function: var(
-    --tw-ease,
-    var(--default-transition-timing-function)
-  );
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
 
 @utility transition-opacity-transform {
   transition-property: opacity, transform;
-  transition-timing-function: var(
-    --tw-ease,
-    var(--default-transition-timing-function)
-  );
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
 
 @utility transition-transform-opacity {
   transition-property: transform, opacity;
-  transition-timing-function: var(
-    --tw-ease,
-    var(--default-transition-timing-function)
-  );
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
 
 @utility transition-scale-rotate {
   transition-property: scale, rotate;
-  transition-timing-function: var(
-    --tw-ease,
-    var(--default-transition-timing-function)
-  );
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
 
 @utility transition-height {
   transition-property: height;
-  transition-timing-function: var(
-    --tw-ease,
-    var(--default-transition-timing-function)
-  );
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
 
 @utility transition-rotate {
   transition-property: rotate;
-  transition-timing-function: var(
-    --tw-ease,
-    var(--default-transition-timing-function)
-  );
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
 
@@ -161,7 +115,7 @@
 }
 
 @utility content-empty {
-  --tw-content: '';
+  --tw-content: "";
   content: var(--tw-content);
 }
 
@@ -214,19 +168,11 @@
 }
 
 @utility bg-dots-muted {
-  background-image: radial-gradient(
-    var(--muted-foreground) 1px,
-    transparent 1px
-  );
+  background-image: radial-gradient(var(--muted-foreground) 1px, transparent 1px);
 }
 
 @utility bg-checker {
-  background-image: conic-gradient(
-    #d4d4d4 25%,
-    #fff 0 50%,
-    #d4d4d4 0 75%,
-    #fff 0
-  );
+  background-image: conic-gradient(#d4d4d4 25%, #fff 0 50%, #d4d4d4 0 75%, #fff 0);
 }
 
 @utility bg-grid-6 {
@@ -270,10 +216,7 @@
 }
 
 @utility grid-cols-fill-* {
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(calc(--value(integer) * 1px), 1fr)
-  );
+  grid-template-columns: repeat(auto-fill, minmax(calc(--value(integer) * 1px), 1fr));
 }
 
 @utility grid-rows-auto-fr {
@@ -293,15 +236,11 @@
 }
 
 @utility pb-safe-* {
-  padding-bottom: calc(
-    var(--spacing) * --value(integer) + env(safe-area-inset-bottom, 0px)
-  );
+  padding-bottom: calc(var(--spacing) * --value(integer) + env(safe-area-inset-bottom, 0px));
 }
 
 @utility bottom-safe-* {
-  bottom: calc(
-    var(--spacing) * --value(integer) + env(safe-area-inset-bottom, 0px)
-  );
+  bottom: calc(var(--spacing) * --value(integer) + env(safe-area-inset-bottom, 0px));
 }
 
 @utility view-transition-name-current {

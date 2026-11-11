@@ -14,7 +14,7 @@ import하면 `<fluent-emoji>`가 등록됩니다. 요소는 shadow root 안에 �
 가지고 있으므로 따로 import할 스타일시트는 없습니다.
 
 ```ts
-import 'animated-fluent-emojis/element'
+import "animated-fluent-emojis/element";
 ```
 
 ## 컴포넌트에서 태그 허용하기
@@ -23,10 +23,10 @@ import 'animated-fluent-emojis/element'
 거부합니다.
 
 ```ts
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 
 @Component({
-  selector: 'app-greeting',
+  selector: "app-greeting",
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `<fluent-emoji id="1f44b_wavinghand" size="64" play-on-hover />`,
@@ -41,12 +41,7 @@ export class GreetingComponent {}
 `playback-end`입니다.
 
 ```html
-<fluent-emoji
-  [id]="emojiId"
-  [size]="64"
-  [playOnHover]="true"
-  (playback-end)="onDone()"
->
+<fluent-emoji [id]="emojiId" [size]="64" [playOnHover]="true" (playback-end)="onDone()">
   <span slot="fallback">👋</span>
 </fluent-emoji>
 ```

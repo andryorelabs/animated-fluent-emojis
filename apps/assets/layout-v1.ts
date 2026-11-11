@@ -1,19 +1,15 @@
-import { readdir, readFile, stat } from 'node:fs/promises'
-import path from 'node:path'
+import { readdir, readFile, stat } from "node:fs/promises";
+import path from "node:path";
 
-import type { Manifest } from '../../packages/animated-fluent-emojis/src/utils/types.js'
-import type { SpriteTask } from './catalog.js'
-import {
-  HD_FRAME_SIZE,
-  indexEmoticons,
-  SPRITE_FRAME_SIZE,
-} from './constants.js'
-import { findSpriteSheetProblem, validateCatalog } from './validate.js'
+import type { Manifest } from "../../packages/animated-fluent-emojis/src/utils/types.js";
+import type { SpriteTask } from "./catalog.js";
+import { HD_FRAME_SIZE, indexEmoticons, SPRITE_FRAME_SIZE } from "./constants.js";
+import { findSpriteSheetProblem, validateCatalog } from "./validate.js";
 
 /**
  * The directory holding the versioned asset layout, as described in ADR 0010.
  */
-export const V1_DIRECTORY = 'v1'
+export const V1_DIRECTORY = "v1";
 
 /**
  * The `_headers` rules of the versioned layout. Sprite names carry their etag,
@@ -31,24 +27,24 @@ export const V1_HEADERS_FILE = `/v1/sprites/*
 /v1/version.json
   Cache-Control: no-cache
   Access-Control-Allow-Origin: *
-`
+`;
 
 /**
  * One emoji in the versioned slim manifest. Fields at their default value are
  * omitted: `fps` 24, `firstFrame` 1, `diverse` false and `hd` false.
  */
 interface V1Emoticon {
-  readonly id: string
-  readonly description: string
-  readonly etag: string
-  readonly unicode?: string
+  readonly id: string;
+  readonly description: string;
+  readonly etag: string;
+  readonly unicode?: string;
   readonly animation: {
-    readonly framesCount: number
-    readonly fps?: number
-    readonly firstFrame?: number
-  }
-  readonly diverse?: true
-  readonly hd?: true
+    readonly framesCount: number;
+    readonly fps?: number;
+    readonly firstFrame?: number;
+  };
+  readonly diverse?: true;
+  readonly hd?: true;
 }
 
 /**
@@ -56,33 +52,33 @@ interface V1Emoticon {
  */
 export interface V1Manifest {
   readonly categories: readonly {
-    readonly id: string
-    readonly title: string
-    readonly description: string
-    readonly emoticons: readonly V1Emoticon[]
-  }[]
+    readonly id: string;
+    readonly title: string;
+    readonly description: string;
+    readonly emoticons: readonly V1Emoticon[];
+  }[];
 }
 
-const DEFAULT_FPS = 24
-const DEFAULT_FIRST_FRAME = 1
+const DEFAULT_FPS = 24;
+const DEFAULT_FIRST_FRAME = 1;
 
 /**
  * Inputs for {@link validateV1Layout}.
  */
 export interface V1ValidationInput {
-  readonly manifest: Manifest
-  readonly tasks: readonly SpriteTask[]
-  readonly outputDirectory: string
-  readonly retained?: readonly RetainedSprite[]
+  readonly manifest: Manifest;
+  readonly tasks: readonly SpriteTask[];
+  readonly outputDirectory: string;
+  readonly retained?: readonly RetainedSprite[];
 }
 
 /**
  * A previous-generation sheet kept in the site next to the current files.
  */
 export interface RetainedSprite {
-  readonly v1Path: string
-  readonly hd: boolean
-  readonly framesCount: number
+  readonly v1Path: string;
+  readonly hd: boolean;
+  readonly framesCount: number;
 }
 
 /**
@@ -95,16 +91,14 @@ export interface RetainedSprite {
  * @returns The relative path inside the site.
  */
 export function buildV1SpritePath(legacyPath: string, etag: string): string {
-  const match = /^(.*?)(@2x)?\.png$/.exec(legacyPath)
-  if (!match) throw new Error(`Not a sprite path: ${legacyPath}`)
-  return `${V1_DIRECTORY}/${match[1] ?? ''}.${etag}${match[2] ?? ''}.png`
+  const match = /^(.*?)(@2x)?\.png$/.exec(legacyPath);
+  if (!match) throw new Error(`Not a sprite path: ${legacyPath}`);
+  return `${V1_DIRECTORY}/${match[1] ?? ""}.${etag}${match[2] ?? ""}.png`;
 }
 
-function toV1Emoticon(
-  emoticon: Manifest['categories'][number]['emoticons'][number],
-): V1Emoticon {
-  const { fps, framesCount, firstFrame } = emoticon.animation
-  const hd = (emoticon as { hd?: unknown }).hd
+function toV1Emoticon(emoticon: Manifest["categories"][number]["emoticons"][number]): V1Emoticon {
+  const { fps, framesCount, firstFrame } = emoticon.animation;
+  const hd = (emoticon as { hd?: unknown }).hd;
   return {
     id: emoticon.id,
     description: emoticon.description,
@@ -117,7 +111,7 @@ function toV1Emoticon(
     },
     ...(emoticon.diverse && { diverse: true as const }),
     ...(hd !== undefined && hd !== false && { hd: true as const }),
-  }
+  };
 }
 
 /**
@@ -134,7 +128,7 @@ export function toV1Manifest(manifest: Manifest): V1Manifest {
       description: category.description,
       emoticons: category.emoticons.map((emoticon) => toV1Emoticon(emoticon)),
     })),
-  }
+  };
 }
 
 /**
@@ -143,21 +137,18 @@ export function toV1Manifest(manifest: Manifest): V1Manifest {
  * @param manifest The manifest providing each emoji's etag.
  * @returns The tasks with versioned `outputPath` and `hdOutputPath`.
  */
-function toV1Tasks(
-  tasks: readonly SpriteTask[],
-  manifest: Manifest,
-): SpriteTask[] {
-  const emoticonById = indexEmoticons(manifest)
+function toV1Tasks(tasks: readonly SpriteTask[], manifest: Manifest): SpriteTask[] {
+  const emoticonById = indexEmoticons(manifest);
   return tasks.map((task) => {
-    const etag = emoticonById.get(task.id)?.etag ?? task.etag
+    const etag = emoticonById.get(task.id)?.etag ?? task.etag;
     return {
       ...task,
       outputPath: buildV1SpritePath(task.outputPath, etag),
       ...(task.hdOutputPath !== undefined && {
         hdOutputPath: buildV1SpritePath(task.hdOutputPath, etag),
       }),
-    }
-  })
+    };
+  });
 }
 
 async function listFiles(directory: string): Promise<string[]> {
@@ -165,22 +156,18 @@ async function listFiles(directory: string): Promise<string[]> {
     const entries = await readdir(directory, {
       recursive: true,
       withFileTypes: true,
-    })
+    });
     return entries
       .filter((entry) => entry.isFile())
-      .map((entry) => path.join(entry.parentPath, entry.name))
+      .map((entry) => path.join(entry.parentPath, entry.name));
   } catch {
-    return []
+    return [];
   }
 }
 
-function splitEtag(
-  relativePath: string,
-): { stem: string; etag: string } | null {
-  const match = /^(.*)\.([^./]+)(@2x)?\.png$/.exec(relativePath)
-  return match
-    ? { stem: `${match[1] ?? ''}${match[3] ?? ''}`, etag: match[2] ?? '' }
-    : null
+function splitEtag(relativePath: string): { stem: string; etag: string } | null {
+  const match = /^(.*)\.([^./]+)(@2x)?\.png$/.exec(relativePath);
+  return match ? { stem: `${match[1] ?? ""}${match[3] ?? ""}`, etag: match[2] ?? "" } : null;
 }
 
 async function findEtagProblems(
@@ -190,31 +177,31 @@ async function findEtagProblems(
 ): Promise<string[]> {
   const expectedByStem = new Map(
     [...expectedPaths].map((expected) => {
-      const parts = splitEtag(expected)
-      return [parts?.stem ?? expected, parts?.etag ?? ''] as const
+      const parts = splitEtag(expected);
+      return [parts?.stem ?? expected, parts?.etag ?? ""] as const;
     }),
-  )
-  const spriteRoot = path.join(outputDirectory, V1_DIRECTORY, 'sprites')
-  const files = await listFiles(spriteRoot)
+  );
+  const spriteRoot = path.join(outputDirectory, V1_DIRECTORY, "sprites");
+  const files = await listFiles(spriteRoot);
   const present = files.map((file) =>
-    path.relative(outputDirectory, file).split(path.sep).join('/'),
-  )
+    path.relative(outputDirectory, file).split(path.sep).join("/"),
+  );
   return present
     .filter((file) => !expectedPaths.has(file) && !retainedPaths.has(file))
     .map((file) => {
-      const parts = splitEtag(file)
-      const expectedEtag = parts ? expectedByStem.get(parts.stem) : undefined
+      const parts = splitEtag(file);
+      const expectedEtag = parts ? expectedByStem.get(parts.stem) : undefined;
       return expectedEtag === undefined
         ? `${file}: v1 sprite is not in the manifest`
-        : `${file}: file name etag "${parts?.etag ?? ''}" disagrees with manifest etag "${expectedEtag}"`
-    })
+        : `${file}: file name etag "${parts?.etag ?? ""}" disagrees with manifest etag "${expectedEtag}"`;
+    });
 }
 
 async function readJson(filePath: string): Promise<unknown> {
   try {
-    return JSON.parse(await readFile(filePath, 'utf8')) as unknown
+    return JSON.parse(await readFile(filePath, "utf8")) as unknown;
   } catch (error: unknown) {
-    return error instanceof Error ? error : new Error(String(error))
+    return error instanceof Error ? error : new Error(String(error));
   }
 }
 
@@ -222,35 +209,35 @@ async function findManifestProblems(
   outputDirectory: string,
   manifest: Manifest,
 ): Promise<string[]> {
-  const root = path.join(outputDirectory, V1_DIRECTORY)
-  const published = await readJson(path.join(root, 'manifest.slim.json'))
-  const version = await readJson(path.join(root, 'version.json'))
-  const expected = toV1Manifest(manifest)
-  const problems: string[] = []
+  const root = path.join(outputDirectory, V1_DIRECTORY);
+  const published = await readJson(path.join(root, "manifest.slim.json"));
+  const version = await readJson(path.join(root, "version.json"));
+  const expected = toV1Manifest(manifest);
+  const problems: string[] = [];
   if (published instanceof Error) {
-    problems.push(`v1/manifest.slim.json is unreadable (${published.message})`)
+    problems.push(`v1/manifest.slim.json is unreadable (${published.message})`);
   } else if (JSON.stringify(published) !== JSON.stringify(expected)) {
-    problems.push('v1/manifest.slim.json does not match the manifest')
+    problems.push("v1/manifest.slim.json does not match the manifest");
   }
   for (const category of expected.categories) {
     for (const emoticon of category.emoticons) {
       if (emoticon.unicode === undefined) {
-        problems.push(`${emoticon.id}: v1 manifest entry has no unicode`)
+        problems.push(`${emoticon.id}: v1 manifest entry has no unicode`);
       }
     }
   }
   if (version instanceof Error) {
-    problems.push(`v1/version.json is unreadable (${version.message})`)
+    problems.push(`v1/version.json is unreadable (${version.message})`);
   }
-  return problems
+  return problems;
 }
 
 async function isNonEmptyFile(filePath: string): Promise<boolean> {
   try {
-    const stats = await stat(filePath)
-    return stats.isFile() && stats.size > 0
+    const stats = await stat(filePath);
+    return stats.isFile() && stats.size > 0;
   } catch {
-    return false
+    return false;
   }
 }
 
@@ -264,13 +251,11 @@ async function findRetainedProblems(
         path.join(outputDirectory, sprite.v1Path),
         sprite.hd ? HD_FRAME_SIZE : SPRITE_FRAME_SIZE,
         sprite.framesCount,
-      )
-      return problem === undefined
-        ? undefined
-        : `retained sprite ${sprite.v1Path} ${problem}`
+      );
+      return problem === undefined ? undefined : `retained sprite ${sprite.v1Path} ${problem}`;
     }),
-  )
-  return checks.filter((problem) => problem !== undefined)
+  );
+  return checks.filter((problem) => problem !== undefined);
 }
 
 /**
@@ -283,18 +268,14 @@ async function findRetainedProblems(
  * @param input The manifest, the planned tasks and the built site directory.
  * @throws {Error} An error listing every problem found.
  */
-export async function validateV1Layout(
-  input: V1ValidationInput,
-): Promise<void> {
-  const { manifest, tasks, outputDirectory, retained = [] } = input
-  const v1Tasks = toV1Tasks(tasks, manifest)
+export async function validateV1Layout(input: V1ValidationInput): Promise<void> {
+  const { manifest, tasks, outputDirectory, retained = [] } = input;
+  const v1Tasks = toV1Tasks(tasks, manifest);
   const expectedPaths = new Set(
     v1Tasks.flatMap((task) =>
-      task.hdOutputPath === undefined
-        ? task.outputPath
-        : [task.outputPath, task.hdOutputPath],
+      task.hdOutputPath === undefined ? task.outputPath : [task.outputPath, task.hdOutputPath],
     ),
-  )
+  );
   const problems = [
     ...(await findManifestProblems(outputDirectory, manifest)),
     ...(await findEtagProblems(
@@ -303,22 +284,22 @@ export async function validateV1Layout(
       new Set(retained.map((sprite) => sprite.v1Path)),
     )),
     ...(await findRetainedProblems(outputDirectory, retained)),
-  ]
+  ];
   for (const expected of expectedPaths) {
     if (!(await isNonEmptyFile(path.join(outputDirectory, expected)))) {
-      problems.push(`missing v1 sprite ${expected}`)
+      problems.push(`missing v1 sprite ${expected}`);
     }
   }
   if (problems.length > 0) {
     throw new Error(
       `v1 layout validation failed with ${String(problems.length)} problem(s):\n${problems
         .map((problem) => `  - ${problem}`)
-        .join('\n')}`,
-    )
+        .join("\n")}`,
+    );
   }
   await validateCatalog({
     manifest,
     tasks: v1Tasks,
     cacheDirectory: outputDirectory,
-  })
+  });
 }

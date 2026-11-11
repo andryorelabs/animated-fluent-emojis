@@ -1,24 +1,21 @@
-import { Emoji } from 'animated-fluent-emojis/react'
-import { useState } from 'react'
+import { Emoji } from "animated-fluent-emojis/react";
+import { useState } from "react";
 
-import CodeBlock, {
-  type CodeBlockLabels,
-  type CodeBlockTab,
-} from '@/components/CodeBlock'
-import CopyBurst from '@/components/CopyBurst'
-import { cn } from '@/lib/utilities'
+import CodeBlock, { type CodeBlockLabels, type CodeBlockTab } from "@/components/CodeBlock";
+import CopyBurst from "@/components/CopyBurst";
+import { cn } from "@/lib/utilities";
 
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 
-const PREVIEW_SIZE = 96
+const PREVIEW_SIZE = 96;
 
 /**
  * Properties of {@link InstallCard}.
  */
 export interface InstallCardProps {
-  tabs: readonly CodeBlockTab[]
-  previews: Readonly<Record<string, string>>
-  labels: CodeBlockLabels
+  tabs: readonly CodeBlockTab[];
+  previews: Readonly<Record<string, string>>;
+  labels: CodeBlockLabels;
 }
 
 /**
@@ -34,13 +31,9 @@ export interface InstallCardProps {
  * @returns The card with the tabbed code on one side and the preview on the
  * other.
  */
-export default function InstallCard({
-  tabs,
-  previews,
-  labels,
-}: InstallCardProps) {
-  const [active, setActive] = useState(tabs[0]?.id ?? '')
-  const [burst, setBurst] = useState(0)
+export default function InstallCard({ tabs, previews, labels }: InstallCardProps) {
+  const [active, setActive] = useState(tabs[0]?.id ?? "");
+  const [burst, setBurst] = useState(0);
 
   return (
     <div className="grid min-w-0 gap-2 rounded-2xl border border-border bg-muted/40 p-2 split:grid-cols-install">
@@ -52,7 +45,7 @@ export default function InstallCard({
         activeId={active}
         onActiveChange={setActive}
         onCopied={() => {
-          setBurst((count) => count + 1)
+          setBurst((count) => count + 1);
         }}
         copyEffect={<CopyBurst burst={burst} />}
       />
@@ -63,26 +56,21 @@ export default function InstallCard({
       >
         <div className="grid size-24 place-items-center">
           {tabs.map((tab) => {
-            const emojiId = previews[tab.id]
-            const isActive = tab.id === active
+            const emojiId = previews[tab.id];
+            const isActive = tab.id === active;
             return emojiId ? (
               <span
                 key={tab.id}
                 data-preview-id={tab.id}
                 data-active={isActive}
                 className={cn(
-                  'col-start-1 row-start-1 grid size-24 place-items-center motion-safe:transition-opacity-scale-filter motion-safe:duration-200 motion-safe:ease-(--ease-out-strong)',
-                  !isActive && 'scale-90 opacity-0 motion-safe:blur-2xs',
+                  "col-start-1 row-start-1 grid size-24 place-items-center motion-safe:transition-opacity-scale-filter motion-safe:duration-200 motion-safe:ease-(--ease-out-strong)",
+                  !isActive && "scale-90 opacity-0 motion-safe:blur-2xs",
                 )}
               >
-                <Emoji
-                  id={emojiId}
-                  size={PREVIEW_SIZE}
-                  alt=""
-                  playing={isActive}
-                />
+                <Emoji id={emojiId} size={PREVIEW_SIZE} alt="" playing={isActive} />
               </span>
-            ) : null
+            ) : null;
           })}
         </div>
         <span
@@ -93,5 +81,5 @@ export default function InstallCard({
         </span>
       </div>
     </div>
-  )
+  );
 }

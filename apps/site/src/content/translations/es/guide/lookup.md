@@ -9,15 +9,11 @@ manifest y, cuando no puede, resuelve a `undefined` o a un arreglo vacío, sin
 rechazar nunca:
 
 ```js
-import {
-  extractEmojis,
-  findEmojiByUnicode,
-  searchEmojis,
-} from 'animated-fluent-emojis/lookup'
+import { extractEmojis, findEmojiByUnicode, searchEmojis } from "animated-fluent-emojis/lookup";
 
-await findEmojiByUnicode('👍🏽') // { id: 'yes', skinTone: 'medium' }
-await extractEmojis('Hi 👋 there') // [{ id, text, index, length }]
-await searchEmojis('party', { limit: 5 }) // [{ id }]
+await findEmojiByUnicode("👍🏽"); // { id: 'yes', skinTone: 'medium' }
+await extractEmojis("Hi 👋 there"); // [{ id, text, index, length }]
+await searchEmojis("party", { limit: 5 }); // [{ id }]
 ```
 
 - `findEmojiByUnicode(text)` resuelve un emoji y asigna un único modificador de

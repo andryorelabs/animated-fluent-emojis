@@ -1,51 +1,34 @@
 ---
-import { loadPublicIndex } from '../../gallery/public-index'
-import type { Locale } from '../../i18n/locales'
-import { getUi } from '../../i18n/ui'
-import { buildCodeBlockTabs } from '../content'
-import {
-  DEMO_EMOJIS,
-  DEMO_PLAYS,
-  INITIAL_DEMO_STATE,
-  type DemoTabs,
-} from '../demo'
-import DemoPlayground from '../DemoPlayground'
-import { eyebrow, heading, section } from './styles'
+import { loadPublicIndex } from "../../gallery/public-index";
+import type { Locale } from "../../i18n/locales";
+import { getUi } from "../../i18n/ui";
+import { buildCodeBlockTabs } from "../content";
+import { DEMO_EMOJIS, DEMO_PLAYS, INITIAL_DEMO_STATE, type DemoTabs } from "../demo";
+import DemoPlayground from "../DemoPlayground";
+import { eyebrow, heading, section } from "./styles";
 
 interface Props {
-  locale: Locale
+  locale: Locale;
 }
 
-const { locale } = Astro.props
-const { home } = getUi(locale)
+const { locale } = Astro.props;
+const { home } = getUi(locale);
 
-const index = await loadPublicIndex()
-const snippetEmoji = index.find((emoji) => emoji.id === '1f44b_wavinghand')
-if (!snippetEmoji) throw new Error('The public index has no waving hand')
-const demoEmojis = index.filter((emoji) =>
-  DEMO_EMOJIS.some(({ id }) => id === emoji.id),
-)
+const index = await loadPublicIndex();
+const snippetEmoji = index.find((emoji) => emoji.id === "1f44b_wavinghand");
+if (!snippetEmoji) throw new Error("The public index has no waving hand");
+const demoEmojis = index.filter((emoji) => DEMO_EMOJIS.some(({ id }) => id === emoji.id));
 const demoTabs = Object.fromEntries(
   await Promise.all(
     DEMO_PLAYS.map(async ({ id: play }) => [
       play,
       {
-        plain: await buildCodeBlockTabs(
-          snippetEmoji,
-          undefined,
-          INITIAL_DEMO_STATE.size,
-          play,
-        ),
-        toned: await buildCodeBlockTabs(
-          snippetEmoji,
-          'light',
-          INITIAL_DEMO_STATE.size,
-          play,
-        ),
+        plain: await buildCodeBlockTabs(snippetEmoji, undefined, INITIAL_DEMO_STATE.size, play),
+        toned: await buildCodeBlockTabs(snippetEmoji, "light", INITIAL_DEMO_STATE.size, play),
       },
     ]),
   ),
-) as DemoTabs
+) as DemoTabs;
 
 const demoLabels = {
   emojiLabel: home.demo.emojiLabel,
@@ -61,7 +44,7 @@ const demoLabels = {
     copy: home.snippets.copy,
     copied: home.snippets.copied,
   },
-}
+};
 ---
 
 <section class={section} aria-labelledby="playground-title">
@@ -73,11 +56,6 @@ const demoLabels = {
     <p class="text-pretty text-muted-foreground">{home.playground.body}</p>
   </div>
   <div class="scroll-reveal min-w-0">
-    <DemoPlayground
-      client:idle
-      emojis={demoEmojis}
-      tabs={demoTabs}
-      labels={demoLabels}
-    />
+    <DemoPlayground client:idle emojis={demoEmojis} tabs={demoTabs} labels={demoLabels} />
   </div>
 </section>

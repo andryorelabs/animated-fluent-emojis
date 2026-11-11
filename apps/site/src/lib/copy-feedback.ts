@@ -1,7 +1,7 @@
 /** How long the "Copied" state stays visible, in milliseconds. */
-export const COPIED_MS = 2000
+export const COPIED_MS = 2000;
 
-const revertTimers = new WeakMap<object, ReturnType<typeof setTimeout>>()
+const revertTimers = new WeakMap<object, ReturnType<typeof setTimeout>>();
 
 /**
  * Copies text to the clipboard and reports a temporary copied state.
@@ -22,19 +22,19 @@ export async function copyWithFeedback(
   onCopied?: () => void,
 ): Promise<void> {
   try {
-    await navigator.clipboard.writeText(text)
+    await navigator.clipboard.writeText(text);
   } catch {
-    return
+    return;
   }
-  showCopied(true)
-  onCopied?.()
-  const pending = revertTimers.get(owner)
-  if (pending !== undefined) globalThis.clearTimeout(pending)
+  showCopied(true);
+  onCopied?.();
+  const pending = revertTimers.get(owner);
+  if (pending !== undefined) globalThis.clearTimeout(pending);
   revertTimers.set(
     owner,
     globalThis.setTimeout(() => {
-      revertTimers.delete(owner)
-      showCopied(false)
+      revertTimers.delete(owner);
+      showCopied(false);
     }, COPIED_MS),
-  )
+  );
 }

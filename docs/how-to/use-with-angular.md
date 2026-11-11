@@ -11,7 +11,7 @@ Import the element entry once, for example in `main.ts`. Importing it registers
 is no stylesheet to import:
 
 ```ts
-import 'animated-fluent-emojis/element'
+import "animated-fluent-emojis/element";
 ```
 
 ## Allow the tag in your components
@@ -19,10 +19,10 @@ import 'animated-fluent-emojis/element'
 Angular rejects unknown tags unless the component allows custom elements:
 
 ```ts
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 
 @Component({
-  selector: 'app-greeting',
+  selector: "app-greeting",
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `<fluent-emoji id="1f44b_wavinghand" size="64" play-on-hover />`,
@@ -37,12 +37,7 @@ properties rather than rewriting attributes. Events are `emoji-load`,
 `emoji-error` and `playback-end`:
 
 ```html
-<fluent-emoji
-  [id]="emojiId"
-  [size]="64"
-  [playOnHover]="true"
-  (playback-end)="onDone()"
->
+<fluent-emoji [id]="emojiId" [size]="64" [playOnHover]="true" (playback-end)="onDone()">
   <span slot="fallback">👋</span>
 </fluent-emoji>
 ```

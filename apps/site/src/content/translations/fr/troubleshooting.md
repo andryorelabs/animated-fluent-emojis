@@ -40,7 +40,7 @@ D'autres cas ont la même apparence et ne sont pas des bugs :
 l'application :
 
 ```js
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 ```
 
 Si vous l'avez bien importée et que l'emoji reste immobile, vérifiez le réglage
@@ -170,15 +170,14 @@ ne passe jamais dans jsdom.
 les tests. Ce dépôt le fait avec MSW dans `src/utils/emoji-manifest.test.ts` :
 
 ```ts
-import { http, HttpResponse } from 'msw/http'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from "msw/http";
+import { setupServer } from "msw/node";
 
 const server = setupServer(
-  http.get(
-    'https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json',
-    () => HttpResponse.json(compactManifest),
+  http.get("https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json", () =>
+    HttpResponse.json(compactManifest),
   ),
-)
+);
 ```
 
 `compactManifest` est la forme compacte du manifest slim ; la fixture utilisée

@@ -1,5 +1,5 @@
-import { installCommand } from '@/lib/package-manager'
-import { usePackageManager } from '@/lib/use-package-manager'
+import { installCommand } from "@/lib/package-manager";
+import { usePackageManager } from "@/lib/use-package-manager";
 
 /**
  * The install command of the landing install step. It follows the page-wide
@@ -7,7 +7,7 @@ import { usePackageManager } from '@/lib/use-package-manager'
  * @returns A muted mono line with the install command of the chosen manager.
  */
 export default function InstallStepCommand() {
-  const [manager] = usePackageManager()
+  const [manager] = usePackageManager();
 
   return (
     <code
@@ -16,5 +16,5 @@ export default function InstallStepCommand() {
     >
       {installCommand(manager)}
     </code>
-  )
+  );
 }

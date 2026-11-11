@@ -38,7 +38,7 @@ Andere Fälle sehen genauso aus und sind keine Bugs:
 **Lösung:** Importiere das Stylesheet einmal, im Root der App:
 
 ```js
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 ```
 
 Wenn du es importiert hast und das Emoji trotzdem ruht, prüfe die Einstellung
@@ -170,15 +170,14 @@ zurück. Dieses Repository macht das mit MSW in
 `src/utils/emoji-manifest.test.ts`:
 
 ```ts
-import { http, HttpResponse } from 'msw/http'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from "msw/http";
+import { setupServer } from "msw/node";
 
 const server = setupServer(
-  http.get(
-    'https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json',
-    () => HttpResponse.json(compactManifest),
+  http.get("https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json", () =>
+    HttpResponse.json(compactManifest),
   ),
-)
+);
 ```
 
 `compactManifest` ist die kompakte Form des Slim-Manifests; die hier verwendete

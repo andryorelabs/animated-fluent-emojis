@@ -1,41 +1,41 @@
-import { SKIN_TONES, type SkinTone } from '../../gallery/public-index'
-import { GALLERY_SIZES, type GallerySize } from '../../gallery/url-state'
-import { ToneDot } from '../ToneDot'
-import type { GalleryStrings } from './EmojiDetail'
-import { SegmentedControl } from './SegmentedControl'
+import { SKIN_TONES, type SkinTone } from "../../gallery/public-index";
+import { GALLERY_SIZES, type GallerySize } from "../../gallery/url-state";
+import { ToneDot } from "../ToneDot";
+import type { GalleryStrings } from "./EmojiDetail";
+import { SegmentedControl } from "./SegmentedControl";
 
-const TONE_LABELS: Record<SkinTone | 'default', keyof GalleryStrings> = {
-  default: 'toneDefault',
-  light: 'toneLight',
-  'medium-light': 'toneMediumLight',
-  medium: 'toneMedium',
-  'medium-dark': 'toneMediumDark',
-  dark: 'toneDark',
-}
+const TONE_LABELS: Record<SkinTone | "default", keyof GalleryStrings> = {
+  default: "toneDefault",
+  light: "toneLight",
+  "medium-light": "toneMediumLight",
+  medium: "toneMedium",
+  "medium-dark": "toneMediumDark",
+  dark: "toneDark",
+};
 
 /**
  * A category with the number of emojis it holds.
  */
 interface CategoryCount {
-  name: string
-  count: number
+  name: string;
+  count: number;
 }
 
 interface GallerySidebarProps {
-  strings: GalleryStrings
-  categories: readonly CategoryCount[]
-  totalCount: number
-  category: string | undefined
-  onCategory: (category: string | undefined) => void
-  tone: SkinTone | undefined
-  onTone: (tone: SkinTone | undefined) => void
-  toneDisabled: boolean
-  size: GallerySize
-  onSize: (size: GallerySize) => void
+  strings: GalleryStrings;
+  categories: readonly CategoryCount[];
+  totalCount: number;
+  category: string | undefined;
+  onCategory: (category: string | undefined) => void;
+  tone: SkinTone | undefined;
+  onTone: (tone: SkinTone | undefined) => void;
+  toneDisabled: boolean;
+  size: GallerySize;
+  onSize: (size: GallerySize) => void;
 }
 
 const ROW_CLASS =
-  'flex h-8 w-full cursor-pointer select-none pointer-coarse:h-11 active:bg-muted items-center justify-between gap-2 rounded-lg px-2.5 text-left text-sm hover:bg-muted aria-pressed:bg-muted aria-pressed:font-medium'
+  "flex h-8 w-full cursor-pointer select-none pointer-coarse:h-11 active:bg-muted items-center justify-between gap-2 rounded-lg px-2.5 text-left text-sm hover:bg-muted aria-pressed:bg-muted aria-pressed:font-medium";
 
 /**
  * The gallery filters: a category list with counts and a card with the tone
@@ -44,29 +44,25 @@ const ROW_CLASS =
  * @returns The sidebar content, shared by the desktop rail and the mobile sheet.
  */
 export function GallerySidebar(props: GallerySidebarProps) {
-  const { strings, categories, totalCount, category = '' } = props
+  const { strings, categories, totalCount, category = "" } = props;
   const rows = [
-    { name: '', label: strings.categoryAll, count: totalCount },
+    { name: "", label: strings.categoryAll, count: totalCount },
     ...categories.map((entry) => ({
       name: entry.name,
       label: entry.name,
       count: entry.count,
     })),
-  ]
+  ];
   return (
     <div className="flex flex-col gap-4">
-      <div
-        role="group"
-        aria-label={strings.categoryLabel}
-        className="flex flex-col gap-0.5"
-      >
+      <div role="group" aria-label={strings.categoryLabel} className="flex flex-col gap-0.5">
         {rows.map((row) => (
           <button
             key={row.name}
             type="button"
             aria-pressed={category === row.name}
             onClick={() => {
-              props.onCategory(row.name === '' ? undefined : row.name)
+              props.onCategory(row.name === "" ? undefined : row.name);
             }}
             className={ROW_CLASS}
           >
@@ -84,14 +80,14 @@ export function GallerySidebar(props: GallerySidebarProps) {
         <h2 className="text-sm font-semibold">{strings.customizeTitle}</h2>
         <SegmentedControl
           label={strings.toneLabel}
-          segments={(['default', ...SKIN_TONES] as const).map((value) => ({
+          segments={(["default", ...SKIN_TONES] as const).map((value) => ({
             value,
             label: strings[TONE_LABELS[value]],
             leading: <ToneDot tone={value} />,
           }))}
-          selected={props.tone ?? 'default'}
+          selected={props.tone ?? "default"}
           onSelect={(value) => {
-            props.onTone(value === 'default' ? undefined : value)
+            props.onTone(value === "default" ? undefined : value);
           }}
           disabled={props.toneDisabled}
           disabledHint={strings.noSkinTones}
@@ -107,5 +103,5 @@ export function GallerySidebar(props: GallerySidebarProps) {
         />
       </section>
     </div>
-  )
+  );
 }

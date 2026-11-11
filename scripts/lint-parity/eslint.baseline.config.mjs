@@ -1,19 +1,19 @@
-import path from 'node:path'
-import eslintComments from '@eslint-community/eslint-plugin-eslint-comments'
-import eslintReact from '@eslint-react/eslint-plugin'
-import { plugin as shadcn } from '@shadcn/lint'
-import vitest from '@vitest/eslint-plugin'
-import astro from 'eslint-plugin-astro'
-import jsdoc from 'eslint-plugin-jsdoc'
-import jsxA11y from 'eslint-plugin-jsx-a11y'
-import reactHooks from 'eslint-plugin-react-hooks'
-import unicorn from 'eslint-plugin-unicorn'
-import { defineConfig, globalIgnores } from 'eslint/config'
-import tseslint from 'typescript-eslint'
+import path from "node:path";
+import eslintComments from "@eslint-community/eslint-plugin-eslint-comments";
+import eslintReact from "@eslint-react/eslint-plugin";
+import { plugin as shadcn } from "@shadcn/lint";
+import vitest from "@vitest/eslint-plugin";
+import astro from "eslint-plugin-astro";
+import jsdoc from "eslint-plugin-jsdoc";
+import jsxA11y from "eslint-plugin-jsx-a11y";
+import reactHooks from "eslint-plugin-react-hooks";
+import unicorn from "eslint-plugin-unicorn";
+import { defineConfig, globalIgnores } from "eslint/config";
+import tseslint from "typescript-eslint";
 
-import directiveAliasesPlugin from './baseline-rules/directive-aliases.mjs'
-import localPlugin from './baseline-rules/index.mjs'
-import prettierConfig from './baseline-rules/prettier-config.mjs'
+import directiveAliasesPlugin from "./baseline-rules/directive-aliases.mjs";
+import localPlugin from "./baseline-rules/index.mjs";
+import prettierConfig from "./baseline-rules/prettier-config.mjs";
 
 /**
  * Frozen snapshot of the repository `eslint.config.mjs` taken before the Oxc
@@ -22,13 +22,13 @@ import prettierConfig from './baseline-rules/prettier-config.mjs'
  * `eslint-config-prettier` copy, the directive alias processor, the root
  * directory and the corpus switch differ from the original.
  */
-const repositoryRoot = path.resolve(import.meta.dirname, '../..')
+const repositoryRoot = path.resolve(import.meta.dirname, "../..");
 
 /**
  * Set by the harness for the external corpus, which has no tsconfig this
  * config can use: type-checked presets are swapped for their plain twins.
  */
-const isCorpusRun = process.env.PARITY_CORPUS === '1'
+const isCorpusRun = process.env.PARITY_CORPUS === "1";
 
 /**
  * `eslint-plugin-jsdoc`'s TypeScript-flavored recommended rules, with
@@ -37,10 +37,10 @@ const isCorpusRun = process.env.PARITY_CORPUS === '1'
  * declaration's name).
  */
 const jsdocRules = {
-  ...jsdoc.configs['flat/recommended-typescript-error'].rules,
-  'jsdoc/require-jsdoc': 'off',
-  'jsdoc/informative-docs': 'error',
-}
+  ...jsdoc.configs["flat/recommended-typescript-error"].rules,
+  "jsdoc/require-jsdoc": "off",
+  "jsdoc/informative-docs": "error",
+};
 
 /**
  * The recommended `eslint-comments` rules, with `require-description` turned
@@ -48,8 +48,8 @@ const jsdocRules = {
  */
 const eslintCommentsRules = {
   ...eslintComments.configs.recommended.rules,
-  '@eslint-community/eslint-comments/require-description': 'error',
-}
+  "@eslint-community/eslint-comments/require-description": "error",
+};
 
 /**
  * Per-component exceptions to `shadcn/no-restyle` on the site; each entry must
@@ -62,29 +62,29 @@ const eslintCommentsRules = {
  */
 const shadcnNoRestyleContracts = [
   {
-    pattern: '^TooltipTrigger$',
+    pattern: "^TooltipTrigger$",
     allow: [
-      'layout',
-      'rounded-10',
-      'border',
-      'border-transparent',
-      'p-1',
-      'transition-bg-transform',
-      'duration-100',
-      'ease-(--ease-out-strong)',
-      'hover:bg-muted',
-      'active:bg-muted',
-      'aria-pressed:border-primary',
+      "layout",
+      "rounded-10",
+      "border",
+      "border-transparent",
+      "p-1",
+      "transition-bg-transform",
+      "duration-100",
+      "ease-(--ease-out-strong)",
+      "hover:bg-muted",
+      "active:bg-muted",
+      "aria-pressed:border-primary",
     ],
   },
-]
+];
 
 /**
  * CSS properties `shadcn/no-inline-styles` lets stay inline on the site: only
  * custom properties, which feed values (delays, hues, counts) into
  * stylesheet rules and cannot be expressed as static classes.
  */
-const shadcnAllowedInlineProperties = ['--*']
+const shadcnAllowedInlineProperties = ["--*"];
 
 /**
  * Classes `shadcn/no-unknown-classes` accepts although Tailwind cannot
@@ -95,7 +95,7 @@ const shadcnAllowedUnknownClasses = [
    * Starlight's own flex helper, defined by its stylesheet rather than by
    * Tailwind.
    */
-  'sl-flex',
+  "sl-flex",
   /**
    * Hook classes in `home.css` that are only ever used inside compound
    * selectors (descendant, sibling, `:has()`, `:hover`, `[data-*]` and
@@ -103,32 +103,32 @@ const shadcnAllowedUnknownClasses = [
    * mascot and install-step animations. They cannot be a self-contained
    * `@utility` without changing the cascade.
    */
-  'bento-*',
-  'teaser-cell',
-  'teaser-tile',
-  'faq-scope',
-  'install-step',
-  'step-emoji',
-  'sc-demo',
-  'sc-item',
-  'sc-text',
-  'sc-emoji',
+  "bento-*",
+  "teaser-cell",
+  "teaser-tile",
+  "faq-scope",
+  "install-step",
+  "step-emoji",
+  "sc-demo",
+  "sc-item",
+  "sc-text",
+  "sc-emoji",
   /**
    * Style-less marker on the demo's code sample, asserted by
    * `DemoPlayground.test.tsx`; no CSS is declared for it.
    */
-  'demo-code',
+  "demo-code",
   /**
    * Hook classes in `docs-chrome.css` and `docs.css` that restyle Starlight's
    * own markup from outside its cascade layers, so they must stay plain rules
    * instead of `@utility` (which would land inside Tailwind's layers).
    */
-  'pagination-nav',
-  'pagination-label',
-  'pagination-title',
-  'translation-notice',
-  'edit-link',
-]
+  "pagination-nav",
+  "pagination-label",
+  "pagination-title",
+  "translation-notice",
+  "edit-link",
+];
 
 /**
  * Unicorn rules relaxed for this repo. `props`/`ref` are React's own
@@ -140,13 +140,10 @@ const shadcnAllowedUnknownClasses = [
  */
 export default defineConfig([
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ["**/*.{ts,tsx}"],
     extends: isCorpusRun
       ? [tseslint.configs.strict, tseslint.configs.stylistic]
-      : [
-          tseslint.configs.strictTypeChecked,
-          tseslint.configs.stylisticTypeChecked,
-        ],
+      : [tseslint.configs.strictTypeChecked, tseslint.configs.stylisticTypeChecked],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -154,37 +151,33 @@ export default defineConfig([
       },
     },
     rules: {
-      '@typescript-eslint/consistent-type-imports': 'error',
+      "@typescript-eslint/consistent-type-imports": "error",
       ...(!isCorpusRun && {
-        '@typescript-eslint/no-floating-promises': 'error',
-        '@typescript-eslint/await-thenable': 'error',
-        '@typescript-eslint/no-misused-promises': [
-          'error',
+        "@typescript-eslint/no-floating-promises": "error",
+        "@typescript-eslint/await-thenable": "error",
+        "@typescript-eslint/no-misused-promises": [
+          "error",
           { checksVoidReturn: { attributes: false } },
         ],
-        '@typescript-eslint/no-deprecated': 'warn',
+        "@typescript-eslint/no-deprecated": "warn",
       }),
     },
   },
   {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      eslintReact.configs[
-        isCorpusRun ? 'recommended' : 'recommended-type-checked'
-      ],
-    ],
+    files: ["**/*.{ts,tsx}"],
+    extends: [eslintReact.configs[isCorpusRun ? "recommended" : "recommended-type-checked"]],
   },
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ["**/*.{ts,tsx}"],
     extends: [reactHooks.configs.flat.recommended],
   },
   jsxA11y.flatConfigs.recommended,
   unicorn.configs.recommended,
   {
     rules: {
-      'unicorn/no-null': 'off',
-      'unicorn/name-replacements': [
-        'error',
+      "unicorn/no-null": "off",
+      "unicorn/name-replacements": [
+        "error",
         {
           allowList: {
             props: true,
@@ -197,25 +190,19 @@ export default defineConfig([
           },
         },
       ],
-      'unicorn/consistent-boolean-name': 'off',
-      'unicorn/single-line-block-comment-style': 'off',
-      'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
-      'unicorn/filename-case': [
-        'error',
-        { cases: { kebabCase: true, pascalCase: true } },
-      ],
+      "unicorn/consistent-boolean-name": "off",
+      "unicorn/single-line-block-comment-style": "off",
+      "unicorn/no-asterisk-prefix-in-documentation-comments": "off",
+      "unicorn/filename-case": ["error", { cases: { kebabCase: true, pascalCase: true } }],
     },
   },
   {
-    files: ['**/*.test.{ts,tsx}'],
+    files: ["**/*.test.{ts,tsx}"],
     plugins: { vitest },
     rules: {
       ...vitest.configs.recommended.rules,
-      'vitest/valid-expect': ['error', { maxArgs: 2 }],
-      'vitest/expect-expect': [
-        'error',
-        { assertFunctionNames: ['expect', 'expectTypeOf'] },
-      ],
+      "vitest/valid-expect": ["error", { maxArgs: 2 }],
+      "vitest/expect-expect": ["error", { assertFunctionNames: ["expect", "expectTypeOf"] }],
     },
   },
   {
@@ -226,23 +213,14 @@ export default defineConfig([
     plugins: { shadcn },
   },
   {
-    files: ['apps/site/**/*.{ts,tsx,astro}'],
+    files: ["apps/site/**/*.{ts,tsx,astro}"],
     rules: {
-      'shadcn/no-restyle': [
-        'error',
-        { allow: ['layout'], contracts: shadcnNoRestyleContracts },
-      ],
-      'shadcn/no-raw-colors': 'error',
-      'shadcn/no-arbitrary-values': 'error',
-      'shadcn/no-inline-styles': [
-        'error',
-        { allow: shadcnAllowedInlineProperties },
-      ],
-      'shadcn/no-unknown-classes': [
-        'error',
-        { allow: shadcnAllowedUnknownClasses },
-      ],
-      'shadcn/require-static-classes': 'error',
+      "shadcn/no-restyle": ["error", { allow: ["layout"], contracts: shadcnNoRestyleContracts }],
+      "shadcn/no-raw-colors": "error",
+      "shadcn/no-arbitrary-values": "error",
+      "shadcn/no-inline-styles": ["error", { allow: shadcnAllowedInlineProperties }],
+      "shadcn/no-unknown-classes": ["error", { allow: shadcnAllowedUnknownClasses }],
+      "shadcn/require-static-classes": "error",
     },
   },
   {
@@ -251,41 +229,41 @@ export default defineConfig([
      * a generated layer that is re-synced rather than hand-edited, so it is
      * exempt from these three rules.
      */
-    files: ['apps/site/src/components/ui/**'],
+    files: ["apps/site/src/components/ui/**"],
     rules: {
-      'shadcn/no-restyle': 'off',
-      'shadcn/no-arbitrary-values': 'off',
-      'shadcn/require-static-classes': 'off',
+      "shadcn/no-restyle": "off",
+      "shadcn/no-arbitrary-values": "off",
+      "shadcn/require-static-classes": "off",
     },
   },
   {
-    files: ['**/*.config.{ts,mjs}'],
-    rules: { 'unicorn/no-top-level-side-effects': 'off' },
+    files: ["**/*.config.{ts,mjs}"],
+    rules: { "unicorn/no-top-level-side-effects": "off" },
   },
   ...astro.configs.recommended,
   {
-    files: ['**/*.astro'],
+    files: ["**/*.astro"],
     plugins: { local: localPlugin },
     rules: {
-      'local/no-non-doc-comments': 'error',
-      'local/no-astro-style-blocks': 'error',
+      "local/no-non-doc-comments": "error",
+      "local/no-astro-style-blocks": "error",
     },
   },
   {
-    files: ['**/*.{ts,tsx,mjs}'],
+    files: ["**/*.{ts,tsx,mjs}"],
     plugins: {
-      jsdoc: jsdoc.configs['flat/recommended-typescript-error'].plugins.jsdoc,
+      jsdoc: jsdoc.configs["flat/recommended-typescript-error"].plugins.jsdoc,
       local: localPlugin,
-      '@eslint-community/eslint-comments': eslintComments,
+      "@eslint-community/eslint-comments": eslintComments,
     },
     rules: {
       ...jsdocRules,
       ...eslintCommentsRules,
-      'local/no-non-doc-comments': 'error',
+      "local/no-non-doc-comments": "error",
     },
   },
   {
-    files: ['**/*.{js,mjs,cjs}'],
+    files: ["**/*.{js,mjs,cjs}"],
     extends: [tseslint.configs.disableTypeChecked],
   },
   prettierConfig,
@@ -294,16 +272,16 @@ export default defineConfig([
      * Not in the original config: reads the live code's `unicorn-js/...`
      * style directive names as the ESLint rule ids they alias.
      */
-    files: ['**/*.{ts,tsx,mjs}'],
-    ignores: ['**/*.astro/**'],
-    plugins: { 'parity-directives': directiveAliasesPlugin },
-    processor: 'parity-directives/aliases',
+    files: ["**/*.{ts,tsx,mjs}"],
+    ignores: ["**/*.astro/**"],
+    plugins: { "parity-directives": directiveAliasesPlugin },
+    processor: "parity-directives/aliases",
   },
   globalIgnores([
-    '**/.astro/**',
-    '**/dist/**',
-    '**/coverage/**',
-    '.claude/worktrees/**',
-    ...(isCorpusRun ? [] : ['.cache/**']),
+    "**/.astro/**",
+    "**/dist/**",
+    "**/coverage/**",
+    ".claude/worktrees/**",
+    ...(isCorpusRun ? [] : [".cache/**"]),
   ]),
-])
+]);

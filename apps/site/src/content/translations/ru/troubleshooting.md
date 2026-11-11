@@ -39,7 +39,7 @@ frame. См. [CSS](architecture.md#css).
 **Решение:** один раз импортируйте таблицу стилей в корне приложения:
 
 ```js
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 ```
 
 Если вы её импортировали, а эмодзи всё равно неподвижно, проверьте настройку
@@ -163,15 +163,14 @@ Jest, который по умолчанию загружает CommonJS, пер
 репозиторий делает это через MSW в `src/utils/emoji-manifest.test.ts`:
 
 ```ts
-import { http, HttpResponse } from 'msw/http'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from "msw/http";
+import { setupServer } from "msw/node";
 
 const server = setupServer(
-  http.get(
-    'https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json',
-    () => HttpResponse.json(compactManifest),
+  http.get("https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json", () =>
+    HttpResponse.json(compactManifest),
   ),
-)
+);
 ```
 
 `compactManifest` имеет компактную форму slim manifest; используемая здесь

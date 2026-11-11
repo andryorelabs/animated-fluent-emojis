@@ -1,8 +1,8 @@
-import type { SnippetSlot } from './snippet-template'
+import type { SnippetSlot } from "./snippet-template";
 
 export interface SlotElement {
-  dataset: Record<string, string | undefined>
-  textContent: string | null
+  dataset: Record<string, string | undefined>;
+  textContent: string | null;
 }
 
 /**
@@ -17,9 +17,9 @@ export function swapSnippetSlots(
   values: Partial<Record<SnippetSlot, string>>,
 ): void {
   for (const element of elements) {
-    const value = values[element.dataset.snippetSlot as SnippetSlot]
+    const value = values[element.dataset.snippetSlot as SnippetSlot];
     if (value !== undefined) {
-      element.textContent = value
+      element.textContent = value;
     }
   }
 }

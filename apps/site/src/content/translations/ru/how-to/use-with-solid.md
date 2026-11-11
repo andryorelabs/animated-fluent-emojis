@@ -12,7 +12,7 @@ Solid нет.
 регистрирует `<fluent-emoji>`, и таблица стилей не нужна:
 
 ```tsx
-import 'animated-fluent-emojis/element'
+import "animated-fluent-emojis/element";
 ```
 
 ## Используйте тег
@@ -28,10 +28,10 @@ export function Greeting() {
       size={64}
       play-on-hover
       on:playback-end={() => {
-        console.log('done')
+        console.log("done");
       }}
     />
-  )
+  );
 }
 ```
 
@@ -42,7 +42,7 @@ Fallback передаётся дочерним элементом с `slot="fall
 <fluent-emoji
   id="1f44b_wavinghand"
   ref={(element) => {
-    element.playing = false
+    element.playing = false;
   }}
 >
   <span slot="fallback">👋</span>

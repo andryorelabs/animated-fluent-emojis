@@ -1,8 +1,8 @@
 ---
-import ChevronLeft from '@lucide/astro/icons/chevron-left'
-import ChevronRight from '@lucide/astro/icons/chevron-right'
+import ChevronLeft from "@lucide/astro/icons/chevron-left";
+import ChevronRight from "@lucide/astro/icons/chevron-right";
 
-import { loadEmojiPageData } from '../emoji-pages/data'
+import { loadEmojiPageData } from "../emoji-pages/data";
 import {
   emojiPagePath,
   fillName,
@@ -10,45 +10,45 @@ import {
   neighbourEmojis,
   ogImagePath,
   relatedEmojis,
-} from '../emoji-pages/emoji-page'
-import { fileUrl } from '../gallery/public-index'
-import { fillTemplate } from '../gallery/template'
-import { buildEmojiPageTabs } from '../home/content'
-import { localePath, SITE_ORIGIN, type Locale } from '../i18n/locales'
-import { getUi } from '../i18n/ui'
-import Layout from '../layouts/Layout.astro'
-import { EmojiPageDetail, PREVIEW_SIZE } from './gallery/EmojiPageDetail'
+} from "../emoji-pages/emoji-page";
+import { fileUrl } from "../gallery/public-index";
+import { fillTemplate } from "../gallery/template";
+import { buildEmojiPageTabs } from "../home/content";
+import { localePath, SITE_ORIGIN, type Locale } from "../i18n/locales";
+import { getUi } from "../i18n/ui";
+import Layout from "../layouts/Layout.astro";
+import { EmojiPageDetail, PREVIEW_SIZE } from "./gallery/EmojiPageDetail";
 
 interface Props {
-  locale: Locale
-  slug: string
+  locale: Locale;
+  slug: string;
 }
 
-const { locale, slug } = Astro.props
-const { emojiPage, gallery } = getUi(locale)
-const { emojis, names } = await loadEmojiPageData(locale)
-const emoji = emojis.find((candidate) => candidate.slug === slug)
-const localized = names.get(slug)
-if (!emoji || !localized) throw new Error(`Unknown emoji "${slug}"`)
+const { locale, slug } = Astro.props;
+const { emojiPage, gallery } = getUi(locale);
+const { emojis, names } = await loadEmojiPageData(locale);
+const emoji = emojis.find((candidate) => candidate.slug === slug);
+const localized = names.get(slug);
+if (!emoji || !localized) throw new Error(`Unknown emoji "${slug}"`);
 
-const snippetTabs = await buildEmojiPageTabs(emoji, PREVIEW_SIZE)
+const snippetTabs = await buildEmojiPageTabs(emoji, PREVIEW_SIZE);
 
 const related = relatedEmojis(emoji, emojis).map((item) => ({
   emoji: item,
   name: names.get(item.slug)?.name ?? item.description,
-}))
+}));
 
-const neighbours = neighbourEmojis(emoji, emojis)
+const neighbours = neighbourEmojis(emoji, emojis);
 const navigationLinks = neighbours
   ? [
       {
-        rel: 'prev',
+        rel: "prev",
         icon: ChevronLeft,
         target: neighbours.previous,
         pattern: emojiPage.previousEmoji,
       },
       {
-        rel: 'next',
+        rel: "next",
         icon: ChevronRight,
         target: neighbours.next,
         pattern: emojiPage.nextEmoji,
@@ -57,15 +57,11 @@ const navigationLinks = neighbours
       rel,
       Icon: icon,
       href: localePath(locale, emojiPagePath(target.slug)),
-      label: fillTemplate(
-        pattern,
-        'name',
-        names.get(target.slug)?.name ?? target.description,
-      ),
+      label: fillTemplate(pattern, "name", names.get(target.slug)?.name ?? target.description),
     }))
-  : []
-const previousHref = navigationLinks.find((link) => link.rel === 'prev')?.href
-const nextHref = navigationLinks.find((link) => link.rel === 'next')?.href
+  : [];
+const previousHref = navigationLinks.find((link) => link.rel === "prev")?.href;
+const nextHref = navigationLinks.find((link) => link.rel === "next")?.href;
 ---
 
 <Layout
@@ -75,7 +71,7 @@ const nextHref = navigationLinks.find((link) => link.rel === 'next')?.href
   path={emojiPagePath(slug)}
   image={`${SITE_ORIGIN}${ogImagePath(slug)}`}
   trail={[
-    { name: gallery.title, path: '/emojis/' },
+    { name: gallery.title, path: "/emojis/" },
     { name: localized.name, path: emojiPagePath(slug) },
   ]}
   jsonLd={imageObjectJsonLd(emoji, localized.name, locale)}
@@ -108,26 +104,23 @@ const nextHref = navigationLinks.find((link) => link.rel === 'next')?.href
             class="font-mono text-xs text-muted-foreground"
           >
             <a
-              href={localePath(locale, '/')}
+              href={localePath(locale, "/")}
               class="pointer-coarse:inline-block pointer-coarse:py-2"
             >
               {emojiPage.breadcrumbHome}
             </a>
-            {' / '}
+            {" / "}
             <a
-              href={localePath(locale, '/emojis/')}
+              href={localePath(locale, "/emojis/")}
               class="pointer-coarse:inline-block pointer-coarse:py-2"
             >
               {emojiPage.breadcrumbEmojis}
             </a>
-            {' / '}
+            {" / "}
             <span aria-current="page">{localized.name}</span>
           </nav>
           {navigationLinks.length > 0 && (
-            <nav
-              aria-label={emojiPage.navigationLabel}
-              class="flex shrink-0 gap-2"
-            >
+            <nav aria-label={emojiPage.navigationLabel} class="flex shrink-0 gap-2">
               {navigationLinks.map(({ rel, Icon, href, label }) => (
                 <a
                   href={href}
@@ -149,10 +142,7 @@ const nextHref = navigationLinks.find((link) => link.rel === 'next')?.href
     </EmojiPageDetail>
     {related.length > 0 && (
       <section class="mt-12" aria-labelledby="related-heading">
-        <h2
-          id="related-heading"
-          class="mb-4 text-xl font-extrabold text-balance"
-        >
+        <h2 id="related-heading" class="mb-4 text-xl font-extrabold text-balance">
           {emojiPage.relatedTitle}
         </h2>
         <ul class="grid grid-cols-3 gap-3 min-[860px]:grid-cols-6">
@@ -183,22 +173,16 @@ const nextHref = navigationLinks.find((link) => link.rel === 'next')?.href
 
 <script>
   const IGNORED_FOCUS_SELECTOR =
-    'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="tablist"], [role="radiogroup"], [role="group"], [role="tabpanel"], [role="menu"], [role="listbox"], details[open]'
+    'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="tablist"], [role="radiogroup"], [role="group"], [role="tabpanel"], [role="menu"], [role="listbox"], details[open]';
 
-  document.addEventListener('keydown', (event) => {
-    if (event.defaultPrevented) return
-    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
+  document.addEventListener("keydown", (event) => {
+    if (event.defaultPrevented) return;
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
     const rel =
-      event.key === 'ArrowLeft'
-        ? 'prev'
-        : event.key === 'ArrowRight'
-          ? 'next'
-          : undefined
-    if (!rel) return
-    const active = document.activeElement
-    if (active?.closest(IGNORED_FOCUS_SELECTOR)) return
-    document
-      .querySelector<HTMLAnchorElement>(`a[data-emoji-nav="${rel}"]`)
-      ?.click()
-  })
+      event.key === "ArrowLeft" ? "prev" : event.key === "ArrowRight" ? "next" : undefined;
+    if (!rel) return;
+    const active = document.activeElement;
+    if (active?.closest(IGNORED_FOCUS_SELECTOR)) return;
+    document.querySelector<HTMLAnchorElement>(`a[data-emoji-nav="${rel}"]`)?.click();
+  });
 </script>

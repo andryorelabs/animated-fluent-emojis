@@ -21,10 +21,8 @@
   --ring: oklch(0.736 0.132 172.1);
   --brand-curl: oklch(0.518 0.097 173.1);
   --radius: 1rem;
-  --font-sans:
-    'Figtree Variable', 'Figtree', ui-sans-serif, system-ui, sans-serif;
-  --font-mono:
-    'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-sans: "Figtree Variable", "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
 .dark {

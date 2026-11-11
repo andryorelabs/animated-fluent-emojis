@@ -1,19 +1,15 @@
 ---
-import GalleryPage from '../../../components/GalleryPage.astro'
-import {
-  localeFromSegment,
-  LOCALES,
-  localeSegment,
-} from '../../../i18n/locales'
+import GalleryPage from "../../../components/GalleryPage.astro";
+import { localeFromSegment, LOCALES, localeSegment } from "../../../i18n/locales";
 
 export function getStaticPaths() {
-  return LOCALES.filter((locale) => locale !== 'en').map((locale) => ({
+  return LOCALES.filter((locale) => locale !== "en").map((locale) => ({
     params: { locale: localeSegment(locale) },
-  }))
+  }));
 }
 
-const locale = localeFromSegment(Astro.params.locale)
-if (!locale) throw new Error(`Unknown locale "${Astro.params.locale}"`)
+const locale = localeFromSegment(Astro.params.locale);
+if (!locale) throw new Error(`Unknown locale "${Astro.params.locale}"`);
 ---
 
 <GalleryPage locale={locale} />

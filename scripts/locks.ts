@@ -6,28 +6,28 @@ import {
   rmSync,
   statSync,
   writeFileSync,
-} from 'node:fs'
-import path from 'node:path'
-import { setTimeout as sleep } from 'node:timers/promises'
+} from "node:fs";
+import path from "node:path";
+import { setTimeout as sleep } from "node:timers/promises";
 
-const HOLDERLESS_GRACE_MS = 2000
+const HOLDERLESS_GRACE_MS = 2000;
 
 /**
  * Who holds a lock directory. Every holder payload carries these three
  * fields; callers may widen it with their own.
  */
 export interface LockHolder {
-  readonly pid: number
-  readonly worktree: string
-  readonly acquiredAt: number
+  readonly pid: number;
+  readonly worktree: string;
+  readonly acquiredAt: number;
 }
 
 function isProcessAlive(pid: number): boolean {
   try {
-    process.kill(pid, 0)
-    return true
+    process.kill(pid, 0);
+    return true;
   } catch (error) {
-    return (error as NodeJS.ErrnoException).code !== 'ESRCH'
+    return (error as NodeJS.ErrnoException).code !== "ESRCH";
   }
 }
 
@@ -38,10 +38,10 @@ function isProcessAlive(pid: number): boolean {
  */
 export function readLockHolder(lockDirectory: string): LockHolder | undefined {
   try {
-    const raw = readFileSync(path.join(lockDirectory, 'holder.json'), 'utf8')
-    return JSON.parse(raw) as LockHolder
+    const raw = readFileSync(path.join(lockDirectory, "holder.json"), "utf8");
+    return JSON.parse(raw) as LockHolder;
   } catch {
-    return undefined
+    return undefined;
   }
 }
 
@@ -56,15 +56,15 @@ export function readLockHolder(lockDirectory: string): LockHolder | undefined {
  * @returns Whether the lock should be reclaimed.
  */
 export function isLockStale(lockDirectory: string, maxAgeMs: number): boolean {
-  const holder = readLockHolder(lockDirectory)
+  const holder = readLockHolder(lockDirectory);
   if (!holder) {
-    const { birthtimeMs } = statSync(lockDirectory)
-    return Date.now() - birthtimeMs > HOLDERLESS_GRACE_MS
+    const { birthtimeMs } = statSync(lockDirectory);
+    return Date.now() - birthtimeMs > HOLDERLESS_GRACE_MS;
   }
   return (
     !isProcessAlive(holder.pid) ||
     (Date.now() - holder.acquiredAt > maxAgeMs && !existsSync(holder.worktree))
-  )
+  );
 }
 
 /**
@@ -74,23 +74,17 @@ export function isLockStale(lockDirectory: string, maxAgeMs: number): boolean {
  * @param holder The holder payload to write into it.
  * @returns Whether this call acquired the lock.
  */
-export function didAcquireLock(
-  lockDirectory: string,
-  holder: LockHolder,
-): boolean {
+export function didAcquireLock(lockDirectory: string, holder: LockHolder): boolean {
   try {
-    mkdirSync(lockDirectory)
+    mkdirSync(lockDirectory);
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'EEXIST') return false
-    throw error
+    if ((error as NodeJS.ErrnoException).code === "EEXIST") return false;
+    throw error;
   }
-  const temporaryPath = path.join(
-    lockDirectory,
-    `.holder.${String(process.pid)}.tmp`,
-  )
-  writeFileSync(temporaryPath, JSON.stringify(holder))
-  renameSync(temporaryPath, path.join(lockDirectory, 'holder.json'))
-  return true
+  const temporaryPath = path.join(lockDirectory, `.holder.${String(process.pid)}.tmp`);
+  writeFileSync(temporaryPath, JSON.stringify(holder));
+  renameSync(temporaryPath, path.join(lockDirectory, "holder.json"));
+  return true;
 }
 
 /**
@@ -98,15 +92,15 @@ export function didAcquireLock(
  * @param lockDirectory The lock directory to remove.
  */
 export function releaseLock(lockDirectory: string): void {
-  rmSync(lockDirectory, { recursive: true, force: true })
+  rmSync(lockDirectory, { recursive: true, force: true });
 }
 
 /** Timing and logging options of {@link acquireLock}. */
 export interface AcquireLockOptions {
-  readonly timeoutMs: number
-  readonly pollIntervalMs: number
-  readonly maxAgeMs: number
-  readonly logLabel: string
+  readonly timeoutMs: number;
+  readonly pollIntervalMs: number;
+  readonly maxAgeMs: number;
+  readonly logLabel: string;
 }
 
 /**
@@ -123,40 +117,38 @@ export async function acquireLock(
   buildHolder: () => LockHolder,
   options: AcquireLockOptions,
 ): Promise<void> {
-  const { timeoutMs, pollIntervalMs, maxAgeMs, logLabel } = options
-  const deadline = Date.now() + timeoutMs
+  const { timeoutMs, pollIntervalMs, maxAgeMs, logLabel } = options;
+  const deadline = Date.now() + timeoutMs;
   for (;;) {
-    if (didAcquireLock(lockDirectory, buildHolder())) return
+    if (didAcquireLock(lockDirectory, buildHolder())) return;
     if (existsSync(lockDirectory) && isLockStale(lockDirectory, maxAgeMs)) {
-      console.log(`${logLabel}: reclaiming a stale lock...`)
-      rmSync(lockDirectory, { recursive: true, force: true })
-      continue
+      console.log(`${logLabel}: reclaiming a stale lock...`);
+      rmSync(lockDirectory, { recursive: true, force: true });
+      continue;
     }
     if (Date.now() >= deadline) {
-      const holder = readLockHolder(lockDirectory)
+      const holder = readLockHolder(lockDirectory);
       throw new Error(
         `${logLabel}: timed out after ${String(timeoutMs)}ms waiting for the lock` +
-          (holder
-            ? ` (held by pid ${String(holder.pid)} in ${holder.worktree})`
-            : '') +
-          ' — another process is mid-run. Re-run this command to retry.',
-      )
+          (holder ? ` (held by pid ${String(holder.pid)} in ${holder.worktree})` : "") +
+          " — another process is mid-run. Re-run this command to retry.",
+      );
     }
-    await sleep(pollIntervalMs)
+    await sleep(pollIntervalMs);
   }
 }
 
 /** One `skills-lock.json` entry, as far as the lock checks read it. */
 export interface SkillsLockEntry {
-  readonly ref?: unknown
+  readonly ref?: unknown;
 }
 
 /** The parts of `skills-lock.json` the lock checks read. */
 export interface SkillsLock {
-  readonly skills: Readonly<Record<string, SkillsLockEntry>>
+  readonly skills: Readonly<Record<string, SkillsLockEntry>>;
 }
 
-const COMMIT_SHA = /^[0-9a-f]{40}$/
+const COMMIT_SHA = /^[0-9a-f]{40}$/;
 
 /**
  * Checks `skills-lock.json` against the vendored skills: every entry is
@@ -170,18 +162,15 @@ export function findSkillsLockProblems(
   lock: SkillsLock,
   vendoredSkills: readonly string[],
 ): string[] {
-  const lockedSkills = Object.keys(lock.skills)
+  const lockedSkills = Object.keys(lock.skills);
   const unpinned = Object.entries(lock.skills)
-    .filter(
-      ([, entry]) =>
-        typeof entry.ref !== 'string' || !COMMIT_SHA.test(entry.ref),
-    )
-    .map(([name]) => `${name}: \`ref\` must be a full commit SHA`)
+    .filter(([, entry]) => typeof entry.ref !== "string" || !COMMIT_SHA.test(entry.ref))
+    .map(([name]) => `${name}: \`ref\` must be a full commit SHA`);
   const unvendored = lockedSkills
     .filter((name) => !vendoredSkills.includes(name))
-    .map((name) => `${name}: locked but missing from .claude/skills`)
+    .map((name) => `${name}: locked but missing from .claude/skills`);
   const unlocked = vendoredSkills
     .filter((name) => !lockedSkills.includes(name))
-    .map((name) => `${name}: in .claude/skills but missing from the lock`)
-  return [...unpinned, ...unvendored, ...unlocked]
+    .map((name) => `${name}: in .claude/skills but missing from the lock`);
+  return [...unpinned, ...unvendored, ...unlocked];
 }
