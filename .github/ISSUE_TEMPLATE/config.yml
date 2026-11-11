@@ -1,9 +1,9 @@
 blank_issues_enabled: false
 
 contact_links:
-  - name: Questions & Discussions
-    url: https://github.com/AndryOre/animated-fluent-emojis/discussions
-    about: Ask questions, share ideas, or get help. Use Discussions, not issues.
+  - name: Support
+    url: https://github.com/andryorelabs/animated-fluent-emojis/blob/main/.github/SUPPORT.md
+    about: Find the docs and where to ask a question before opening an issue.
   - name: Security Vulnerability
-    url: https://github.com/AndryOre/animated-fluent-emojis/security/advisories/new
+    url: https://github.com/andryorelabs/animated-fluent-emojis/security/advisories/new
     about: Report vulnerabilities privately via GitHub Security Advisories.

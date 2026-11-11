@@ -1,3 +1,5 @@
+# Animated Fluent Emojis
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/Cover.webp">
@@ -6,20 +8,17 @@
   </picture>
 </p>
 
-# Animated Fluent Emojis
+<p align="center"><strong>Fluent emojis, but they move.</strong></p>
 
 <p align="center">
-  <a href="https://github.com/AndryOre/animated-fluent-emojis/actions/workflows/ci.yml"><img src="https://github.com/AndryOre/animated-fluent-emojis/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/andryorelabs/animated-fluent-emojis/actions/workflows/ci.yml"><img src="https://github.com/andryorelabs/animated-fluent-emojis/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://www.npmjs.com/package/animated-fluent-emojis"><img src="https://img.shields.io/npm/v/animated-fluent-emojis" alt="npm version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/npm/l/animated-fluent-emojis" alt="License"></a>
-  <a href="https://scorecard.dev/viewer/?uri=github.com/AndryOre/animated-fluent-emojis"><img src="https://api.scorecard.dev/projects/github.com/AndryOre/animated-fluent-emojis/badge" alt="OpenSSF Scorecard"></a>
-  <a href="https://www.bestpractices.dev/projects?q=animated-fluent-emojis"><img src="https://img.shields.io/badge/OpenSSF%20Best%20Practices-pending-lightgrey" alt="OpenSSF Best Practices"></a>
+  <a href="https://scorecard.dev/viewer/?uri=github.com/andryorelabs/animated-fluent-emojis"><img src="https://api.scorecard.dev/projects/github.com/andryorelabs/animated-fluent-emojis/badge" alt="OpenSSF Scorecard"></a>
   <a href="https://www.npmjs.com/package/animated-fluent-emojis"><img src="https://img.shields.io/npm/dm/animated-fluent-emojis" alt="npm downloads"></a>
   <a href="https://bundlephobia.com/package/animated-fluent-emojis"><img src="https://img.shields.io/bundlephobia/minzip/animated-fluent-emojis" alt="Bundle size"></a>
   <a href="https://www.npmjs.com/package/animated-fluent-emojis"><img src="https://img.shields.io/npm/types/animated-fluent-emojis" alt="Types"></a>
 </p>
-
-**Fluent emojis, but they move.**
 
 Drop Microsoft's animated Fluent emojis into a React, Vue, Svelte or Astro app,
 or any page through the `<fluent-emoji>` element: one import, one tag. They play
@@ -211,7 +210,7 @@ Contributions to Animated Fluent Emojis are welcome. Read
 taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md). To report a
 vulnerability, follow [SECURITY](.github/SECURITY.md).
 
-[![Contributors](https://contrib.rocks/image?repo=AndryOre/animated-fluent-emojis)](https://github.com/AndryOre/animated-fluent-emojis/graphs/contributors)
+[![Contributors](https://contrib.rocks/image?repo=andryorelabs/animated-fluent-emojis)](https://github.com/andryorelabs/animated-fluent-emojis/graphs/contributors)
 
 ## Support the Project
 
@@ -219,7 +218,7 @@ If you find Animated Fluent Emojis useful, please consider supporting it:
 
 [![GitHub Stars][GitHub Stars]][GitHub-url]
 [![GitHub Follow][GitHub Follow]][GitHub-follow-url]
-[![X Follow][X-follow]][X-url] [![Ko-fi][Ko-fi]][Ko-fi-url]
+[![X Follow][X-follow]][X-url]
 
 ## License
 
@@ -253,20 +252,21 @@ publishes the notice for the emojis from Microsoft's MIT-licensed repository at
   library
 
 [GitHub Stars]:
-  https://img.shields.io/github/stars/andryore/animated-fluent-emojis?style=for-the-badge&logo=github&logoColor=white&labelColor=24292e
-[GitHub-url]: https://github.com/andryore/animated-fluent-emojis
+  https://img.shields.io/github/stars/andryorelabs/animated-fluent-emojis?style=for-the-badge&logo=github&logoColor=white&labelColor=24292e
+[GitHub-url]: https://github.com/andryorelabs/animated-fluent-emojis
 [X-follow]:
   https://img.shields.io/badge/X-000000.svg?style=for-the-badge&logo=X&logoColor=white
 [X-url]: https://twitter.com/andryore
 [GitHub Follow]:
   https://img.shields.io/github/followers/andryore?style=for-the-badge&logo=github&logoColor=white&labelColor=24292e
 [GitHub-follow-url]: https://github.com/andryore
-[Ko-fi]:
-  https://img.shields.io/badge/Kofi-FF5E5B.svg?style=for-the-badge&logo=Ko-fi&logoColor=white
-[Ko-fi-url]: https://ko-fi.com/andryore
 [Microsoft Fluent Emojis]: https://github.com/microsoft/fluentui-emoji
 [Microsoft Fluent Emojis Animated]:
   https://github.com/microsoft/fluentui-emoji-animated
 [Tarikul Islam Anik Profile]: https://github.com/Tarikul-Islam-Anik
 [Tarikul Islam Anik Repo]:
   https://github.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis
+
+Built by [AndryOre](https://andryore.dev)
+
+This project is not affiliated with or endorsed by Microsoft.
