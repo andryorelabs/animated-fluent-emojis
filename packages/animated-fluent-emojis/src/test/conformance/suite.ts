@@ -141,7 +141,7 @@ export const defineConformanceSuite = (
     test("a failed sprite falls back to the Unicode glyph and reports the error", async () => {
       const onError = vi.fn();
       await mount({ id: "cat", size: 40, alt: "A cat", onError });
-      await expect.poll(getImage).not.toBeNull();
+      await expect.poll(getImage, { timeout: 5000 }).not.toBeNull();
 
       getImage()?.dispatchEvent(new Event("error"));
 

@@ -19,6 +19,10 @@ and this project adheres to
   `controller.update({ fallback: undefined })` type-checks for consumers that
   compile with `exactOptionalPropertyTypes`. Runtime behavior is unchanged.
 
+### Fixed
+
+- A manifest load that failed is no longer fetched a second time when an older load, superseded by `configureEmojis`, settles afterwards. `onError` fired twice for one failure in that case.
+
 ## [0.8.0] - 2026-10-06
 
 ### Added

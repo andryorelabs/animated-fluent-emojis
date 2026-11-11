@@ -897,6 +897,10 @@ describe("ci.yml Playwright browser cache", () => {
     expect(steps[installIndex]?.run).toContain("--with-deps");
     expect(steps[installIndex]?.if).toBeUndefined();
   });
+
+  test("bounds the install step so a stalled apt mirror fails fast", () => {
+    expect(steps[installIndex]?.["timeout-minutes"]).toBe(5);
+  });
 });
 
 describe("site-quality.yml paths filter", () => {

@@ -192,6 +192,7 @@ function retryWhenOnline(): void {
 
 /**
  * Runs one manifest load and publishes its outcome unless it was superseded.
+ * A superseded load never restarts a current load that already failed.
  * @param generation - The store generation the load belongs to.
  * @returns The snapshot this load produced, or the current load's when superseded; never rejects.
  */
@@ -206,7 +207,9 @@ async function runManifestLoad(generation: number): Promise<ManifestSnapshot> {
       console.error("Error fetching emoji data:", error);
     }
   }
-  if (generation !== state.generation) return startManifestLoad();
+  if (generation !== state.generation) {
+    return state.snapshot.status === "error" ? state.snapshot : startManifestLoad();
+  }
   state.pending = null;
   publish(outcome);
   if (outcome.status === "error") retryWhenOnline();

@@ -13,6 +13,7 @@ export interface WorkflowStep {
   readonly name?: string;
   readonly if?: string;
   readonly "continue-on-error"?: boolean;
+  readonly "timeout-minutes"?: number;
   readonly uses?: string;
   readonly run?: string;
   readonly env?: Record<string, unknown>;
