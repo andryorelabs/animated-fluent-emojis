@@ -109,6 +109,7 @@ jobs:
             steps.playwright-version.outputs.version }}
 
       - name: Install Playwright browsers
+        timeout-minutes: 5
         run: bunx playwright install --with-deps chromium firefox webkit
 
       - name: Install ffmpeg
