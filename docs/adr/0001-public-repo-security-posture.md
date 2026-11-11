@@ -14,13 +14,19 @@ the repository security settings, otherwise both run (AO-2157).
 Revised: 2026-10-21, removed the superseded CodeQL default-setup bullet under
 Adopted and the matching Rejected bullet; Adopted now describes the workflow.
 
+Revised: 2026-11-11, the repository is now org-owned
+(`github.com/andryorelabs/animated-fluent-emojis`); secret scanning, push
+protection and Dependabot security updates are on, and the merge-queue rejection
+no longer claims it is unavailable on personal accounts (ADR 0029).
+
 ## Context
 
 `animated-fluent-emojis` is a published npm library maintained by one person.
-The repository is moving from private to public, and its supply chain (GitHub
-Actions, npm publishing, dependencies) is the main attack surface. The settings
-below follow the OpenSSF SCM best-practices guide and OpenSSF Scorecard checks,
-and mirror the posture of the sibling `snug` repository.
+The repository lives under the `andryorelabs` organization
+(`github.com/andryorelabs/animated-fluent-emojis`) and is public, and its supply
+chain (GitHub Actions, npm publishing, dependencies) is the main attack surface.
+The settings below follow the OpenSSF SCM best-practices guide and OpenSSF
+Scorecard checks, and mirror the posture of the sibling `snug` repository.
 
 The settings are applied once by the maintainer through the GitHub API (ticket
 AO-1195) after the workflows and docs land, not by a committed script.
@@ -45,6 +51,10 @@ AO-1195) after the workflows and docs land, not by a committed script.
   Adding or renaming CI jobs never requires touching the ruleset.
 - **Every PR runs the full CI gate**, including docs-only changes (no
   `paths-ignore`).
+- **Secret scanning and push protection** enabled, so a committed credential is
+  reported and a push containing one is blocked.
+- **Dependabot security updates** enabled for vulnerability fix PRs only.
+  Renovate stays the source of routine version updates.
 - **Private vulnerability reporting (PVR)** enabled, as described in
   [`SECURITY.md`](../../.github/SECURITY.md).
 - **Immutable releases**, so a published GitHub Release and its assets cannot be
@@ -66,10 +76,11 @@ AO-1195) after the workflows and docs land, not by a committed script.
   parse `bun.lock`, so it would only see ranges from `package.json`.
 - **`step-security/harden-runner`**: a third-party root-level agent in every
   job, for a repository with no runtime secrets and already-pinned actions.
-- **A merge queue**: unavailable on personal-account repositories and
-  unnecessary for a solo maintainer.
+- **A merge queue**: the single `CI passed` check and squash auto-merge cover a
+  solo maintainer's flow, and a queue would add a second CI run per PR for no
+  gain.
 - **Required code-owner review**: no benefit with a single owner.
-- **Dependabot alerts and security updates**: Renovate is the single source of
+- **Dependabot version updates**: Renovate is the single source of routine
   dependency updates.
 - **Classic branch protection**: cannot express tag rules, and rulesets are the
   supported replacement.

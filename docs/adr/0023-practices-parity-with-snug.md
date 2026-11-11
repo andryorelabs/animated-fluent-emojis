@@ -19,6 +19,11 @@ the style lint row, added the five rows Snug records and the `@shadcn/lint` row.
 Revised: 2026-11-02, the import-sort row now names Oxfmt's `sortImports` in
 place of a Prettier plugin.
 
+Revised: 2026-11-11, the Ko-fi sponsorship ask is gone from both repos, so the
+`FUNDING.yml` row no longer implies one; the cross-repo rules now live in
+[ADR 0029](0029-andryorelabs-cross-repo-standard.md); read it for the current
+cross-repo rules.
+
 ## Context
 
 AFE and Snug are maintained by the same person and started from the same
@@ -43,7 +48,7 @@ structured data). A fix in one repo rarely reached the other.
 | Launch kit and store runbooks             | Applies                   | N/A        | AFE publishes to npm, not to stores                                                                                                                                                  |
 | Build provenance                          | Attestation               | Equivalent | npm trusted publishing already gives AFE provenance ([ADR 0005](0005-npm-trusted-publishing.md))                                                                                     |
 | BrowserStack and Percy                    | Applies                   | Deferred   | BrowserStack OSS approval is per repo and AFE has none yet                                                                                                                           |
-| `FUNDING.yml`                             | N/A                       | N/A        | Removed from AFE; neither repo asks for sponsors                                                                                                                                     |
+| `FUNDING.yml`                             | N/A                       | N/A        | Removed from AFE; AFE asks for no sponsorship (ADR 0029)                                                                                                                             |
 | Docs testing checklist                    | Applies                   | N/A        | Tied to BrowserStack, which AFE defers                                                                                                                                               |
 | Package gates (publint, attw, size-limit) | N/A                       | Applies    | Snug ships no npm package; AFE enforces these gates on its published package                                                                                                         |
 | Asset pipeline and sync-assets            | N/A                       | Applies    | Only AFE builds and publishes emoji assets                                                                                                                                           |
