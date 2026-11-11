@@ -42,33 +42,33 @@ export interface EmojiOptions {
   /** The unique identifier of the emoji. */
   id: string
   /** A number of pixels (default 100) or any CSS length. */
-  size?: number | string
+  size?: number | string | undefined
   /** Whether to play the animation on hover. Default is false. */
-  playOnHover?: boolean
+  playOnHover?: boolean | undefined
   /** The number of times to play the animation, or 'infinite'. Default is 2. */
-  animationIterations?: number | 'infinite'
+  animationIterations?: number | 'infinite' | undefined
   /** Whether to automatically play the animation. Default is true. */
-  autoPlay?: boolean
+  autoPlay?: boolean | undefined
   /** `true` plays, overriding `autoPlay` and reduced motion; `false` pauses. */
-  playing?: boolean
+  playing?: boolean | undefined
   /** Called once when a finite run of `animationIterations` ends. */
-  onPlaybackEnd?: () => void
+  onPlaybackEnd?: (() => void) | undefined
   /** The skin tone, for emojis that support it. Default is 'default'. */
-  skinTone?: SkinTone
+  skinTone?: SkinTone | undefined
   /** Accessible text; an empty string marks the emoji as decorative. */
-  alt?: string
+  alt?: string | undefined
   /** Rendered on failure or unknown id. Defaults to the Unicode glyph; `null` renders nothing. */
-  fallback?: EmojiFallback
+  fallback?: EmojiFallback | undefined
   /** Called when the image loads. */
-  onLoad?: (event: Event) => void
+  onLoad?: ((event: Event) => void) | undefined
   /** Called when the image fails, and without an event when the manifest fails. */
-  onError?: (event?: Event) => void
+  onError?: ((event?: Event) => void) | undefined
   /** Class names for the root span. */
-  className?: string
+  className?: string | undefined
   /** Inline styles for the root span, applied after the sizing styles. Keys are CSS property names or camelCase. */
-  style?: Readonly<Record<string, string>>
+  style?: Readonly<Record<string, string>> | undefined
   /** Extra attributes for the root span, such as `data-*`. */
-  attributes?: Readonly<Record<string, string>>
+  attributes?: Readonly<Record<string, string>> | undefined
 }
 
 /**

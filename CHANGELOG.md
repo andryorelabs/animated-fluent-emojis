@@ -15,6 +15,9 @@ and this project adheres to
   Astro component and `<fluent-emoji>`. On touch devices a tap no longer leaves
   a sticky `:hover` that loops the animation until the user taps elsewhere;
   keyboard focus (`:focus-visible`) playback is unchanged.
+- Every optional `EmojiOptions` property accepts an explicit `undefined`, so
+  `controller.update({ fallback: undefined })` type-checks for consumers that
+  compile with `exactOptionalPropertyTypes`. Runtime behavior is unchanged.
 
 ## [0.8.0] - 2026-10-06
 
