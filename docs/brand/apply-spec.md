@@ -25,17 +25,87 @@ No change is needed in `knip.jsonc`, ESLint or Oxfmt: `bun run lint`,
 and the generated rasters and the HTML brand book are outside the formatted
 globs.
 
+## Repository settings and rulesets
+
+The values below and the files in `.github/rulesets/` are the source of truth
+for the GitHub settings. `bun run repo-settings:check` reads the live settings
+with `gh api` (GET only), prints each value that differs and exits non-zero when
+there is any. It needs `gh` signed in with admin access to the repository.
+
+Drift is fixed by re-applying from these files, never by editing the live
+settings. To change a setting, change it here (or in the ruleset file, and in
+`scripts/repo-settings/settings.ts` for the table), merge, then apply.
+
+| Setting                                                        | Value                                           | Meaning                                     |
+| -------------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------- |
+| `allow_squash_merge`                                           | `true`                                          | Squash is the only merge method             |
+| `allow_merge_commit`                                           | `false`                                         | No merge commits                            |
+| `allow_rebase_merge`                                           | `false`                                         | No rebase merges                            |
+| `squash_merge_commit_title`                                    | `PR_TITLE`                                      | The squash commit subject is the PR title   |
+| `squash_merge_commit_message`                                  | `PR_BODY`                                       | The squash commit body is the PR body       |
+| `delete_branch_on_merge`                                       | `true`                                          | Head branches are deleted on merge          |
+| `allow_auto_merge`                                             | `true`                                          | Auto-merge is available                     |
+| `allow_update_branch`                                          | `true`                                          | "Update branch" is offered on pull requests |
+| `has_wiki`                                                     | `false`                                         | Wiki off                                    |
+| `has_projects`                                                 | `false`                                         | Projects off                                |
+| `has_discussions`                                              | `false`                                         | Discussions off                             |
+| `homepage`                                                     | `https://animated-fluent-emojis.andryore.dev`   | Repository, About, website                  |
+| `security_and_analysis.secret_scanning.status`                 | `enabled`                                       | Secret scanning on                          |
+| `security_and_analysis.secret_scanning_push_protection.status` | `enabled`                                       | Push protection on                          |
+| `security_and_analysis.dependabot_security_updates.status`     | `enabled`                                       | Dependabot security updates on              |
+| `private_vulnerability_reporting.enabled`                      | `true`                                          | Private vulnerability reporting on          |
+| Ruleset `main`                                                 | [`main.json`](../../.github/rulesets/main.json) | Rules for the default branch                |
+| Ruleset `tags`                                                 | [`tags.json`](../../.github/rulesets/tags.json) | Rules for `refs/tags/v*`                    |
+
+Apply the settings:
+
+```sh
+gh api --method PATCH repos/andryorelabs/animated-fluent-emojis \
+  -F allow_squash_merge=true -F allow_merge_commit=false -F allow_rebase_merge=false \
+  -f squash_merge_commit_title=PR_TITLE -f squash_merge_commit_message=PR_BODY \
+  -F delete_branch_on_merge=true -F allow_auto_merge=true -F allow_update_branch=true \
+  -F has_wiki=false -F has_projects=false -F has_discussions=false \
+  -f homepage=https://animated-fluent-emojis.andryore.dev \
+  -f 'security_and_analysis[secret_scanning][status]=enabled' \
+  -f 'security_and_analysis[secret_scanning_push_protection][status]=enabled'
+gh api --method PUT repos/andryorelabs/animated-fluent-emojis/vulnerability-alerts
+gh api --method PUT repos/andryorelabs/animated-fluent-emojis/automated-security-fixes
+gh api --method PUT repos/andryorelabs/animated-fluent-emojis/private-vulnerability-reporting
+```
+
+Dependabot security updates (`automated-security-fixes`) need Dependabot alerts
+(`vulnerability-alerts`) on first, so keep that order.
+
+Apply the rulesets. Each file is the request body as is. Look up the ruleset
+ids, then replace each ruleset with its file:
+
+```sh
+gh api repos/andryorelabs/animated-fluent-emojis/rulesets --jq '.[] | "\(.id) \(.name)"'
+gh api --method PUT repos/andryorelabs/animated-fluent-emojis/rulesets/<main id> --input .github/rulesets/main.json
+gh api --method PUT repos/andryorelabs/animated-fluent-emojis/rulesets/<tags id> --input .github/rulesets/tags.json
+```
+
+When a ruleset does not exist yet, create it instead:
+
+```sh
+gh api --method POST repos/andryorelabs/animated-fluent-emojis/rulesets --input .github/rulesets/main.json
+```
+
+Then run `bun run repo-settings:check`; it must exit 0.
+
+`scripts/rulesets.test.ts` fails when a required check in `main.json` is not a
+job name in `.github/workflows`, so a job is renamed in the workflow and in the
+ruleset file together, and the ruleset is applied again after the merge.
+
 ## Manual (GitHub and npm)
 
-Applied by hand, as repository settings are not code
-([`docs/development.md#repository-settings`](../development.md#repository-settings)).
+Applied by hand: these have no API or are not checked by `repo-settings:check`.
 
 | Where                                | Value                                                                                                                       |
 | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | Repository, Settings, Social preview | Upload [`og/social-preview.png`](og/social-preview.png) (1280x640, 235 KB)                                                  |
 | Repository, About, description       | "Fluent emojis, but they move: Microsoft's animated emojis as one component. Not affiliated with or endorsed by Microsoft." |
 | Repository, About, topics            | `react`, `emoji`, `emojis`, `animated-emojis`, `fluent-emoji`, `fluent-emojis`, `animation`, `typescript`                   |
-| Repository, About, website           | `https://animated-fluent-emojis.andryore.dev`                                                                               |
 | npm page                             | Nothing to do: it shows the README and the `package.json` fields above                                                      |
 
 ## Not done on purpose

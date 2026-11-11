@@ -29,14 +29,14 @@
   ],
   "homepage": "https://animated-fluent-emojis.andryore.dev",
   "bugs": {
-    "url": "https://github.com/AndryOre/animated-fluent-emojis/issues"
+    "url": "https://github.com/andryorelabs/animated-fluent-emojis/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AndryOre/animated-fluent-emojis.git"
+    "url": "git+https://github.com/andryorelabs/animated-fluent-emojis.git"
   },
   "license": "MIT",
-  "author": "Andry Orellana",
+  "author": "Andry Orellana <hello@andryore.dev>",
   "private": true,
   "type": "module",
   "packageManager": "bun@1.4.4",
@@ -123,6 +123,7 @@
     "assets:files": "bun run --cwd apps/assets sync:files",
     "i18n:status": "bun run --cwd apps/site i18n:status",
     "brand:export": "bun docs/brand/tools/export.mjs",
-    "ci:local": "bun install --frozen-lockfile && bun run lint:commits && bun run lint:docs && bun run check && bun run test:coverage && bun run build && bun run size"
+    "ci:local": "bun install --frozen-lockfile && bun run lint:commits && bun run lint:docs && bun run check && bun run test:coverage && bun run build && bun run size",
+    "repo-settings:check": "bun scripts/repo-settings/check.ts"
   }
 }
