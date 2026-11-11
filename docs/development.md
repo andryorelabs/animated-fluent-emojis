@@ -260,10 +260,11 @@ Hooks live in `.husky/`:
 - **`commit-msg`** runs `commitlint` with `@commitlint/config-conventional`. It
   enforces the Conventional Commits shape and type list, not the emoji.
 - **`pre-push`** rejects a push whose branch name does not match `<type>/<slug>`
-  (or `main`, `renovate/*`). It then runs `turbo run typecheck --affected` and
-  Oxlint (type-aware, `--deny-warnings`) on the code files changed relative to
-  `origin/main`, so failures surface before CI. When `origin/main` is not
-  fetched, it skips those checks with a message instead of blocking the push.
+  (or `main`, `renovate/*`, the agent names `ao-<n>-<slug>` and `worktree-*`).
+  It then runs `turbo run typecheck --affected` and Oxlint (type-aware,
+  `--deny-warnings`) on the code files changed relative to `origin/main`, so
+  failures surface before CI. When `origin/main` is not fetched, it skips those
+  checks with a message instead of blocking the push.
   `scripts/affected-guard.test.ts` guards the `--affected` selection the hook
   and CI share: it fails when a change inside a workspace does not select that
   workspace's `test` task.
@@ -434,11 +435,11 @@ contract lives in `src/test/conformance/driver.ts`.
 `bun run test:coverage` measures each workspace and enforces these thresholds
 (lines, functions, branches, statements):
 
-| Workspace                         | Measured                                                                       | Thresholds  |
-| --------------------------------- | ------------------------------------------------------------------------------ | ----------- |
-| `packages/animated-fluent-emojis` | `src/**` (including `.svelte`)                                                 | 95/95/90/95 |
-| `apps/assets`                     | `*.ts` (not tests, `test-support.ts` or the Vitest config)                     | 95/95/90/95 |
-| root                              | `scripts/**`, `eslint-rules/**`, `oxlint-plugins/**` and `docs/brand/tools/**` | 94/95/87/94 |
+| Workspace                         | Measured                                                                                   | Thresholds  |
+| --------------------------------- | ------------------------------------------------------------------------------------------ | ----------- |
+| `packages/animated-fluent-emojis` | `src/**` (including `.svelte`)                                                             | 95/95/90/95 |
+| `apps/assets`                     | `*.ts` (not tests, `test-support.ts` or the Vitest config)                                 | 95/95/90/95 |
+| root                              | `scripts/**`, `eslint-rules/**`, `oxlint-plugins/**`, `tools/**` and `docs/brand/tools/**` | 94/95/87/94 |
 
 `.astro` files are not reported by v8 (the container render test covers them)
 and `docs/brand/tools/export.mjs` needs a real browser, so neither is measured.
@@ -490,14 +491,22 @@ knip.
 
 ## Repository settings
 
-Settings are applied by hand through the GitHub API, not by code in the repo,
-and are recorded in [ADR 0001](adr/0001-public-repo-security-posture.md), for
-the org-owned repository `github.com/andryorelabs/animated-fluent-emojis`:
-rulesets on `main` and `v*` tags, squash-only merges, linear history, signed
-commits, a single `CI passed` required check, private vulnerability reporting,
-secret scanning with push protection, Dependabot security updates, immutable
-releases, `sha_pinning_required` and CodeQL (a workflow, with the default setup
-disabled). Change the ADR together with any setting.
+Settings for the org-owned repository
+`github.com/andryorelabs/animated-fluent-emojis` live in the repo and are
+applied by hand through the GitHub API. The rulesets for `main` and `v*` tags
+are `.github/rulesets/main.json` and `.github/rulesets/tags.json`; the other
+settings and the `gh api` commands that apply them are listed in
+[`docs/brand/apply-spec.md`](brand/apply-spec.md). `bun run repo-settings:check`
+compares the live settings with those files and exits non-zero on any
+difference. Fix drift by re-applying from the files, never by editing live.
+
+The posture is recorded in [ADR 0001](adr/0001-public-repo-security-posture.md):
+squash-only merges, linear history, signed commits, the strict required checks
+`CI passed`, `Validate PR title` and `Check markdown links`, private
+vulnerability reporting, secret scanning with push protection, Dependabot
+security updates, immutable releases, `sha_pinning_required` and CodeQL (a
+workflow, with the default setup disabled). Change the ADR and the files
+together with any setting.
 
 The cross-repo rules these settings follow live in
 [aokit `docs/standards`](https://github.com/andryorelabs/aokit/tree/main/docs/standards),

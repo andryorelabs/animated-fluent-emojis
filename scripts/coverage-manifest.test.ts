@@ -12,6 +12,7 @@ const SOURCE_ROOTS = [
   'eslint-rules',
   'oxlint-plugins',
   'docs/brand/tools',
+  'tools',
 ] as const
 
 const ASTRO_PAGE_REASON =

@@ -7,6 +7,10 @@ An index of every document in this repository.
 - [`README.md`](../README.md): user-facing portal with install and usage.
 - [`usage.md`](usage.md): the Guide overview, linking to one page per topic in
   [`guide/`](guide/): frameworks, props, behavior, assets, lookup and types.
+- [`guide/frameworks.md`](guide/frameworks.md),
+  [`guide/props.md`](guide/props.md), [`guide/behavior.md`](guide/behavior.md),
+  [`guide/assets.md`](guide/assets.md), [`guide/lookup.md`](guide/lookup.md) and
+  [`guide/types.md`](guide/types.md): the Guide pages.
 - [`troubleshooting.md`](troubleshooting.md): fixes for common problems, by
   symptom.
 - [`CHANGELOG.md`](../CHANGELOG.md): release notes, newest first.
@@ -86,11 +90,23 @@ An index of every document in this repository.
 - [`adr/0024-site-csp-served-as-a-header-with-build-time-hashes.md`](adr/0024-site-csp-served-as-a-header-with-build-time-hashes.md)
 - [`adr/0025-release-notes-on-the-website.md`](adr/0025-release-notes-on-the-website.md)
 - [`adr/0026-robots-allows-search-and-answer-crawlers-and-blocks-ai-training-crawlers.md`](adr/0026-robots-allows-search-and-answer-crawlers-and-blocks-ai-training-crawlers.md)
+- [`adr/0027-oxc-toolchain-replaces-prettier-and-most-of-eslint.md`](adr/0027-oxc-toolchain-replaces-prettier-and-most-of-eslint.md)
+- [`adr/0028-ci-runner-standard-and-a-parallel-site-quality-workflow.md`](adr/0028-ci-runner-standard-and-a-parallel-site-quality-workflow.md)
+- [`adr/0029-andryorelabs-cross-repo-standard.md`](adr/0029-andryorelabs-cross-repo-standard.md)
 
 ## Brand
 
 - [`brand/README.md`](brand/README.md): the brand kit, with the brief, naming,
   voice, copy, logo, tokens and brand book.
+- [`brand/brief.md`](brand/brief.md): the brand brief.
+- [`brand/naming.md`](brand/naming.md): the name and how to write it.
+- [`brand/voice.md`](brand/voice.md): voice and tone.
+- [`brand/copy.md`](brand/copy.md): the public copy, the source for the slogan
+  and the package description.
+- [`brand/competitors.md`](brand/competitors.md): the competitor review.
+- [`brand/apply-spec.md`](brand/apply-spec.md): where the brand is applied, and
+  the repository settings with the commands that apply them.
+- [`design/README.md`](design/README.md): design notes.
 
 ## Agent workflow
 

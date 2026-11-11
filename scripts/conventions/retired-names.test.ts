@@ -18,10 +18,6 @@ const ALLOWED_PATHS: readonly { prefix: string; reason: string }[] = [
     prefix: 'scripts/conventions/retired-names.test.ts',
     reason: 'the test names what it forbids',
   },
-  {
-    prefix: 'package.json',
-    reason: 'root manifest, owned by a sibling ticket of the same wave',
-  },
 ]
 
 function listTrackedFiles(): string[] {

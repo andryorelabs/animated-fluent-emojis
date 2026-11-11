@@ -11,17 +11,6 @@ const EXCLUDED_PATTERNS: readonly { pattern: RegExp; reason: string }[] = [
   { pattern: /^EMOJI_LIST(_.+)?\.md$/, reason: 'generated emoji lists' },
   { pattern: /^brand\/tools\//, reason: 'brand tooling' },
   { pattern: /^brand\/brandbook\//, reason: 'brand tooling' },
-  {
-    pattern: /^adr\/002[789]-/,
-    reason:
-      'ADRs 0027 to 0029 are not in docs/README.md yet; the file is outside the ticket that added this test',
-  },
-  {
-    pattern:
-      /^(brand\/(apply-spec|brief|competitors|copy|naming|voice)|design\/README|guide\/[a-z]+)\.md$/,
-    reason:
-      "reached through a directory link in docs/README.md; listing each page there is outside this ticket's surfaces",
-  },
 ]
 
 function listMarkdownFiles(directory: string): string[] {
