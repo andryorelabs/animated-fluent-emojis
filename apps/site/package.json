@@ -3,6 +3,17 @@
   "private": true,
   "type": "module",
   "description": "The static website for animated-fluent-emojis: landing, docs and emoji gallery.",
+  "license": "MIT",
+  "author": "Andry Orellana <hello@andryore.dev>",
+  "homepage": "https://animated-fluent-emojis.andryore.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andryorelabs/animated-fluent-emojis.git",
+    "directory": "apps/site"
+  },
+  "bugs": {
+    "url": "https://github.com/andryorelabs/animated-fluent-emojis/issues"
+  },
   "engines": {
     "node": ">=22.12.0"
   },

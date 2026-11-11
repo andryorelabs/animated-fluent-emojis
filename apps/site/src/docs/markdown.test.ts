@@ -9,7 +9,7 @@ const body =
 describe('rewriteMarkdownLinks', () => {
   it('rewrites to site routes and GitHub URLs', () => {
     expect(rewriteMarkdownLinks(body, context)).toBe(
-      'See [usage](/es/docs/#a), [adr](https://github.com/AndryOre/animated-fluent-emojis/blob/main/docs/adr/1.md), [web](https://x.dev) and [top](#top).\n',
+      'See [usage](/es/docs/#a), [adr](https://github.com/andryorelabs/animated-fluent-emojis/blob/main/docs/adr/1.md), [web](https://x.dev) and [top](#top).\n',
     )
   })
 
