@@ -108,8 +108,12 @@ adapter.
   ([ADR 0001](adr/0001-public-repo-security-posture.md)).
 - **OpenSSF Scorecard** runs on a schedule and on push to `main`, published with
   a README badge. CodeQL runs as a workflow (`.github/workflows/codeql.yml`).
-- **Renovate** is the single source of dependency updates; Dependabot updates
-  are not used ([ADR 0001](adr/0001-public-repo-security-posture.md)).
+- **Renovate** is the source of routine version updates. Dependabot opens fix
+  pull requests for vulnerabilities only; Dependabot version updates are not
+  used ([ADR 0001](adr/0001-public-repo-security-posture.md)).
+- **Secret scanning and push protection** report a committed credential and
+  block a push that contains one
+  ([ADR 0001](adr/0001-public-repo-security-posture.md)).
 - **No state carried between sync runs.** The Actions cache was removed for
   cache-poisoning reasons
   ([ADR 0010](adr/0010-versioned-asset-layout-and-live-seeding.md)).

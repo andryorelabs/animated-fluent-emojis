@@ -17,7 +17,9 @@ Adopted and the matching Rejected bullet; Adopted now describes the workflow.
 Revised: 2026-11-11, the repository is now org-owned
 (`github.com/andryorelabs/animated-fluent-emojis`); secret scanning, push
 protection and Dependabot security updates are on, and the merge-queue rejection
-no longer claims it is unavailable on personal accounts (ADR 0029).
+no longer claims it is unavailable on personal accounts (ADR 0029). The three
+security features take effect when the AO-3004 repository settings are applied,
+after the rulesets are committed under `.github/rulesets`.
 
 ## Context
 
