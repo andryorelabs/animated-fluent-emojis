@@ -30,6 +30,24 @@ jobs:
             exit 1
           fi
 
+      - name: Check the tag is annotated and signed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag_object=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${GITHUB_REF_NAME}" --jq .object)
+          tag_type=$(jq -r .type <<< "${tag_object}")
+          if [[ "${tag_type}" != "tag" ]]; then
+            echo "Tag ${GITHUB_REF_NAME} is a lightweight tag (it points at a ${tag_type}). Release tags must be annotated and signed: git tag -s ${GITHUB_REF_NAME}"
+            exit 1
+          fi
+          tag_sha=$(jq -r .sha <<< "${tag_object}")
+          verification=$(gh api "repos/${GITHUB_REPOSITORY}/git/tags/${tag_sha}" --jq .verification)
+          verified=$(jq -r .verified <<< "${verification}")
+          if [[ "${verified}" != "true" ]]; then
+            echo "Tag ${GITHUB_REF_NAME} has no signature GitHub can verify ($(jq -r .reason <<< "${verification}")). Release tags must be annotated and signed: git tag -s ${GITHUB_REF_NAME}"
+            exit 1
+          fi
+
       - name: Check the tagged commit is on main
         run: |
           git fetch --no-tags origin main
@@ -75,7 +93,7 @@ jobs:
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24
+          node-version-file: .node-version
           package-manager-cache: false
 
       - name: Install dependencies
@@ -125,6 +143,7 @@ jobs:
           mkdir release-artifact
           (cd packages/animated-fluent-emojis && bun pm pack --destination "${GITHUB_WORKSPACE}/release-artifact" --quiet)
           mv release-notes.md release-artifact/release-notes.md
+          cp .node-version release-artifact/node-version
 
       - name: Verify the tarball contents
         run: |
@@ -165,7 +184,7 @@ jobs:
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24
+          node-version-file: release-artifact/node-version
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
 

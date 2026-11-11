@@ -33,12 +33,168 @@ function triggerNames(workflow: Workflow): string[] {
     : []
 }
 
+const NODE_VERSION_FILE = '.node-version'
+
+function isPermissionsMap(permissions: unknown): boolean {
+  return (
+    permissions !== null &&
+    typeof permissions === 'object' &&
+    !Array.isArray(permissions)
+  )
+}
+
+function jobsWithoutOwnPermissions(workflow: Workflow): string[] {
+  return Object.entries(workflow.jobs ?? {})
+    .filter(([, job]) => !isPermissionsMap(job.permissions))
+    .map(([jobName]) => jobName)
+}
+
+type WorkflowWithConcurrency = Workflow & { readonly concurrency?: unknown }
+
+function concurrencyGroup({ concurrency }: WorkflowWithConcurrency): unknown {
+  if (typeof concurrency === 'string') return concurrency
+  return concurrency !== null && typeof concurrency === 'object'
+    ? (concurrency as { readonly group?: unknown }).group
+    : undefined
+}
+
+function isMissingConcurrencyGroup(workflow: WorkflowWithConcurrency): boolean {
+  const group = concurrencyGroup(workflow)
+  return typeof group !== 'string' || group.trim() === ''
+}
+
+function describeNodeSource(step: WorkflowStep): string {
+  return JSON.stringify({
+    'node-version': step.with?.['node-version'],
+    'node-version-file': step.with?.['node-version-file'],
+  })
+}
+
+function nodeSourceViolations(workflow: Workflow): string[] {
+  return Object.entries(workflow.jobs ?? {}).flatMap(([jobName, job]) => {
+    const steps = job.steps ?? []
+    const checksOut = steps.some((step) =>
+      step.uses?.startsWith('actions/checkout@'),
+    )
+    return steps
+      .filter((step) => step.uses?.startsWith('actions/setup-node@'))
+      .filter((step) => {
+        const file = step.with?.['node-version-file']
+        const readsFile = checksOut
+          ? file === NODE_VERSION_FILE
+          : typeof file === 'string' && file !== ''
+        return step.with?.['node-version'] !== undefined || !readsFile
+      })
+      .map((step) => `${jobName}: ${describeNodeSource(step)}`)
+  })
+}
+
 test('there is at least one workflow to check', () => {
   expect(listWorkflowFiles().length).toBeGreaterThan(0)
 })
 
+test('.node-version pins the Node major the workflows install', () => {
+  const nodeVersion = readFileSync(
+    fileURLToPath(new URL(`../${NODE_VERSION_FILE}`, import.meta.url)),
+    'utf8',
+  )
+  expect(nodeVersion.trim()).toBe('24')
+})
+
+describe('job permissions check', () => {
+  test('reports a job that inherits the workflow permissions', () => {
+    const workflow: Workflow = {
+      jobs: {
+        scoped: { permissions: { contents: 'read' } },
+        empty: { permissions: {} },
+        inherited: {},
+        shorthand: { permissions: 'write-all' },
+      },
+    }
+    expect(jobsWithoutOwnPermissions(workflow)).toEqual([
+      'inherited',
+      'shorthand',
+    ])
+  })
+})
+
+describe('Node version source check', () => {
+  const setupNode =
+    'actions/setup-node@0000000000000000000000000000000000000000'
+  const checkout = 'actions/checkout@0000000000000000000000000000000000000000'
+
+  test('reports a literal version and a file other than .node-version', () => {
+    const workflow: Workflow = {
+      jobs: {
+        literal: {
+          steps: [
+            { uses: checkout },
+            { uses: setupNode, with: { 'node-version': 24 } },
+          ],
+        },
+        'other-file': {
+          steps: [
+            { uses: checkout },
+            { uses: setupNode, with: { 'node-version-file': 'package.json' } },
+          ],
+        },
+        unset: { steps: [{ uses: setupNode }] },
+        pinned: {
+          steps: [
+            { uses: checkout },
+            {
+              uses: setupNode,
+              with: { 'node-version-file': NODE_VERSION_FILE },
+            },
+          ],
+        },
+        'from-artifact': {
+          steps: [
+            {
+              uses: setupNode,
+              with: { 'node-version-file': 'artifact/node-version' },
+            },
+          ],
+        },
+      },
+    }
+    expect(nodeSourceViolations(workflow)).toEqual([
+      'literal: {"node-version":24}',
+      'other-file: {"node-version-file":"package.json"}',
+      'unset: {}',
+    ])
+  })
+})
+
+describe('concurrency check', () => {
+  test.each([
+    ['no concurrency', {}, true],
+    ['an empty group', { concurrency: { group: ' ' } }, true],
+    ['only cancel-in-progress', { concurrency: {} }, true],
+    ['a group', { concurrency: { group: 'ci-${{ github.ref }}' } }, false],
+    ['the string shorthand', { concurrency: 'ci' }, false],
+  ])('%s', (_label, workflow, missing) => {
+    expect(isMissingConcurrencyGroup(workflow)).toBe(missing)
+  })
+})
+
 describe.each(listWorkflowFiles())('%s', (fileName) => {
   const workflow = readWorkflow(fileName)
+
+  test('every job declares its own permissions', () => {
+    expect(jobsWithoutOwnPermissions(workflow)).toEqual([])
+  })
+
+  test('every actions/setup-node reads the version from a file', () => {
+    expect(nodeSourceViolations(workflow)).toEqual([])
+  })
+
+  test.runIf(triggerNames(workflow).includes('pull_request'))(
+    'declares a concurrency group because pull requests trigger it',
+    () => {
+      expect(isMissingConcurrencyGroup(workflow)).toBe(false)
+    },
+  )
 
   test('does not use the pull_request_target trigger', () => {
     expect(triggerNames(workflow)).not.toContain('pull_request_target')
@@ -504,6 +660,35 @@ describe('release.yml job split', () => {
     expect(verifyScript).toContain('package.json')
     expect(verifyScript).toContain('merge-base --is-ancestor')
     expect(verifyScript).toContain('release-notes.md')
+  })
+
+  test('verify rejects a tag that is not annotated and signed before installing anything', () => {
+    const steps = verify?.steps ?? []
+    const gateIndex = steps.findIndex(
+      (step) => step.name === 'Check the tag is annotated and signed',
+    )
+    const installIndex = steps.findIndex((step) => step.run === 'bun ci')
+    expect(gateIndex).toBeGreaterThan(-1)
+    expect(gateIndex).toBeLessThan(installIndex)
+    const gate = steps[gateIndex]
+    expect(gate?.env).toEqual({ GH_TOKEN: '${{ github.token }}' })
+    expect(gate?.run).toContain('git/ref/tags/${GITHUB_REF_NAME}" --jq .object')
+    expect(gate?.run).toContain('"${tag_type}" != "tag"')
+    expect(gate?.run).toContain('git/tags/${tag_sha}" --jq .verification')
+    expect(gate?.run).toContain('"${verified}" != "true"')
+    expect(gate?.run?.match(/exit 1/g)).toHaveLength(2)
+  })
+
+  test('publish installs the Node version that verify copied from .node-version', () => {
+    expect(verifyScript).toContain(
+      'cp .node-version release-artifact/node-version',
+    )
+    const setupNode = publish?.steps?.find((step) =>
+      step.uses?.startsWith('actions/setup-node@'),
+    )
+    expect(setupNode?.with?.['node-version-file']).toBe(
+      'release-artifact/node-version',
+    )
   })
 
   test('publish is idempotent for npm and the GitHub Release', () => {
