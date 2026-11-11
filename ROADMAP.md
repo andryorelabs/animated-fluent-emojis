@@ -2,7 +2,7 @@
 
 This document describes the project's direction at a high level. It is reviewed
 yearly; day-to-day planning happens in
-[GitHub issues](https://github.com/AndryOre/animated-fluent-emojis/issues),
+[GitHub issues](https://github.com/andryorelabs/animated-fluent-emojis/issues),
 which are the source of truth for what's actually being worked on next.
 
 ## Next 12 months
@@ -28,7 +28,7 @@ The focus for the next year is maintenance rather than new surface area:
 ## Future enhancements under consideration
 
 Nothing is queued at the moment. New ideas are welcome as
-[GitHub issues](https://github.com/AndryOre/animated-fluent-emojis/issues);
+[GitHub issues](https://github.com/andryorelabs/animated-fluent-emojis/issues);
 being listed here would never be a promise that they ship.
 
 ## Out of scope
@@ -47,6 +47,6 @@ The following are explicitly not planned:
 ## Where planning actually happens
 
 This roadmap is intentionally coarse. Concrete, scheduled work lives in
-[GitHub issues](https://github.com/AndryOre/animated-fluent-emojis/issues).
+[GitHub issues](https://github.com/andryorelabs/animated-fluent-emojis/issues).
 Those are the places to check for what's happening next, and the places to
 propose new work.

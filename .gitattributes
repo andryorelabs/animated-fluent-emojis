@@ -1,0 +1,4 @@
+* text=auto eol=lf
+
+bun.lock linguist-generated
+docs/EMOJI_LIST*.md linguist-generated
