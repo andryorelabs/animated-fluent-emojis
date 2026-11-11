@@ -217,6 +217,40 @@ test("awaiters of a superseded load receive the current site outcome", async () 
   ]);
 });
 
+test("a superseded load that settles late does not refetch a site that already failed", async () => {
+  const otherManifestUrl = "https://other.example.com/v1/manifest.slim.json";
+  let otherRequestCount = 0;
+  server.use(
+    http.get(MANIFEST_URL, async () => {
+      await delay(50);
+      return HttpResponse.json(FIXTURE_MANIFEST);
+    }),
+    http.get(otherManifestUrl, () => {
+      otherRequestCount += 1;
+      return new HttpResponse("nope", { status: 500 });
+    }),
+  );
+  silence("warn");
+  silence("error");
+  const { configureEmojis, getManifestSnapshot, startManifestLoad, subscribeToManifest } =
+    await importFreshModule();
+
+  const supersededLoad = startManifestLoad();
+  configureEmojis({ assetSiteUrl: "https://other.example.com" });
+  const seen: string[] = [];
+  const unsubscribe = subscribeToManifest(() => {
+    seen.push(getManifestSnapshot().status);
+  });
+  const currentOutcome = await startManifestLoad();
+  const supersededOutcome = await supersededLoad;
+  unsubscribe();
+
+  expect(currentOutcome.status).toBe("error");
+  expect(supersededOutcome.status).toBe("error");
+  expect(otherRequestCount).toBe(1);
+  expect(seen).toEqual(["loading", "error"]);
+});
+
 test("preloadEmojis assigns sizes before srcset on the warm-up image", async () => {
   serveFixtureManifest();
   const assignments: string[] = [];
