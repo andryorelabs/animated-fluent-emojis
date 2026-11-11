@@ -7,6 +7,7 @@
     ':preserveSemverRanges',
     'helpers:pinGitHubActionDigests',
     'group:monorepos',
+    ':dependencyDashboard',
   ],
 
   timezone: 'UTC',
@@ -19,7 +20,7 @@
 
   rangeStrategy: 'bump',
   // Main requires the PR branch to be up to date before merging
-  // (strict_required_status_checks_policy in the main branch ruleset),
+  // (strict_required_status_checks_policy in .github/rulesets/main.json),
   // so automerge branches must be kept current, not just conflict-free
   rebaseWhen: 'behind-base-branch',
 
@@ -111,14 +112,6 @@
       ],
     },
     {
-      // Oxc tools are pre-1.0 or move fast, and a bump can change lint or
-      // format output repo-wide, so they stay exact and are reviewed by hand
-      groupName: 'oxc',
-      matchPackageNames: ['oxlint', 'oxlint-tsgolint', 'oxfmt', 'typescript7'],
-      rangeStrategy: 'pin',
-      automerge: false,
-    },
-    {
       groupName: 'vitest',
       matchPackageNames: ['vitest', '@vitest/**'],
     },
@@ -145,6 +138,17 @@
       automerge: true,
       automergeType: 'pr',
       minimumReleaseAge: '7 days',
+    },
+
+    // Keep this rule last: a later matching rule wins, so a rule placed after
+    // it could turn automerge back on for the oxc tools.
+    // Oxc tools are pre-1.0 or move fast, and a bump can change lint or
+    // format output repo-wide, so they stay exact and are reviewed by hand
+    {
+      groupName: 'oxc',
+      matchPackageNames: ['oxlint', 'oxlint-tsgolint', 'oxfmt', 'typescript7'],
+      rangeStrategy: 'pin',
+      automerge: false,
     },
   ],
 }
