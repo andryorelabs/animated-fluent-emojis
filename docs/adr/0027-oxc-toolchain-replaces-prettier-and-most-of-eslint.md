@@ -7,6 +7,7 @@ Accepted. Partly supersedes [0002](0002-tsdoc-only-code-comments.md),
 [0023](0023-practices-parity-with-snug.md).
 
 Date: 2026-11-02
+Revised: 2026-11-11, dropped the Oxfmt style overrides (semicolons off, single quotes, width 80, prose wrap always) in favor of the Oxfmt defaults (standard v1 rule E8).
 
 ## Context
 
