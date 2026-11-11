@@ -1,37 +1,37 @@
-import type { Locale } from '../i18n/locales'
-import type { PublicEmoji } from './public-index'
+import type { Locale } from "../i18n/locales";
+import type { PublicEmoji } from "./public-index";
 
 interface Annotation {
-  name: string
-  keywords: string[]
+  name: string;
+  keywords: string[];
 }
 
-export type AnnotationTable = ReadonlyMap<string, Annotation>
+export type AnnotationTable = ReadonlyMap<string, Annotation>;
 
 export interface LocalizedEmoji {
-  slug: string
-  name: string
-  keywords: string[]
-  fellBack: boolean
+  slug: string;
+  name: string;
+  keywords: string[];
+  fellBack: boolean;
 }
 
-const CLDR_VERSION = '48.2.0'
+const CLDR_VERSION = "48.2.0";
 
 /**
  * Unicode CLDR data file that backs each site locale. English comes from the
  * index itself, so it has no entry.
  */
-const CLDR_LANGUAGE: Record<Exclude<Locale, 'en'>, string> = {
-  es: 'es',
-  de: 'de',
-  fr: 'fr',
-  it: 'it',
-  ja: 'ja',
-  ko: 'ko',
-  'pt-BR': 'pt',
-  ru: 'ru',
-  'zh-CN': 'zh',
-}
+const CLDR_LANGUAGE: Record<Exclude<Locale, "en">, string> = {
+  es: "es",
+  de: "de",
+  fr: "fr",
+  it: "it",
+  ja: "ja",
+  ko: "ko",
+  "pt-BR": "pt",
+  ru: "ru",
+  "zh-CN": "zh",
+};
 
 /**
  * Strips emoji presentation selectors so index and CLDR keys compare equal.
@@ -39,7 +39,7 @@ const CLDR_LANGUAGE: Record<Exclude<Locale, 'en'>, string> = {
  * @returns The sequence without `U+FE0F`.
  */
 function normalizeUnicode(unicode: string): string {
-  return unicode.replaceAll('️', '')
+  return unicode.replaceAll("️", "");
 }
 
 /**
@@ -50,39 +50,37 @@ function normalizeUnicode(unicode: string): string {
  */
 export function parseCldrAnnotations(raw: unknown): AnnotationTable {
   const document = raw as {
-    annotations?: { annotations?: Record<string, unknown> }
-  } | null
-  const entries = document?.annotations?.annotations
+    annotations?: { annotations?: Record<string, unknown> };
+  } | null;
+  const entries = document?.annotations?.annotations;
   if (!entries) {
-    throw new Error('CLDR annotations: unexpected document structure')
+    throw new Error("CLDR annotations: unexpected document structure");
   }
-  const table = new Map<string, Annotation>()
+  const table = new Map<string, Annotation>();
   for (const [unicode, value] of Object.entries(entries)) {
     const { default: keywords, tts } = value as {
-      default?: string[]
-      tts?: string[]
-    }
-    const name = tts?.[0]
+      default?: string[];
+      tts?: string[];
+    };
+    const name = tts?.[0];
     if (name !== undefined && Array.isArray(keywords)) {
-      table.set(normalizeUnicode(unicode), { name, keywords })
+      table.set(normalizeUnicode(unicode), { name, keywords });
     }
   }
-  return table
+  return table;
 }
 
-const tables = new Map<Locale, Promise<AnnotationTable>>()
+const tables = new Map<Locale, Promise<AnnotationTable>>();
 
 async function downloadAnnotations(
   url: string,
   fetcher: (url: string) => Promise<Response>,
 ): Promise<AnnotationTable> {
-  const response = await fetcher(url)
+  const response = await fetcher(url);
   if (!response.ok) {
-    throw new Error(
-      `CLDR annotations: ${url} answered ${String(response.status)}`,
-    )
+    throw new Error(`CLDR annotations: ${url} answered ${String(response.status)}`);
   }
-  return parseCldrAnnotations(await response.json())
+  return parseCldrAnnotations(await response.json());
 }
 
 /**
@@ -96,18 +94,18 @@ export function loadAnnotations(
   locale: Locale,
   fetcher: (url: string) => Promise<Response> = fetch,
 ): Promise<AnnotationTable> {
-  if (locale === 'en') {
-    return Promise.resolve(new Map())
+  if (locale === "en") {
+    return Promise.resolve(new Map());
   }
-  let table = tables.get(locale)
+  let table = tables.get(locale);
   if (!table) {
     table = downloadAnnotations(
       `https://cdn.jsdelivr.net/npm/cldr-annotations-full@${CLDR_VERSION}/annotations/${CLDR_LANGUAGE[locale]}/annotations.json`,
       fetcher,
-    )
-    tables.set(locale, table)
+    );
+    tables.set(locale, table);
   }
-  return table
+  return table;
 }
 
 /**
@@ -122,7 +120,7 @@ export function localizeEmojis(
   annotations: AnnotationTable,
 ): LocalizedEmoji[] {
   return emojis.map((emoji) => {
-    const annotation = annotations.get(normalizeUnicode(emoji.unicode))
+    const annotation = annotations.get(normalizeUnicode(emoji.unicode));
     return annotation
       ? {
           slug: emoji.slug,
@@ -135,6 +133,6 @@ export function localizeEmojis(
           name: emoji.description,
           keywords: emoji.keywords,
           fellBack: true,
-        }
-  })
+        };
+  });
 }

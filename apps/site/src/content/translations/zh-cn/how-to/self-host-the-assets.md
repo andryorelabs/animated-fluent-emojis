@@ -24,9 +24,9 @@ Pages，请参照[设置资源托管](set-up-asset-hosting.md)。
 在第一个 `Emoji` 渲染之前调用一次 `configureEmojis`。URL 末尾的斜杠会被忽略：
 
 ```jsx
-import { configureEmojis } from 'animated-fluent-emojis'
+import { configureEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
 ```
 
 如果在 manifest 已被请求之后才调用它，manifest 会被重置，并在开发环境中给出警告。参见使用指南的

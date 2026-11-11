@@ -20,8 +20,8 @@ React、Vue、Svelte のアダプターと `createEmoji` は、キーフレー�
 React のサブパスから `Emoji` をインポートします。
 
 ```jsx
-import { Emoji } from 'animated-fluent-emojis/react'
-import 'animated-fluent-emojis/style.css'
+import { Emoji } from "animated-fluent-emojis/react";
+import "animated-fluent-emojis/style.css";
 ```
 
 0.6 以前からの移行：ルートの `Emoji`
@@ -40,22 +40,17 @@ Vue 3.3 以降が必要です。`Emoji`
 
 ```vue
 <script setup lang="ts">
-import { Emoji } from 'animated-fluent-emojis/vue'
+import { Emoji } from "animated-fluent-emojis/vue";
 
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 
 const handlePlaybackEnd = () => {
-  console.log('done')
-}
+  console.log("done");
+};
 </script>
 
 <template>
-  <Emoji
-    id="1f44b_wavinghand"
-    :size="64"
-    play-on-hover
-    @playback-end="handlePlaybackEnd"
-  >
+  <Emoji id="1f44b_wavinghand" :size="64" play-on-hover @playback-end="handlePlaybackEnd">
     <template #fallback><span>👋</span></template>
   </Emoji>
 </template>
@@ -93,7 +88,7 @@ Astro
 
 ```astro
 ---
-import Emoji from 'animated-fluent-emojis/astro'
+import Emoji from "animated-fluent-emojis/astro";
 ---
 
 <Emoji id="1f44b_wavinghand" size={64} playOnHover>
@@ -115,7 +110,7 @@ props は以下のものからコールバックを除いたもので、`class` 
 
 ```html
 <script type="module">
-  import 'animated-fluent-emojis/element'
+  import "animated-fluent-emojis/element";
 </script>
 
 <fluent-emoji id="1f44b_wavinghand" size="64" play-on-hover>
@@ -147,17 +142,17 @@ props は以下のものからコールバックを除いたもので、`class` 
 は任意の DOM ノードにレンダリングし、コントローラーを返します。これはすべてのアダプターに共通する、フレームワーク非依存のコアです。インポートしても DOM には一切触れません。
 
 ```js
-import { createEmoji } from 'animated-fluent-emojis'
-import 'animated-fluent-emojis/style.css'
+import { createEmoji } from "animated-fluent-emojis";
+import "animated-fluent-emojis/style.css";
 
-const controller = createEmoji(document.querySelector('#slot'), {
-  id: '1f44b_wavinghand',
+const controller = createEmoji(document.querySelector("#slot"), {
+  id: "1f44b_wavinghand",
   size: 64,
-  fallback: () => document.createTextNode('👋'),
-})
+  fallback: () => document.createTextNode("👋"),
+});
 
-controller.update({ playing: false })
-controller.destroy()
+controller.update({ playing: false });
+controller.destroy();
 ```
 
 オプションは以下の props に加えて、ルートの span 用の

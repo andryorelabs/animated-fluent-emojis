@@ -26,10 +26,8 @@
   --radius-2xl: var(--radius);
   --radius-3xl: calc(var(--radius) * 1.5);
   --radius-4xl: calc(var(--radius) * 2);
-  --font-sans:
-    'Figtree Variable', 'Figtree', ui-sans-serif, system-ui, sans-serif;
-  --font-mono:
-    'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-sans: "Figtree Variable", "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
 @theme inline {
@@ -74,10 +72,6 @@
 
   --spacing-toast-offset: calc(100% + 1rem);
 
-  --color-primary-emphasis: color-mix(
-    in oklab,
-    var(--primary) 55%,
-    var(--foreground)
-  );
+  --color-primary-emphasis: color-mix(in oklab, var(--primary) 55%, var(--foreground));
   --color-primary-edge: color-mix(in oklab, var(--primary) 45%, var(--border));
 }

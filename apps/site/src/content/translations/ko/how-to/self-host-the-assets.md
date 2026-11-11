@@ -27,9 +27,9 @@ asset site는 `apps/assets`가 `apps/assets/dist-assets/`에 생성하며, 생�
 슬래시는 무시됩니다.
 
 ```jsx
-import { configureEmojis } from 'animated-fluent-emojis'
+import { configureEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
 ```
 
 manifest가 이미 요청된 뒤에 호출하면 manifest가 초기화되고, 개발 중에는 경고가

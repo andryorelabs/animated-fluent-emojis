@@ -1,6 +1,6 @@
-import type { ClientDirective } from 'astro'
+import type { ClientDirective } from "astro";
 
-import { hydrateOnInteraction } from './hydrate-on-interaction'
+import { hydrateOnInteraction } from "./hydrate-on-interaction";
 
 /**
  * Astro client directive behind `client:interaction`, registered by
@@ -10,7 +10,7 @@ import { hydrateOnInteraction } from './hydrate-on-interaction'
  * @param element - The island element.
  */
 const interactionDirective: ClientDirective = (load, _options, element) => {
-  hydrateOnInteraction(element, load)
-}
+  hydrateOnInteraction(element, load);
+};
 
-export default interactionDirective
+export default interactionDirective;

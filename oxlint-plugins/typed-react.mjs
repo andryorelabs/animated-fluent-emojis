@@ -1,6 +1,6 @@
-import eslintReact from '@eslint-react/eslint-plugin'
+import eslintReact from "@eslint-react/eslint-plugin";
 
-import { withTypes } from './with-types.mjs'
+import { withTypes } from "./with-types.mjs";
 
 /**
  * Oxlint-only plugin running `@eslint-react/no-leaked-conditional-rendering`,
@@ -9,13 +9,13 @@ import { withTypes } from './with-types.mjs'
  * covers are reported instead of skipped.
  */
 const typedReactPlugin = {
-  meta: { name: 'typed-react' },
+  meta: { name: "typed-react" },
   rules: {
-    'no-leaked-conditional-rendering': withTypes(
-      eslintReact.rules['no-leaked-conditional-rendering'],
+    "no-leaked-conditional-rendering": withTypes(
+      eslintReact.rules["no-leaked-conditional-rendering"],
       { requireTypes: true },
     ),
   },
-}
+};
 
-export default typedReactPlugin
+export default typedReactPlugin;

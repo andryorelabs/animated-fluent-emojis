@@ -1,22 +1,19 @@
-import { passthrough } from 'msw'
-import { setupWorker } from 'msw/browser'
-import { http, HttpResponse } from 'msw/http'
+import { passthrough } from "msw";
+import { setupWorker } from "msw/browser";
+import { http, HttpResponse } from "msw/http";
 
 import {
   FIXTURE_MANIFEST,
   MANIFEST_URL,
   SPRITE_URL_PATTERN,
   TRANSPARENT_PNG_BASE64,
-} from './manifest-fixture.js'
+} from "./manifest-fixture.js";
 
 const respondWithSprite = () =>
   new HttpResponse(
-    Uint8Array.from(
-      atob(TRANSPARENT_PNG_BASE64),
-      (character) => character.codePointAt(0) ?? 0,
-    ),
-    { headers: { 'Content-Type': 'image/png' } },
-  )
+    Uint8Array.from(atob(TRANSPARENT_PNG_BASE64), (character) => character.codePointAt(0) ?? 0),
+    { headers: { "Content-Type": "image/png" } },
+  );
 
 /**
  * Source files such as `.svelte` are not on MSW's common-asset list, so the
@@ -30,6 +27,6 @@ const worker = setupWorker(
   http.get(MANIFEST_URL, () => HttpResponse.json(FIXTURE_MANIFEST)),
   http.get(SPRITE_URL_PATTERN, respondWithSprite),
   http.get(/^https:\/\/[^/]+\.test\/v1\/sprites\//, respondWithSprite),
-)
+);
 
-await worker.start({ onUnhandledFrame: 'error', quiet: true })
+await worker.start({ onUnhandledFrame: "error", quiet: true });

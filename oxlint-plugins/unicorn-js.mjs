@@ -1,6 +1,6 @@
-import unicorn from 'eslint-plugin-unicorn'
+import unicorn from "eslint-plugin-unicorn";
 
-import { withTypesPlugin } from './with-types.mjs'
+import { withTypesPlugin } from "./with-types.mjs";
 
 /**
  * `eslint-plugin-unicorn`'s original rules for Oxlint's `unicorn-js` alias.
@@ -9,8 +9,8 @@ import { withTypesPlugin } from './with-types.mjs'
  * ESLint lints `.ts`/`.tsx` with types, so they run with types there and
  * without types on JavaScript files, as under ESLint.
  */
-const unicornJsPlugin = withTypesPlugin(unicorn, 'unicorn-js', {
+const unicornJsPlugin = withTypesPlugin(unicorn, "unicorn-js", {
   requireTypes: false,
-})
+});
 
-export default unicornJsPlugin
+export default unicornJsPlugin;

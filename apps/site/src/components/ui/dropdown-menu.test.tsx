@@ -1,5 +1,5 @@
-import { renderToString } from 'react-dom/server'
-import { expect, test } from 'vitest'
+import { renderToString } from "react-dom/server";
+import { expect, test } from "vitest";
 
 import {
   DropdownMenu,
@@ -10,9 +10,9 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from './dropdown-menu'
+} from "./dropdown-menu";
 
-test('the nova menu parts render inside an open menu with a check on the selected item', () => {
+test("the nova menu parts render inside an open menu with a check on the selected item", () => {
   const html = renderToString(
     <DropdownMenu open>
       <DropdownMenuTrigger>Theme</DropdownMenuTrigger>
@@ -27,12 +27,12 @@ test('the nova menu parts render inside an open menu with a check on the selecte
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>,
-  )
+  );
 
-  expect(html).toContain('data-slot="dropdown-menu-trigger"')
-})
+  expect(html).toContain('data-slot="dropdown-menu-trigger"');
+});
 
-test('DropdownMenuRadioItem is exported alongside the radio group', () => {
-  expect(DropdownMenuRadioItem).toBeTypeOf('function')
-  expect(DropdownMenuRadioGroup).toBeTypeOf('function')
-})
+test("DropdownMenuRadioItem is exported alongside the radio group", () => {
+  expect(DropdownMenuRadioItem).toBeTypeOf("function");
+  expect(DropdownMenuRadioGroup).toBeTypeOf("function");
+});

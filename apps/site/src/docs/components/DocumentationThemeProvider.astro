@@ -1,12 +1,12 @@
 ---
-import { THEME_INIT_SCRIPT } from '../../scripts/theme-init'
+import { THEME_INIT_SCRIPT } from "../../scripts/theme-init";
 ---
 
 <script is:inline set:html={THEME_INIT_SCRIPT} />
 <script>
-  import { makeCodeFocusable } from '../code-focus'
-  import { initInstallBlocks } from '../install-block-client'
+  import { makeCodeFocusable } from "../code-focus";
+  import { initInstallBlocks } from "../install-block-client";
 
-  initInstallBlocks()
-  makeCodeFocusable()
+  initInstallBlocks();
+  makeCodeFocusable();
 </script>

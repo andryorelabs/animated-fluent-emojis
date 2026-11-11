@@ -1,12 +1,9 @@
-import { useSyncExternalStore } from 'react'
+import { useSyncExternalStore } from "react";
 
-import {
-  getDocumentHidden,
-  subscribeToDocumentHidden,
-} from '../core/environment-signals.js'
+import { getDocumentHidden, subscribeToDocumentHidden } from "../core/environment-signals.js";
 
-const noopSubscribe = (): (() => void) => Function.prototype as () => void
-const getNeverHidden = (): boolean => false
+const noopSubscribe = (): (() => void) => Function.prototype as () => void;
+const getNeverHidden = (): boolean => false;
 
 /**
  * Tracks `document.hidden` through one `visibilitychange` listener shared by
@@ -19,4 +16,4 @@ export const useDocumentHidden = (isActive: boolean): boolean =>
     isActive ? subscribeToDocumentHidden : noopSubscribe,
     isActive ? getDocumentHidden : getNeverHidden,
     getNeverHidden,
-  )
+  );

@@ -1,9 +1,9 @@
-import { readFile } from 'node:fs/promises'
-import path from 'node:path'
-import { format, type FormatConfig, type Oxfmtrc } from 'oxfmt'
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { format, type FormatConfig, type Oxfmtrc } from "oxfmt";
 
-import type { Manifest } from '../../packages/animated-fluent-emojis/src/utils/types.js'
-import { listRegistryKeys, type SlugRegistry } from './public-slugs.js'
+import type { Manifest } from "../../packages/animated-fluent-emojis/src/utils/types.js";
+import { listRegistryKeys, type SlugRegistry } from "./public-slugs.js";
 
 /**
  * Builds the file name of a category's emoji list.
@@ -11,31 +11,28 @@ import { listRegistryKeys, type SlugRegistry } from './public-slugs.js'
  * @returns A name like `EMOJI_LIST_Travel_and_places.md`.
  */
 export function buildCategoryFileName(categoryTitle: string): string {
-  return `EMOJI_LIST_${categoryTitle.replaceAll(' ', '_')}.md`
+  return `EMOJI_LIST_${categoryTitle.replaceAll(" ", "_")}.md`;
 }
 
 function escapeCell(text: string): string {
   return text
-    .replaceAll('|', String.raw`\|`)
-    .replaceAll(/\s+/g, ' ')
-    .trim()
+    .replaceAll("|", String.raw`\|`)
+    .replaceAll(/\s+/g, " ")
+    .trim();
 }
 
 function requireSlug(slugs: SlugRegistry, key: string): string {
-  const slug = slugs.slugs[key]
-  if (slug === undefined) throw new Error(`No public slug for ${key}.`)
-  return slug
+  const slug = slugs.slugs[key];
+  if (slug === undefined) throw new Error(`No public slug for ${key}.`);
+  return slug;
 }
 
-const FORMAT_LABELS = { gif: 'GIF', webp: 'WebP', png: 'PNG' } as const
+const FORMAT_LABELS = { gif: "GIF", webp: "WebP", png: "PNG" } as const;
 
 function renderFileLinks(filesBaseUrl: string, slug: string): string {
   return Object.entries(FORMAT_LABELS)
-    .map(
-      ([format, label]) =>
-        `[${label}](${filesBaseUrl}/${format}/${slug}.${format})`,
-    )
-    .join(' ')
+    .map(([format, label]) => `[${label}](${filesBaseUrl}/${format}/${slug}.${format})`)
+    .join(" ");
 }
 
 /**
@@ -54,41 +51,41 @@ export function renderEmojiLists(
   slugs: SlugRegistry,
   filesBaseUrl: string,
 ): Map<string, string> {
-  const baseUrl = filesBaseUrl.replace(/\/+$/, '')
-  const keysById = Map.groupBy(listRegistryKeys(manifest), ({ id }) => id)
-  const files = new Map<string, string>()
+  const baseUrl = filesBaseUrl.replace(/\/+$/, "");
+  const keysById = Map.groupBy(listRegistryKeys(manifest), ({ id }) => id);
+  const files = new Map<string, string>();
   for (const category of manifest.categories) {
     const rows = category.emoticons.map((emoticon) => {
-      const [defaultKey, ...toneKeys] = keysById.get(emoticon.id) ?? []
-      const slug = requireSlug(slugs, defaultKey?.key ?? emoticon.id)
+      const [defaultKey, ...toneKeys] = keysById.get(emoticon.id) ?? [];
+      const slug = requireSlug(slugs, defaultKey?.key ?? emoticon.id);
       const links = [
         renderFileLinks(baseUrl, slug),
         ...toneKeys.map(
           ({ key, tone }) =>
             `${tone.slice(1)}: ${renderFileLinks(baseUrl, requireSlug(slugs, key))}`,
         ),
-      ].join('<br>')
-      const preview = `<img src="${baseUrl}/png/${slug}.png" width="32" height="32" alt="">`
-      return `| ${escapeCell(emoticon.id)} | ${preview} | ${emoticon.unicode} | ${escapeCell(emoticon.description)} | ${escapeCell([...new Set(emoticon.keywords)].join(', '))} | ${links} |`
-    })
+      ].join("<br>");
+      const preview = `<img src="${baseUrl}/png/${slug}.png" width="32" height="32" alt="">`;
+      return `| ${escapeCell(emoticon.id)} | ${preview} | ${emoticon.unicode} | ${escapeCell(emoticon.description)} | ${escapeCell([...new Set(emoticon.keywords)].join(", "))} | ${links} |`;
+    });
     files.set(
       buildCategoryFileName(category.title),
       [
         `# ${category.title}`,
-        '',
-        '| ID | Preview | Unicode | Description | Keywords | Files |',
-        '| -- | ------- | ------- | ----------- | -------- | ----- |',
+        "",
+        "| ID | Preview | Unicode | Description | Keywords | Files |",
+        "| -- | ------- | ------- | ----------- | -------- | ----- |",
         ...rows,
-        '',
-      ].join('\n'),
-    )
+        "",
+      ].join("\n"),
+    );
   }
 
-  return files
+  return files;
 }
 
 function toLiteral(emoticon: { id: string }): string {
-  return `  | ${JSON.stringify(emoticon.id)}`
+  return `  | ${JSON.stringify(emoticon.id)}`;
 }
 
 /**
@@ -99,40 +96,33 @@ function toLiteral(emoticon: { id: string }): string {
  * @returns TypeScript source, unformatted.
  */
 export function renderEmojiIdModule(manifest: Manifest): string {
-  const emoticons = manifest.categories.flatMap(
-    (category) => category.emoticons,
-  )
+  const emoticons = manifest.categories.flatMap((category) => category.emoticons);
   const diverseLiterals = emoticons
     .filter((emoticon) => emoticon.diverse)
-    .map((emoticon) => toLiteral(emoticon))
+    .map((emoticon) => toLiteral(emoticon));
   return [
-    '/**',
-    ' * Every emoji id in the published catalog. Generated by `bun run assets:lists`;',
-    ' * do not edit by hand.',
-    ' */',
-    'export type EmojiId =',
+    "/**",
+    " * Every emoji id in the published catalog. Generated by `bun run assets:lists`;",
+    " * do not edit by hand.",
+    " */",
+    "export type EmojiId =",
     ...emoticons.map((emoticon) => toLiteral(emoticon)),
-    '',
-    '/**',
-    ' * Every emoji id that has skin tone variants. Generated by `bun run assets:lists`;',
-    ' * do not edit by hand.',
-    ' */',
+    "",
+    "/**",
+    " * Every emoji id that has skin tone variants. Generated by `bun run assets:lists`;",
+    " * do not edit by hand.",
+    " */",
     diverseLiterals.length > 0
-      ? 'export type DiverseEmojiId ='
-      : 'export type DiverseEmojiId = never',
+      ? "export type DiverseEmojiId ="
+      : "export type DiverseEmojiId = never",
     ...diverseLiterals,
-    '',
-  ].join('\n')
+    "",
+  ].join("\n");
 }
 
-const REPOSITORY_DIRECTORY = path.resolve(import.meta.dirname, '../..')
+const REPOSITORY_DIRECTORY = path.resolve(import.meta.dirname, "../..");
 
-const CLI_ONLY_CONFIG_KEYS = new Set([
-  '$schema',
-  'ignorePatterns',
-  'associations',
-  'overrides',
-])
+const CLI_ONLY_CONFIG_KEYS = new Set(["$schema", "ignorePatterns", "associations", "overrides"]);
 
 /**
  * Anchors a relative Tailwind stylesheet to the repository root, so the
@@ -141,15 +131,15 @@ const CLI_ONLY_CONFIG_KEYS = new Set([
  * @returns The same value with an absolute stylesheet path.
  */
 function anchorTailwindStylesheet(
-  sortTailwindcss: Oxfmtrc['sortTailwindcss'],
-): Oxfmtrc['sortTailwindcss'] {
-  if (typeof sortTailwindcss !== 'object' || !sortTailwindcss.stylesheet) {
-    return sortTailwindcss
+  sortTailwindcss: Oxfmtrc["sortTailwindcss"],
+): Oxfmtrc["sortTailwindcss"] {
+  if (typeof sortTailwindcss !== "object" || !sortTailwindcss.stylesheet) {
+    return sortTailwindcss;
   }
   return {
     ...sortTailwindcss,
     stylesheet: path.resolve(REPOSITORY_DIRECTORY, sortTailwindcss.stylesheet),
-  }
+  };
 }
 
 /**
@@ -159,15 +149,13 @@ function anchorTailwindStylesheet(
  */
 async function loadFormatConfig(): Promise<FormatConfig> {
   const config = JSON.parse(
-    await readFile(path.join(REPOSITORY_DIRECTORY, '.oxfmtrc.json'), 'utf8'),
-  ) as Oxfmtrc
+    await readFile(path.join(REPOSITORY_DIRECTORY, ".oxfmtrc.json"), "utf8"),
+  ) as Oxfmtrc;
   const formatConfig = Object.fromEntries(
     Object.entries(config).filter(([key]) => !CLI_ONLY_CONFIG_KEYS.has(key)),
-  ) as FormatConfig
-  const sortTailwindcss = anchorTailwindStylesheet(config.sortTailwindcss)
-  return sortTailwindcss === undefined
-    ? formatConfig
-    : { ...formatConfig, sortTailwindcss }
+  ) as FormatConfig;
+  const sortTailwindcss = anchorTailwindStylesheet(config.sortTailwindcss);
+  return sortTailwindcss === undefined ? formatConfig : { ...formatConfig, sortTailwindcss };
 }
 
 /**
@@ -177,14 +165,11 @@ async function loadFormatConfig(): Promise<FormatConfig> {
  * @returns The formatted source.
  * @throws {Error} When Oxfmt reports a parse or format error.
  */
-export async function formatSource(
-  source: string,
-  filePath: string,
-): Promise<string> {
-  const result = await format(filePath, source, await loadFormatConfig())
+export async function formatSource(source: string, filePath: string): Promise<string> {
+  const result = await format(filePath, source, await loadFormatConfig());
   if (result.errors.length > 0) {
-    const messages = result.errors.map((error) => error.message).join('\n')
-    throw new Error(`Oxfmt failed to format ${filePath}:\n${messages}`)
+    const messages = result.errors.map((error) => error.message).join("\n");
+    throw new Error(`Oxfmt failed to format ${filePath}:\n${messages}`);
   }
-  return result.code
+  return result.code;
 }

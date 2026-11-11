@@ -1,22 +1,18 @@
-import { Emoji } from 'animated-fluent-emojis/react'
-import type { CSSProperties } from 'react'
+import { Emoji } from "animated-fluent-emojis/react";
+import type { CSSProperties } from "react";
 
-import { effectiveTone, urlsForTone } from '../../gallery/filter'
-import {
-  fileUrl,
-  type PublicEmoji,
-  type SkinTone,
-} from '../../gallery/public-index'
-import type { GallerySize } from '../../gallery/url-state'
+import { effectiveTone, urlsForTone } from "../../gallery/filter";
+import { fileUrl, type PublicEmoji, type SkinTone } from "../../gallery/public-index";
+import type { GallerySize } from "../../gallery/url-state";
 
 /**
  * Properties of {@link GalleryTileEmoji}.
  */
 export interface GalleryTileEmojiProps {
-  emoji: PublicEmoji
-  tone: SkinTone | undefined
-  size: GallerySize
-  armed: boolean
+  emoji: PublicEmoji;
+  tone: SkinTone | undefined;
+  size: GallerySize;
+  armed: boolean;
 }
 
 /**
@@ -28,12 +24,12 @@ export interface GalleryTileEmojiProps {
  * @returns The poster, with the animated emoji stacked over it when armed.
  */
 export function GalleryTileEmoji(props: GalleryTileEmojiProps) {
-  const { emoji, tone, size, armed } = props
-  const appliedTone = effectiveTone(emoji, tone)
+  const { emoji, tone, size, armed } = props;
+  const appliedTone = effectiveTone(emoji, tone);
   return (
     <span
       className="relative inline-grid size-(--tile-size)"
-      style={{ '--tile-size': `${String(size)}px` } as CSSProperties}
+      style={{ "--tile-size": `${String(size)}px` } as CSSProperties}
     >
       <img
         src={fileUrl(urlsForTone(emoji, tone).png)}
@@ -56,5 +52,5 @@ export function GalleryTileEmoji(props: GalleryTileEmojiProps) {
         />
       )}
     </span>
-  )
+  );
 }

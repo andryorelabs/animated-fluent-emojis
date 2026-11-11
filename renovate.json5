@@ -1,143 +1,143 @@
 {
-  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: [
-    'config:best-practices',
-    ':semanticCommits',
-    ':semanticCommitTypeAll(chore)',
-    ':preserveSemverRanges',
-    'helpers:pinGitHubActionDigests',
-    'group:monorepos',
-    ':dependencyDashboard',
+    "config:best-practices",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)",
+    ":preserveSemverRanges",
+    "helpers:pinGitHubActionDigests",
+    "group:monorepos",
+    ":dependencyDashboard",
   ],
 
-  timezone: 'UTC',
-  schedule: ['before 12pm on monday'],
+  timezone: "UTC",
+  schedule: ["before 12pm on monday"],
 
   // Rate limits — low noise for solo dev
   prConcurrentLimit: 3,
   prHourlyLimit: 2,
   branchConcurrentLimit: 5,
 
-  rangeStrategy: 'bump',
+  rangeStrategy: "bump",
   // Main requires the PR branch to be up to date before merging
   // (strict_required_status_checks_policy in .github/rulesets/main.json),
   // so automerge branches must be kept current, not just conflict-free
-  rebaseWhen: 'behind-base-branch',
+  rebaseWhen: "behind-base-branch",
 
   // Wait 3 days before opening a PR — guards against supply-chain attacks on freshly published versions
-  minimumReleaseAge: '3 days',
+  minimumReleaseAge: "3 days",
 
-  labels: ['dependencies'],
+  labels: ["dependencies"],
 
   osvVulnerabilityAlerts: true,
   vulnerabilityAlerts: {
     enabled: true,
-    labels: ['Priority: Critical', 'Type: Security'],
-    assignees: ['AndryOre'],
+    labels: ["Priority: Critical", "Type: Security"],
+    assignees: ["AndryOre"],
   },
 
   lockFileMaintenance: {
     enabled: true,
-    schedule: ['before 12pm on monday'],
+    schedule: ["before 12pm on monday"],
     automerge: true,
   },
 
   customManagers: [
     {
-      customType: 'regex',
-      managerFilePatterns: ['/^\\.github/workflows/.+\\.ya?ml$/'],
-      matchStrings: ['npm install -g npm@(?<currentValue>\\d+\\.\\d+\\.\\d+)'],
-      datasourceTemplate: 'npm',
-      depNameTemplate: 'npm',
+      customType: "regex",
+      managerFilePatterns: ["/^\\.github/workflows/.+\\.ya?ml$/"],
+      matchStrings: ["npm install -g npm@(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      datasourceTemplate: "npm",
+      depNameTemplate: "npm",
     },
     {
-      customType: 'regex',
-      managerFilePatterns: ['/^\\.github/workflows/.+\\.ya?ml$/'],
-      matchStrings: ['wranglerVersion: (?<currentValue>\\d+\\.\\d+\\.\\d+)'],
-      datasourceTemplate: 'npm',
-      depNameTemplate: 'wrangler',
+      customType: "regex",
+      managerFilePatterns: ["/^\\.github/workflows/.+\\.ya?ml$/"],
+      matchStrings: ["wranglerVersion: (?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      datasourceTemplate: "npm",
+      depNameTemplate: "wrangler",
     },
     // Bumping ACTIONLINT_VERSION leaves ACTIONLINT_SHA256 stale: the Renovate PR
     // fails lint-workflows until the checksum is updated by hand
     {
-      customType: 'regex',
-      managerFilePatterns: ['/^\\.github/workflows/lint-workflows\\.yml$/'],
-      matchStrings: ['ACTIONLINT_VERSION: (?<currentValue>\\d+\\.\\d+\\.\\d+)'],
-      datasourceTemplate: 'github-releases',
-      depNameTemplate: 'rhysd/actionlint',
-      extractVersionTemplate: '^v(?<version>.+)$',
+      customType: "regex",
+      managerFilePatterns: ["/^\\.github/workflows/lint-workflows\\.yml$/"],
+      matchStrings: ["ACTIONLINT_VERSION: (?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      datasourceTemplate: "github-releases",
+      depNameTemplate: "rhysd/actionlint",
+      extractVersionTemplate: "^v(?<version>.+)$",
     },
     {
-      customType: 'regex',
-      managerFilePatterns: ['/^\\.github/workflows/lint-workflows\\.yml$/'],
+      customType: "regex",
+      managerFilePatterns: ["/^\\.github/workflows/lint-workflows\\.yml$/"],
       matchStrings: [
-        'zizmorcore/zizmor-action@[^\\n]+\\n\\s+with:\\n\\s+version: (?<currentValue>v\\d+\\.\\d+\\.\\d+)',
+        "zizmorcore/zizmor-action@[^\\n]+\\n\\s+with:\\n\\s+version: (?<currentValue>v\\d+\\.\\d+\\.\\d+)",
       ],
-      datasourceTemplate: 'github-releases',
-      depNameTemplate: 'zizmorcore/zizmor',
+      datasourceTemplate: "github-releases",
+      depNameTemplate: "zizmorcore/zizmor",
     },
   ],
 
   packageRules: [
     {
-      matchDepTypes: ['devDependencies'],
-      semanticCommitScope: 'deps-dev',
+      matchDepTypes: ["devDependencies"],
+      semanticCommitScope: "deps-dev",
     },
     {
-      matchDepTypes: ['dependencies'],
-      semanticCommitScope: 'deps',
+      matchDepTypes: ["dependencies"],
+      semanticCommitScope: "deps",
     },
 
     // Library: consumers rely on the broad peer ranges, so widen instead of bumping
     {
-      matchDepTypes: ['peerDependencies'],
-      rangeStrategy: 'widen',
+      matchDepTypes: ["peerDependencies"],
+      rangeStrategy: "widen",
     },
 
     {
-      groupName: 'react',
-      matchPackageNames: ['react', 'react-dom', '@types/react*'],
+      groupName: "react",
+      matchPackageNames: ["react", "react-dom", "@types/react*"],
     },
     {
-      groupName: 'vite',
-      matchPackageNames: ['vite', '@vitejs/**', 'vite-plugin-*'],
+      groupName: "vite",
+      matchPackageNames: ["vite", "@vitejs/**", "vite-plugin-*"],
     },
     {
-      groupName: 'eslint',
+      groupName: "eslint",
       matchPackageNames: [
-        'eslint',
-        'typescript-eslint',
-        'eslint-plugin-*',
-        '@vitest/eslint-plugin',
+        "eslint",
+        "typescript-eslint",
+        "eslint-plugin-*",
+        "@vitest/eslint-plugin",
       ],
     },
     {
-      groupName: 'vitest',
-      matchPackageNames: ['vitest', '@vitest/**'],
+      groupName: "vitest",
+      matchPackageNames: ["vitest", "@vitest/**"],
     },
     {
-      groupName: 'type definitions',
-      matchPackageNames: ['@types/**'],
+      groupName: "type definitions",
+      matchPackageNames: ["@types/**"],
     },
     {
-      groupName: 'github-actions',
-      matchManagers: ['github-actions'],
+      groupName: "github-actions",
+      matchManagers: ["github-actions"],
     },
 
     // Automerge with a 7-day release age (stricter than global 3-day) as extra supply-chain buffer
     {
-      matchDepTypes: ['devDependencies'],
-      matchUpdateTypes: ['patch', 'minor'],
+      matchDepTypes: ["devDependencies"],
+      matchUpdateTypes: ["patch", "minor"],
       automerge: true,
-      automergeType: 'pr',
-      minimumReleaseAge: '7 days',
+      automergeType: "pr",
+      minimumReleaseAge: "7 days",
     },
     {
-      matchManagers: ['github-actions'],
-      matchUpdateTypes: ['patch', 'minor', 'digest', 'pin', 'pinDigest'],
+      matchManagers: ["github-actions"],
+      matchUpdateTypes: ["patch", "minor", "digest", "pin", "pinDigest"],
       automerge: true,
-      automergeType: 'pr',
-      minimumReleaseAge: '7 days',
+      automergeType: "pr",
+      minimumReleaseAge: "7 days",
     },
 
     // Keep this rule last: a later matching rule wins, so a rule placed after
@@ -145,9 +145,9 @@
     // Oxc tools are pre-1.0 or move fast, and a bump can change lint or
     // format output repo-wide, so they stay exact and are reviewed by hand
     {
-      groupName: 'oxc',
-      matchPackageNames: ['oxlint', 'oxlint-tsgolint', 'oxfmt', 'typescript7'],
-      rangeStrategy: 'pin',
+      groupName: "oxc",
+      matchPackageNames: ["oxlint", "oxlint-tsgolint", "oxfmt", "typescript7"],
+      rangeStrategy: "pin",
       automerge: false,
     },
   ],

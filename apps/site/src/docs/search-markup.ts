@@ -1,4 +1,4 @@
-const TAG_OPEN_OUTSIDE_MARK = /<(?!\/?mark>)/gi
+const TAG_OPEN_OUTSIDE_MARK = /<(?!\/?mark>)/gi;
 
 /**
  * Reduces an HTML string to text plus bare `<mark>` and `</mark>` tags, the
@@ -9,5 +9,5 @@ const TAG_OPEN_OUTSIDE_MARK = /<(?!\/?mark>)/gi
  * @returns The same text with every tag but `<mark>` neutralized.
  */
 export function restrictToMarkTags(html: string): string {
-  return html.replaceAll(TAG_OPEN_OUTSIDE_MARK, '&lt;')
+  return html.replaceAll(TAG_OPEN_OUTSIDE_MARK, "&lt;");
 }

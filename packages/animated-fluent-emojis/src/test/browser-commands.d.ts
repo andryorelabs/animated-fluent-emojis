@@ -1,7 +1,7 @@
-import 'vitest/browser'
+import "vitest/browser";
 
-declare module 'vitest/browser' {
+declare module "vitest/browser" {
   interface BrowserCommands {
-    emulateReducedMotion: (value: 'reduce' | 'no-preference') => Promise<void>
+    emulateReducedMotion: (value: "reduce" | "no-preference") => Promise<void>;
   }
 }

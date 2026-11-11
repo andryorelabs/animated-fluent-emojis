@@ -12,9 +12,9 @@ que os emojis apareçam sem um carregamento visível.
 `Emoji` ser renderizado. Ele nunca é rejeitado, então `void` basta:
 
 ```jsx
-import { preloadEmojis } from 'animated-fluent-emojis'
+import { preloadEmojis } from "animated-fluent-emojis";
 
-void preloadEmojis()
+void preloadEmojis();
 ```
 
 Chame-o quando o usuário provavelmente vai abrir o seletor, por exemplo ao
@@ -27,10 +27,10 @@ pronto. Passe `skinTone` para aquecer a variante que o usuário verá, nos emoji
 que têm tons de pele:
 
 ```jsx
-const quickReactions = ['1f44b_wavinghand', '1f525_fire', '1f389_partypopper']
+const quickReactions = ["1f44b_wavinghand", "1f525_fire", "1f389_partypopper"];
 
 function handlePickerTriggerHover() {
-  void preloadEmojis(quickReactions, { skinTone: 'medium' })
+  void preloadEmojis(quickReactions, { skinTone: "medium" });
 }
 ```
 

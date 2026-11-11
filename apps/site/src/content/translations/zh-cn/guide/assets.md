@@ -21,10 +21,10 @@ sheet（200px 帧）的表情还会获得基于宽度的 `srcSet`（`100w` 和 `
 sheet。它永远不会 reject：
 
 ```js
-import { preloadEmojis } from 'animated-fluent-emojis'
+import { preloadEmojis } from "animated-fluent-emojis";
 
-void preloadEmojis()
-void preloadEmojis(['1f44b_wavinghand', '1f525_fire'], { skinTone: 'medium' })
+void preloadEmojis();
+void preloadEmojis(["1f44b_wavinghand", "1f525_fire"], { skinTone: "medium" });
 ```
 
 `skinTone` 用于为有肤色的表情选择要预热的变体。
@@ -38,7 +38,7 @@ void preloadEmojis(['1f44b_wavinghand', '1f525_fire'], { skinTone: 'medium' })
 `configureEmojis`：
 
 ```js
-import { configureEmojis } from 'animated-fluent-emojis'
+import { configureEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
 ```

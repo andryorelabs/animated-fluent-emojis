@@ -9,9 +9,9 @@ emojis show up without a visible load.
 `Emoji` renders. It never rejects, so `void` is enough:
 
 ```jsx
-import { preloadEmojis } from 'animated-fluent-emojis'
+import { preloadEmojis } from "animated-fluent-emojis";
 
-void preloadEmojis()
+void preloadEmojis();
 ```
 
 Call it when the user is likely to open the picker, for example on hover or
@@ -24,10 +24,10 @@ Pass ids to request their sprite sheets once the manifest is ready. Pass
 tones:
 
 ```jsx
-const quickReactions = ['1f44b_wavinghand', '1f525_fire', '1f389_partypopper']
+const quickReactions = ["1f44b_wavinghand", "1f525_fire", "1f389_partypopper"];
 
 function handlePickerTriggerHover() {
-  void preloadEmojis(quickReactions, { skinTone: 'medium' })
+  void preloadEmojis(quickReactions, { skinTone: "medium" });
 }
 ```
 

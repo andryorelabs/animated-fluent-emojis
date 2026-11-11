@@ -1,32 +1,28 @@
 ---
-import Emoji from 'animated-fluent-emojis/astro'
+import Emoji from "animated-fluent-emojis/astro";
 
-import { loadPublicIndex } from '../../gallery/public-index'
-import type { Locale } from '../../i18n/locales'
-import {
-  marqueeDurationSeconds,
-  pickMarqueeEmojis,
-  repeatMarqueeEmojis,
-} from '../content'
+import { loadPublicIndex } from "../../gallery/public-index";
+import type { Locale } from "../../i18n/locales";
+import { marqueeDurationSeconds, pickMarqueeEmojis, repeatMarqueeEmojis } from "../content";
 
 interface Props {
-  locale: Locale
+  locale: Locale;
 }
 
-const MARQUEE_EMOJI_SIZE = 34
-const MARQUEE_GAP = 26
-const MARQUEE_EMOJI_COUNT = 24
-const MARQUEE_HALF_MIN_WIDTH = 2560
+const MARQUEE_EMOJI_SIZE = 34;
+const MARQUEE_GAP = 26;
+const MARQUEE_EMOJI_COUNT = 24;
+const MARQUEE_HALF_MIN_WIDTH = 2560;
 
-const index = await loadPublicIndex()
+const index = await loadPublicIndex();
 const half = repeatMarqueeEmojis(
   pickMarqueeEmojis(index, MARQUEE_EMOJI_COUNT),
   MARQUEE_EMOJI_SIZE + MARQUEE_GAP,
   MARQUEE_HALF_MIN_WIDTH,
-)
+);
 const marqueeDuration = marqueeDurationSeconds(
   half.length * (MARQUEE_EMOJI_SIZE + MARQUEE_GAP),
-).toFixed(2)
+).toFixed(2);
 ---
 
 <section class="py-10 md:py-14" aria-hidden="true" data-marquee>
@@ -37,24 +33,16 @@ const marqueeDuration = marqueeDurationSeconds(
     <div
       class="marquee-track"
       data-direction="normal"
-      style={{ '--marquee-duration': `${marqueeDuration}s` }}
+      style={{ "--marquee-duration": `${marqueeDuration}s` }}
     >
       {[false, true].map((duplicate) => (
         <div
           class="flex shrink-0 items-center gap-6.5 pr-6.5"
-          aria-hidden={duplicate ? 'true' : undefined}
+          aria-hidden={duplicate ? "true" : undefined}
         >
           {half.map((emoji) => (
-            <span
-              class="flex size-8.5 shrink-0 items-center justify-center"
-              data-marquee-emoji
-            >
-              <Emoji
-                id={emoji.id}
-                size={MARQUEE_EMOJI_SIZE}
-                alt=""
-                autoPlay={false}
-              />
+            <span class="flex size-8.5 shrink-0 items-center justify-center" data-marquee-emoji>
+              <Emoji id={emoji.id} size={MARQUEE_EMOJI_SIZE} alt="" autoPlay={false} />
             </span>
           ))}
         </div>

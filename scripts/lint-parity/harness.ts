@@ -1,38 +1,38 @@
-import { cpSync, existsSync, mkdirSync, readdirSync, rmSync } from 'node:fs'
-import path from 'node:path'
-import { parseArgs } from 'node:util'
-import eslintReact from '@eslint-react/eslint-plugin'
-import reactHooks from 'eslint-plugin-react-hooks'
-import tseslint from 'typescript-eslint'
+import { cpSync, existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
+import path from "node:path";
+import { parseArgs } from "node:util";
+import eslintReact from "@eslint-react/eslint-plugin";
+import reactHooks from "eslint-plugin-react-hooks";
+import tseslint from "typescript-eslint";
 
-import type { AcceptedEntry, Finding } from './diff'
-import { MODES, parseMode, type Mode } from './modes'
-import { buildSectionReport, type SectionReport } from './report'
+import type { AcceptedEntry, Finding } from "./diff";
+import { MODES, parseMode, type Mode } from "./modes";
+import { buildSectionReport, type SectionReport } from "./report";
 
 /**
  * Suffix the committed fixtures carry so the repository's own lint,
  * formatter and TypeScript project never see them.
  */
-export const FIXTURE_SUFFIX = '.fixture'
+export const FIXTURE_SUFFIX = ".fixture";
 
 /**
  * The parsed command line.
  */
 export interface Options {
-  mode: Mode
-  isTypeAware: boolean
-  accepted: string
-  corpusDirectory: string
-  report: string
+  mode: Mode;
+  isTypeAware: boolean;
+  accepted: string;
+  corpusDirectory: string;
+  report: string;
 }
 
 /**
  * Where the options default to when a flag is omitted.
  */
 export interface OptionDefaults {
-  accepted: string
-  corpusDirectory: string
-  report: string
+  accepted: string;
+  corpusDirectory: string;
+  report: string;
 }
 
 /**
@@ -72,13 +72,13 @@ accepted.json (--accepted, default scripts/lint-parity/accepted.json)
   mandatory. Entries that match nothing are reported as stale.
 
 Options
-  --mode <${MODES.join('|')}>   what to lint (default fixtures)
+  --mode <${MODES.join("|")}>   what to lint (default fixtures)
   --no-type-aware                skip type-aware rules (not a valid gate)
   --accepted <path>              accepted gaps file
   --corpus-dir <path>            where corpus repos are cloned
   --report <path>                JSON report; a .md twin is written next to it
   --help                         show this text
-`
+`;
 
 /**
  * Parses the command line.
@@ -86,38 +86,35 @@ Options
  * @param defaults Paths used for omitted flags.
  * @returns The options, or `undefined` when `--help` was requested.
  */
-export function parseOptions(
-  argv: string[],
-  defaults: OptionDefaults,
-): Options | undefined {
+export function parseOptions(argv: string[], defaults: OptionDefaults): Options | undefined {
   const { values } = parseArgs({
     args: argv,
     options: {
-      mode: { type: 'string', default: 'fixtures' },
-      'no-type-aware': { type: 'boolean', default: false },
-      accepted: { type: 'string', default: defaults.accepted },
-      'corpus-dir': { type: 'string', default: defaults.corpusDirectory },
-      report: { type: 'string', default: defaults.report },
-      help: { type: 'boolean', default: false },
+      mode: { type: "string", default: "fixtures" },
+      "no-type-aware": { type: "boolean", default: false },
+      accepted: { type: "string", default: defaults.accepted },
+      "corpus-dir": { type: "string", default: defaults.corpusDirectory },
+      report: { type: "string", default: defaults.report },
+      help: { type: "boolean", default: false },
     },
-  })
-  if (values.help) return undefined
+  });
+  if (values.help) return undefined;
   return {
     mode: parseMode(values.mode),
-    isTypeAware: !values['no-type-aware'],
+    isTypeAware: !values["no-type-aware"],
     accepted: path.resolve(values.accepted),
-    corpusDirectory: path.resolve(values['corpus-dir']),
+    corpusDirectory: path.resolve(values["corpus-dir"]),
     report: path.resolve(values.report),
-  }
+  };
 }
 
 interface RuleMetadata {
   meta?: {
     docs?: {
-      requiresTypeChecking?: boolean
-      extendsBaseRule?: boolean | string
-    }
-  }
+      requiresTypeChecking?: boolean;
+      extendsBaseRule?: boolean | string;
+    };
+  };
 }
 
 /**
@@ -133,23 +130,19 @@ interface RuleMetadata {
  * @returns The canonicalizing function; other ids pass through unchanged.
  */
 export function canonicalRuleIdFunction(): (rule: string) => string {
-  const typescriptRules = (
-    tseslint.plugin as unknown as { rules: Record<string, RuleMetadata> }
-  ).rules
+  const typescriptRules = (tseslint.plugin as unknown as { rules: Record<string, RuleMetadata> })
+    .rules;
   const extensionRules = new Set(
     Object.entries(typescriptRules)
       .filter(([, rule]) => rule.meta?.docs?.extendsBaseRule === true)
       .map(([name]) => name),
-  )
-  const hookRules = new Set(Object.keys(reactHooks.rules))
+  );
+  const hookRules = new Set(Object.keys(reactHooks.rules));
   return (rule) => {
-    const [, plugin, name = ''] =
-      /^(@typescript-eslint|react)\/(.+)$/.exec(rule) ?? []
-    if (plugin === '@typescript-eslint' && extensionRules.has(name)) return name
-    return plugin === 'react' && hookRules.has(name)
-      ? `react-hooks/${name}`
-      : rule
-  }
+    const [, plugin, name = ""] = /^(@typescript-eslint|react)\/(.+)$/.exec(rule) ?? [];
+    if (plugin === "@typescript-eslint" && extensionRules.has(name)) return name;
+    return plugin === "react" && hookRules.has(name) ? `react-hooks/${name}` : rule;
+  };
 }
 
 /**
@@ -159,19 +152,17 @@ export function canonicalRuleIdFunction(): (rule: string) => string {
  * @returns The set of ids a type-less run cannot reproduce.
  */
 export function ruleIdsRequiringTypes(): Set<string> {
-  const rules = (
-    tseslint.plugin as unknown as { rules: Record<string, RuleMetadata> }
-  ).rules
+  const rules = (tseslint.plugin as unknown as { rules: Record<string, RuleMetadata> }).rules;
   const typescriptRules = Object.entries(rules)
     .filter(([, rule]) => rule.meta?.docs?.requiresTypeChecking === true)
-    .map(([name]) => `@typescript-eslint/${name}`)
-  const reactRuleIds = (preset: 'recommended' | 'recommended-type-checked') =>
-    Object.keys(eslintReact.configs[preset].rules ?? {})
-  const plainReact = new Set(reactRuleIds('recommended'))
-  const typedOnlyReact = reactRuleIds('recommended-type-checked').filter(
+    .map(([name]) => `@typescript-eslint/${name}`);
+  const reactRuleIds = (preset: "recommended" | "recommended-type-checked") =>
+    Object.keys(eslintReact.configs[preset].rules ?? {});
+  const plainReact = new Set(reactRuleIds("recommended"));
+  const typedOnlyReact = reactRuleIds("recommended-type-checked").filter(
     (rule) => !plainReact.has(rule),
-  )
-  return new Set([...typescriptRules, ...typedOnlyReact])
+  );
+  return new Set([...typescriptRules, ...typedOnlyReact]);
 }
 
 /**
@@ -187,16 +178,16 @@ export function checkExpectedFixtures(
   findings: readonly Finding[],
   files: readonly string[],
 ): string[] {
-  const seen = new Set(findings.map((item) => `${item.file}|${item.rule}`))
+  const seen = new Set(findings.map((item) => `${item.file}|${item.rule}`));
   const missing = Object.entries(expected).flatMap(([file, rules]) =>
     rules
       .filter((rule) => !seen.has(`${file}|${rule}`))
       .map((rule) => `ESLint did not report ${rule} on fixture ${file}`),
-  )
+  );
   const unlisted = files
     .filter((file) => !Object.hasOwn(expected, file))
-    .map((file) => `Fixture ${file} is missing from expected.json`)
-  return [...missing, ...unlisted]
+    .map((file) => `Fixture ${file} is missing from expected.json`);
+  return [...missing, ...unlisted];
 }
 
 /**
@@ -213,16 +204,14 @@ export function splitCandidateTargets(
 ): { oxlint: string[]; astro: string[] } {
   if (isExplicitFiles) {
     return {
-      oxlint: targets.filter((target) => !target.endsWith('.astro')),
-      astro: targets.filter((target) => target.endsWith('.astro')),
-    }
+      oxlint: targets.filter((target) => !target.endsWith(".astro")),
+      astro: targets.filter((target) => target.endsWith(".astro")),
+    };
   }
   return {
     oxlint: [...targets],
-    astro: targets.map((target) =>
-      target === '.' ? '**/*.astro' : `${target}/**/*.astro`,
-    ),
-  }
+    astro: targets.map((target) => (target === "." ? "**/*.astro" : `${target}/**/*.astro`)),
+  };
 }
 
 /**
@@ -235,12 +224,9 @@ export function listFiles(directory: string): string[] {
   return readdirSync(directory, { recursive: true, withFileTypes: true })
     .filter((entry) => entry.isFile())
     .map((entry) =>
-      path
-        .relative(directory, path.join(entry.parentPath, entry.name))
-        .split(path.sep)
-        .join('/'),
+      path.relative(directory, path.join(entry.parentPath, entry.name)).split(path.sep).join("/"),
     )
-    .toSorted((left, right) => left.localeCompare(right))
+    .toSorted((left, right) => left.localeCompare(right));
 }
 
 /**
@@ -256,41 +242,39 @@ export function materializeFixtures(
   treeDirectory: string,
   repositoryRoot: string,
 ): { files: string[]; cleanup: () => void } {
-  const stored = listFiles(treeDirectory)
-  const files = stored.map((file) => file.slice(0, -FIXTURE_SUFFIX.length))
-  const clash = files.find((file) =>
-    existsSync(path.join(repositoryRoot, file)),
-  )
+  const stored = listFiles(treeDirectory);
+  const files = stored.map((file) => file.slice(0, -FIXTURE_SUFFIX.length));
+  const clash = files.find((file) => existsSync(path.join(repositoryRoot, file)));
   if (clash !== undefined) {
-    throw new Error(`Fixture ${clash} would overwrite an existing repo file`)
+    throw new Error(`Fixture ${clash} would overwrite an existing repo file`);
   }
-  const created: string[] = []
+  const created: string[] = [];
   const cleanup = () => {
-    for (const target of created) rmSync(target, { force: true })
-  }
+    for (const target of created) rmSync(target, { force: true });
+  };
   try {
     for (const [index, file] of files.entries()) {
-      const target = path.join(repositoryRoot, file)
-      mkdirSync(path.dirname(target), { recursive: true })
-      cpSync(path.join(treeDirectory, stored[index] ?? ''), target)
-      created.push(target)
+      const target = path.join(repositoryRoot, file);
+      mkdirSync(path.dirname(target), { recursive: true });
+      cpSync(path.join(treeDirectory, stored[index] ?? ""), target);
+      created.push(target);
     }
   } catch (error) {
-    cleanup()
-    throw error
+    cleanup();
+    throw error;
   }
-  return { files, cleanup }
+  return { files, cleanup };
 }
 
 /**
  * The raw output of one harness section before it is gated.
  */
 export interface RawSection {
-  name: string
-  eslint: Finding[]
-  candidate: Finding[] | undefined
-  problems: string[]
-  isTypeAware: boolean
+  name: string;
+  eslint: Finding[];
+  candidate: Finding[] | undefined;
+  problems: string[];
+  isTypeAware: boolean;
 }
 
 /**
@@ -313,17 +297,17 @@ export function toSectionReport(
     findings.map((finding) => ({
       ...finding,
       rule: canonicalRuleId(finding.rule),
-    }))
+    }));
   const eslint = raw.isTypeAware
     ? raw.eslint
-    : raw.eslint.filter((finding) => !typedRules.has(finding.rule))
+    : raw.eslint.filter((finding) => !typedRules.has(finding.rule));
   return buildSectionReport({
     name: raw.name,
     eslint: canonical(eslint),
     candidate: raw.candidate && canonical(raw.candidate),
     accepted,
     problems: raw.problems,
-  })
+  });
 }
 
 /**
@@ -334,24 +318,20 @@ export function toSectionReport(
  * @returns The lines to print.
  */
 export function summarizeSection(section: SectionReport): string[] {
-  const counts = Object.entries(
-    Object.groupBy(section.rows, (row) => row.classification),
-  ).map(([classification, rows]) => `${classification}: ${String(rows.length)}`)
+  const counts = Object.entries(Object.groupBy(section.rows, (row) => row.classification)).map(
+    ([classification, rows]) => `${classification}: ${String(rows.length)}`,
+  );
   return [
     `== ${section.name} ==`,
     ...(section.isCandidatePresent
       ? []
-      : [
-          'Candidate stack (Oxlint) not installed: ESLint baseline only, nothing to compare.',
-        ]),
+      : ["Candidate stack (Oxlint) not installed: ESLint baseline only, nothing to compare."]),
     ...counts,
     ...section.unexplained.map(
       (finding) =>
         `UNEXPLAINED ESLint-only: ${finding.file}:${String(finding.line)} ${finding.rule}`,
     ),
     ...section.problems.map((problem) => `HARNESS: ${problem}`),
-    ...section.stale.map(
-      (entry) => `stale accepted entry: ${entry.file} ${entry.rule}`,
-    ),
-  ]
+    ...section.stale.map((entry) => `stale accepted entry: ${entry.file} ${entry.rule}`),
+  ];
 }

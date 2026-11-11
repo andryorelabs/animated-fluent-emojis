@@ -1,17 +1,17 @@
-import { expect, test, vi } from 'vitest'
-import { render } from 'vitest-browser-react'
+import { expect, test, vi } from "vitest";
+import { render } from "vitest-browser-react";
 
-import { usePrefersReducedMotion } from './use-prefers-reduced-motion.js'
+import { usePrefersReducedMotion } from "./use-prefers-reduced-motion.js";
 
 const Probe = () => {
-  usePrefersReducedMotion()
-  return null
-}
+  usePrefersReducedMotion();
+  return null;
+};
 
-const fifty = Array.from({ length: 50 }, (_, index) => index)
+const fifty = Array.from({ length: 50 }, (_, index) => index);
 
-test('attaches one media-query change listener for 50 consumers', async () => {
-  const addSpy = vi.spyOn(MediaQueryList.prototype, 'addEventListener')
+test("attaches one media-query change listener for 50 consumers", async () => {
+  const addSpy = vi.spyOn(MediaQueryList.prototype, "addEventListener");
 
   await render(
     <div>
@@ -19,9 +19,9 @@ test('attaches one media-query change listener for 50 consumers', async () => {
         <Probe key={key} />
       ))}
     </div>,
-  )
+  );
 
-  const calls = addSpy.mock.calls.filter(([type]) => type === 'change')
-  expect(calls).toHaveLength(1)
-  addSpy.mockRestore()
-})
+  const calls = addSpy.mock.calls.filter(([type]) => type === "change");
+  expect(calls).toHaveLength(1);
+  addSpy.mockRestore();
+});

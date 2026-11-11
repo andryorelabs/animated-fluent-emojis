@@ -34,7 +34,7 @@ sheet 就停留在海报帧。参见 [CSS](architecture.md#css)。
 **修复：** 在应用的根部导入一次样式表：
 
 ```js
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 ```
 
 如果你已经导入了，emoji 仍然静止，请检查操作系统的“减少动态效果”设置。
@@ -144,15 +144,14 @@ Component 中把 `configureEmojis` 或 `preloadEmojis`
 `src/utils/emoji-manifest.test.ts` 中用 MSW 实现了这一点：
 
 ```ts
-import { http, HttpResponse } from 'msw/http'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from "msw/http";
+import { setupServer } from "msw/node";
 
 const server = setupServer(
-  http.get(
-    'https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json',
-    () => HttpResponse.json(compactManifest),
+  http.get("https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json", () =>
+    HttpResponse.json(compactManifest),
   ),
-)
+);
 ```
 
 `compactManifest` 是紧凑的 slim manifest 结构；这里使用的夹具是

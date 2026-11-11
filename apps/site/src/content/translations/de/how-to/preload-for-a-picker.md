@@ -12,9 +12,9 @@ Wärme das Manifest und die Sprite Sheets auf, bevor sich ein Emoji-Picker
 gerendert wird. Es wird nie abgelehnt, daher genügt `void`:
 
 ```jsx
-import { preloadEmojis } from 'animated-fluent-emojis'
+import { preloadEmojis } from "animated-fluent-emojis";
 
-void preloadEmojis()
+void preloadEmojis();
 ```
 
 Rufe es auf, wenn die Person den Picker wahrscheinlich öffnet, zum Beispiel beim
@@ -28,10 +28,10 @@ wird.
 die Person sehen wird:
 
 ```jsx
-const quickReactions = ['1f44b_wavinghand', '1f525_fire', '1f389_partypopper']
+const quickReactions = ["1f44b_wavinghand", "1f525_fire", "1f389_partypopper"];
 
 function handlePickerTriggerHover() {
-  void preloadEmojis(quickReactions, { skinTone: 'medium' })
+  void preloadEmojis(quickReactions, { skinTone: "medium" });
 }
 ```
 

@@ -1,4 +1,4 @@
-import eslintComments from '@eslint-community/eslint-plugin-eslint-comments'
+import eslintComments from "@eslint-community/eslint-plugin-eslint-comments";
 
 /**
  * Moves a negative column to the start of its line. `eslint-comments` reports
@@ -8,7 +8,7 @@ import eslintComments from '@eslint-community/eslint-plugin-eslint-comments'
  * @returns The same position with its column clamped at 0.
  */
 const clampColumn = (position) =>
-  position && position.column < 0 ? { ...position, column: 0 } : position
+  position && position.column < 0 ? { ...position, column: 0 } : position;
 
 /**
  * Clamps the start and end columns of a report descriptor's `loc`.
@@ -16,12 +16,12 @@ const clampColumn = (position) =>
  * @returns The descriptor, unchanged except for a negative column.
  */
 function clampDescriptor(descriptor) {
-  const { loc } = descriptor
-  if (!loc || !('start' in loc)) return descriptor
+  const { loc } = descriptor;
+  if (!loc || !("start" in loc)) return descriptor;
   return {
     ...descriptor,
     loc: { start: clampColumn(loc.start), end: clampColumn(loc.end) },
-  }
+  };
 }
 
 /**
@@ -32,18 +32,18 @@ function clampDescriptor(descriptor) {
  */
 function withClampedReport(context) {
   const report = (descriptor) => {
-    context.report(clampDescriptor(descriptor))
-  }
+    context.report(clampDescriptor(descriptor));
+  };
   return new Proxy(
     {},
     {
       get(_, key) {
-        if (key === 'report') return report
-        const value = Reflect.get(context, key, context)
-        return typeof value === 'function' ? value.bind(context) : value
+        if (key === "report") return report;
+        const value = Reflect.get(context, key, context);
+        return typeof value === "function" ? value.bind(context) : value;
       },
     },
-  )
+  );
 }
 
 /**
@@ -52,13 +52,13 @@ function withClampedReport(context) {
  * crashes Oxlint, and a crash stops every JS plugin rule in that file.
  */
 const eslintCommentsPlugin = {
-  meta: { name: '@eslint-community/eslint-comments' },
+  meta: { name: "@eslint-community/eslint-comments" },
   rules: Object.fromEntries(
     Object.entries(eslintComments.rules).map(([name, rule]) => [
       name,
       { ...rule, create: (context) => rule.create(withClampedReport(context)) },
     ]),
   ),
-}
+};
 
-export default eslintCommentsPlugin
+export default eslintCommentsPlugin;

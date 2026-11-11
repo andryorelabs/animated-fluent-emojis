@@ -12,7 +12,7 @@ Importiere den Element-Einstiegspunkt einmalig, zum Beispiel in deinem
 Einstiegsmodul. Er registriert `<fluent-emoji>` und braucht kein Stylesheet:
 
 ```tsx
-import 'animated-fluent-emojis/element'
+import "animated-fluent-emojis/element";
 ```
 
 ## Den Tag verwenden
@@ -29,10 +29,10 @@ export function Greeting() {
       size={64}
       play-on-hover
       on:playback-end={() => {
-        console.log('done')
+        console.log("done");
       }}
     />
-  )
+  );
 }
 ```
 
@@ -43,7 +43,7 @@ Element:
 <fluent-emoji
   id="1f44b_wavinghand"
   ref={(element) => {
-    element.playing = false
+    element.playing = false;
   }}
 >
   <span slot="fallback">👋</span>

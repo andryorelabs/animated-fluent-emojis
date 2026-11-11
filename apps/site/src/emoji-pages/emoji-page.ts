@@ -1,19 +1,15 @@
-import {
-  fileUrl,
-  type PublicEmoji,
-  type SkinTone,
-} from '../gallery/public-index'
-import { fillTemplate } from '../gallery/template'
-import { localeUrl, type Locale } from '../i18n/locales'
-import { lastCommitDate } from '../seo/last-modified'
-import type { SitemapSource } from '../seo/sitemap'
+import { fileUrl, type PublicEmoji, type SkinTone } from "../gallery/public-index";
+import { fillTemplate } from "../gallery/template";
+import { localeUrl, type Locale } from "../i18n/locales";
+import { lastCommitDate } from "../seo/last-modified";
+import type { SitemapSource } from "../seo/sitemap";
 
 /**
  * How many related emojis an emoji page lists at most.
  */
-const RELATED_LIMIT = 12
+const RELATED_LIMIT = 12;
 
-const VARIATION_SELECTOR_16 = 0xfe_0f
+const VARIATION_SELECTOR_16 = 0xfe_0f;
 
 /**
  * Site path of an emoji page, without a locale prefix.
@@ -21,7 +17,7 @@ const VARIATION_SELECTOR_16 = 0xfe_0f
  * @returns The path, with a trailing slash.
  */
 export function emojiPagePath(slug: string): string {
-  return `/emojis/${slug}/`
+  return `/emojis/${slug}/`;
 }
 
 /**
@@ -30,7 +26,7 @@ export function emojiPagePath(slug: string): string {
  * @returns The path of the generated PNG.
  */
 export function ogImagePath(slug: string): string {
-  return `/og/${slug}.png`
+  return `/og/${slug}.png`;
 }
 
 /**
@@ -46,16 +42,12 @@ export function relatedEmojis(
   all: readonly PublicEmoji[],
   limit: number = RELATED_LIMIT,
 ): PublicEmoji[] {
-  const siblings = all.filter(
-    (candidate) => candidate.category === emoji.category,
-  )
-  const position = siblings.findIndex(
-    (candidate) => candidate.slug === emoji.slug,
-  )
-  return [
-    ...siblings.slice(position + 1),
-    ...siblings.slice(0, Math.max(position, 0)),
-  ].slice(0, limit)
+  const siblings = all.filter((candidate) => candidate.category === emoji.category);
+  const position = siblings.findIndex((candidate) => candidate.slug === emoji.slug);
+  return [...siblings.slice(position + 1), ...siblings.slice(0, Math.max(position, 0))].slice(
+    0,
+    limit,
+  );
 }
 
 /**
@@ -69,16 +61,12 @@ export function neighbourEmojis(
   emoji: PublicEmoji,
   all: readonly PublicEmoji[],
 ): { previous: PublicEmoji; next: PublicEmoji } | undefined {
-  const siblings = all.filter(
-    (candidate) => candidate.category === emoji.category,
-  )
-  const position = siblings.findIndex(
-    (candidate) => candidate.slug === emoji.slug,
-  )
-  if (position === -1 || siblings.length < 2) return undefined
-  const previous = siblings.at(position - 1)
-  const next = siblings[(position + 1) % siblings.length]
-  return previous && next ? { previous, next } : undefined
+  const siblings = all.filter((candidate) => candidate.category === emoji.category);
+  const position = siblings.findIndex((candidate) => candidate.slug === emoji.slug);
+  if (position === -1 || siblings.length < 2) return undefined;
+  const previous = siblings.at(position - 1);
+  const next = siblings[(position + 1) % siblings.length];
+  return previous && next ? { previous, next } : undefined;
 }
 
 /**
@@ -94,15 +82,15 @@ export function imageObjectJsonLd(
   locale: Locale,
 ): Record<string, unknown> {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'ImageObject',
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
     name,
     contentUrl: fileUrl(emoji.urls.gif),
     thumbnailUrl: fileUrl(emoji.urls.png),
-    encodingFormat: 'image/gif',
+    encodingFormat: "image/gif",
     url: localeUrl(locale, emojiPagePath(emoji.slug)),
-    keywords: emoji.keywords.join(', '),
-  }
+    keywords: emoji.keywords.join(", "),
+  };
 }
 
 /**
@@ -112,17 +100,17 @@ export function imageObjectJsonLd(
  * @returns The filled text.
  */
 export function fillName(pattern: string, name: string): string {
-  return fillTemplate(pattern, 'name', name)
+  return fillTemplate(pattern, "name", name);
 }
 
 /**
  * Source files that change what an emoji page shows, relative to `apps/site`.
  */
 const EMOJI_PAGE_SOURCES = [
-  'src/components/EmojiPage.astro',
-  'src/emoji-pages',
-  'src/pages/emojis/[slug].astro',
-] as const
+  "src/components/EmojiPage.astro",
+  "src/emoji-pages",
+  "src/pages/emojis/[slug].astro",
+] as const;
 
 /**
  * Sitemap source with one localized route per emoji page, dated by the newest
@@ -134,14 +122,14 @@ export function createEmojiSitemapSource(
   load: () => Promise<readonly PublicEmoji[]>,
 ): SitemapSource {
   return async () => {
-    const emojis = await load()
-    const lastmod = lastCommitDate(EMOJI_PAGE_SOURCES)
+    const emojis = await load();
+    const lastmod = lastCommitDate(EMOJI_PAGE_SOURCES);
     return emojis.map((emoji) => ({
       path: emojiPagePath(emoji.slug),
       localized: true,
       lastmod,
-    }))
-  }
+    }));
+  };
 }
 
 /**
@@ -153,11 +141,8 @@ export function createEmojiSitemapSource(
 export function formatCodePoint(unicode: string): string {
   return Array.from(unicode, (character) => character.codePointAt(0) ?? 0)
     .filter((codePoint) => codePoint !== VARIATION_SELECTOR_16)
-    .map(
-      (codePoint) =>
-        `U+${codePoint.toString(16).toUpperCase().padStart(4, '0')}`,
-    )
-    .join(' ')
+    .map((codePoint) => `U+${codePoint.toString(16).toUpperCase().padStart(4, "0")}`)
+    .join(" ");
 }
 
 /**
@@ -167,12 +152,7 @@ export function formatCodePoint(unicode: string): string {
  * @returns The toned glyph when the tone's variant has its own unicode,
  * otherwise the base glyph.
  */
-export function copyableGlyph(
-  emoji: PublicEmoji,
-  tone: SkinTone | undefined,
-): string {
-  const variant = tone
-    ? emoji.tones.find((candidate) => candidate.tone === tone)
-    : undefined
-  return variant?.unicode ?? emoji.unicode
+export function copyableGlyph(emoji: PublicEmoji, tone: SkinTone | undefined): string {
+  const variant = tone ? emoji.tones.find((candidate) => candidate.tone === tone) : undefined;
+  return variant?.unicode ?? emoji.unicode;
 }

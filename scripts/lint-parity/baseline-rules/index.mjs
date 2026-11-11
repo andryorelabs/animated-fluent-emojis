@@ -1,5 +1,5 @@
-import noAstroStyleBlocks from './no-astro-style-blocks.mjs'
-import rule from './no-non-doc-comments.mjs'
+import noAstroStyleBlocks from "./no-astro-style-blocks.mjs";
+import rule from "./no-non-doc-comments.mjs";
 
 /**
  * This repo's local ESLint plugin, registered in `eslint.config.mjs` under
@@ -7,9 +7,9 @@ import rule from './no-non-doc-comments.mjs'
  */
 const localPlugin = {
   rules: {
-    'no-astro-style-blocks': noAstroStyleBlocks,
-    'no-non-doc-comments': rule,
+    "no-astro-style-blocks": noAstroStyleBlocks,
+    "no-non-doc-comments": rule,
   },
-}
+};
 
-export default localPlugin
+export default localPlugin;

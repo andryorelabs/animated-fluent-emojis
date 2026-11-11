@@ -12,9 +12,9 @@ emojis, para que los emojis aparezcan sin una carga visible.
 renderice cualquier `Emoji`. Nunca se rechaza, así que basta con `void`:
 
 ```jsx
-import { preloadEmojis } from 'animated-fluent-emojis'
+import { preloadEmojis } from "animated-fluent-emojis";
 
-void preloadEmojis()
+void preloadEmojis();
 ```
 
 Llámalo cuando sea probable que el usuario abra el selector, por ejemplo al
@@ -28,10 +28,10 @@ Pasa ids para solicitar sus sprite sheets cuando el manifest esté listo. Pasa
 tienen tonos de piel:
 
 ```jsx
-const quickReactions = ['1f44b_wavinghand', '1f525_fire', '1f389_partypopper']
+const quickReactions = ["1f44b_wavinghand", "1f525_fire", "1f389_partypopper"];
 
 function handlePickerTriggerHover() {
-  void preloadEmojis(quickReactions, { skinTone: 'medium' })
+  void preloadEmojis(quickReactions, { skinTone: "medium" });
 }
 ```
 

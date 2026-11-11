@@ -35,7 +35,7 @@ Other cases look the same and are not bugs:
 **Fix:** Import the stylesheet once, at the root of the app:
 
 ```js
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 ```
 
 If you did import it and the emoji still rests, check the operating system's
@@ -154,15 +154,14 @@ jsdom.
 repository does it with MSW in `src/utils/emoji-manifest.test.ts`:
 
 ```ts
-import { http, HttpResponse } from 'msw/http'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from "msw/http";
+import { setupServer } from "msw/node";
 
 const server = setupServer(
-  http.get(
-    'https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json',
-    () => HttpResponse.json(compactManifest),
+  http.get("https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json", () =>
+    HttpResponse.json(compactManifest),
   ),
-)
+);
 ```
 
 `compactManifest` is the compact slim manifest shape; the fixture used here is

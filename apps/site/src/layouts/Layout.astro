@@ -1,43 +1,39 @@
 ---
-import figtreeLatin from '@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2?url'
+import figtreeLatin from "@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2?url";
 
-import Footer from '../components/Footer.astro'
-import Header from '../components/Header.astro'
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
 import {
   hreflangAlternates,
   LOCALE_CONFIG,
   localeUrl,
   type FontPreload,
   type Locale,
-} from '../i18n/locales'
-import { getUi } from '../i18n/ui'
-import { THEME_INIT_SCRIPT } from '../scripts/theme-init'
-import { THEME_COLORS } from '../scripts/theme-keys'
-import { buildSocialMeta, SITE_OG_IMAGE_URL } from '../seo/open-graph'
-import {
-  buildStructuredData,
-  serializeJsonLd,
-  type Breadcrumb,
-} from '../seo/structured-data'
-import '../styles/global.css'
+} from "../i18n/locales";
+import { getUi } from "../i18n/ui";
+import { THEME_INIT_SCRIPT } from "../scripts/theme-init";
+import { THEME_COLORS } from "../scripts/theme-keys";
+import { buildSocialMeta, SITE_OG_IMAGE_URL } from "../seo/open-graph";
+import { buildStructuredData, serializeJsonLd, type Breadcrumb } from "../seo/structured-data";
+import "../styles/global.css";
 
 interface Props {
-  locale: Locale
-  title?: string
-  description?: string
-  path?: string
-  notFound?: boolean
-  image?: string
-  imageAlt?: string
-  jsonLd?: object
-  trail?: readonly Breadcrumb[]
-  previousHref?: string | undefined
-  nextHref?: string | undefined
+  locale: Locale;
+  title?: string;
+  description?: string;
+  path?: string;
+  notFound?: boolean;
+  image?: string;
+  imageAlt?: string;
+  jsonLd?: object;
+  trail?: readonly Breadcrumb[];
+  previousHref?: string | undefined;
+  nextHref?: string | undefined;
 }
 
 const {
   locale,
-  path = '/',
+  path = "/",
   notFound = false,
   image = SITE_OG_IMAGE_URL,
   imageAlt,
@@ -45,21 +41,21 @@ const {
   trail,
   previousHref,
   nextHref,
-} = Astro.props
+} = Astro.props;
 const FONT_PRELOAD_URLS: Record<FontPreload, string> = {
-  'figtree-latin': figtreeLatin,
-}
-const { meta } = getUi(locale)
-const title = Astro.props.title ?? meta.siteName
-const description = Astro.props.description ?? meta.description
-const canonical = localeUrl(locale, path)
+  "figtree-latin": figtreeLatin,
+};
+const { meta } = getUi(locale);
+const title = Astro.props.title ?? meta.siteName;
+const description = Astro.props.description ?? meta.description;
+const canonical = localeUrl(locale, path);
 const socialMeta = buildSocialMeta({
   locale,
   title,
   description,
   image,
   imageAlt: imageAlt ?? title,
-})
+});
 const structuredData = notFound
   ? undefined
   : buildStructuredData({
@@ -69,27 +65,16 @@ const structuredData = notFound
       description,
       path,
       trail,
-    })
+    });
 ---
 
 <!doctype html>
 <html lang={locale}>
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
-    <meta
-      name="theme-color"
-      media="(prefers-color-scheme: light)"
-      content={THEME_COLORS.light}
-    />
-    <meta
-      name="theme-color"
-      media="(prefers-color-scheme: dark)"
-      content={THEME_COLORS.dark}
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content={THEME_COLORS.light} />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content={THEME_COLORS.dark} />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light dark" />
@@ -98,13 +83,7 @@ const structuredData = notFound
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     {LOCALE_CONFIG[locale].preloadFonts.map((font) => (
-      <link
-        rel="preload"
-        as="font"
-        type="font/woff2"
-        href={FONT_PRELOAD_URLS[font]}
-        crossorigin
-      />
+      <link rel="preload" as="font" type="font/woff2" href={FONT_PRELOAD_URLS[font]} crossorigin />
     ))}
     <script is:inline set:html={THEME_INIT_SCRIPT} />
     {notFound ? (
@@ -128,23 +107,18 @@ const structuredData = notFound
       <meta {...{ [attribute]: key }} content={content} />
     ))}
     {structuredData && (
-      <script
-        type="application/ld+json"
-        set:html={serializeJsonLd(structuredData)}
-      />
+      <script type="application/ld+json" set:html={serializeJsonLd(structuredData)} />
     )}
-    {jsonLd && (
-      <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />
-    )}
+    {jsonLd && <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />}
   </head>
   <body class="flex min-h-dvh flex-col font-sans">
-    <Header locale={locale} path={notFound ? '/' : path} />
+    <Header locale={locale} path={notFound ? "/" : path} />
     <slot />
     <Footer locale={locale} />
     <script>
-      import { installEmojiTransition } from '../scripts/emoji-transition'
+      import { installEmojiTransition } from "../scripts/emoji-transition";
 
-      installEmojiTransition()
+      installEmojiTransition();
     </script>
   </body>
 </html>

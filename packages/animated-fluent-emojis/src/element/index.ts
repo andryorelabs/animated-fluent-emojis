@@ -1,11 +1,11 @@
-import { defineFluentEmoji } from './fluent-emoji.js'
+import { defineFluentEmoji } from "./fluent-emoji.js";
 
-defineFluentEmoji()
+defineFluentEmoji();
 
-export { FLUENT_EMOJI_PRE_UPGRADE_CSS } from './fluent-emoji.js'
+export { FLUENT_EMOJI_PRE_UPGRADE_CSS } from "./fluent-emoji.js";
 export type {
   FluentEmojiAttributes,
   FluentEmojiElement,
   FluentEmojiJsxAttributes,
   FluentEmojiProperties,
-} from './types.js'
+} from "./types.js";

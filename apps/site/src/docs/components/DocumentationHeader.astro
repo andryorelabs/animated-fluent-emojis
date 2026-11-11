@@ -1,17 +1,17 @@
 ---
-import Search from '@astrojs/starlight/components/Search.astro'
+import Search from "@astrojs/starlight/components/Search.astro";
 
-import Header from '../../components/Header.astro'
-import { splitLocalePath } from '../../i18n/locales'
-import { getUi } from '../../i18n/ui'
+import Header from "../../components/Header.astro";
+import { splitLocalePath } from "../../i18n/locales";
+import { getUi } from "../../i18n/ui";
 
-const { path, locale } = splitLocalePath(Astro.url.pathname)
-const { search } = getUi(locale).docs
+const { path, locale } = splitLocalePath(Astro.url.pathname);
+const { search } = getUi(locale).docs;
 const searchStyle = {
-  '--afe-search-hint': JSON.stringify(search.hint),
-  '--afe-search-dev-title': JSON.stringify(search.devTitle),
-  '--afe-search-dev-body': JSON.stringify(search.devBody),
-}
+  "--afe-search-hint": JSON.stringify(search.hint),
+  "--afe-search-dev-title": JSON.stringify(search.devTitle),
+  "--afe-search-dev-body": JSON.stringify(search.devBody),
+};
 ---
 
 <Header locale={locale} path={path} skipTarget="#_top" embedded>
@@ -24,10 +24,10 @@ const searchStyle = {
   import {
     installSearchTrustedTypesPolicy,
     type TrustedTypesFactory,
-  } from '../search-trusted-types'
+  } from "../search-trusted-types";
 
   installSearchTrustedTypesPolicy(
     (window as Window & { trustedTypes?: TrustedTypesFactory }).trustedTypes,
     window.location.origin,
-  )
+  );
 </script>

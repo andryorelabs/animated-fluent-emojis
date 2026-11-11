@@ -1,9 +1,9 @@
-@import 'tailwindcss';
-@import '../../../../docs/brand/tokens.css';
-@import '@fontsource-variable/figtree';
-@import '@fontsource-variable/geist-mono';
-@import './theme.css';
-@import './utilities.css';
+@import "tailwindcss";
+@import "../../../../docs/brand/tokens.css";
+@import "@fontsource-variable/figtree";
+@import "@fontsource-variable/geist-mono";
+@import "./theme.css";
+@import "./utilities.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -104,7 +104,7 @@
 
 .site-header::before {
   @apply bg-background/80 backdrop-blur-md;
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
@@ -134,7 +134,7 @@
 }
 
 .spotlight::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -214,7 +214,7 @@
 
   a,
   button,
-  [role='button'],
+  [role="button"],
   summary {
     touch-action: manipulation;
   }
@@ -244,7 +244,7 @@
   }
 
   .shimmer::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     background-image: linear-gradient(
@@ -326,7 +326,7 @@
   user-select: none;
 }
 
-.afe-code[data-line-numbers='false'] .gutter {
+.afe-code[data-line-numbers="false"] .gutter {
   display: none;
 }
 
@@ -365,8 +365,7 @@
   }
   100% {
     opacity: 0;
-    transform: translate(var(--burst-x), var(--burst-y))
-      rotate(var(--burst-rotate)) scale(1);
+    transform: translate(var(--burst-x), var(--burst-y)) rotate(var(--burst-rotate)) scale(1);
   }
 }
 
@@ -387,12 +386,12 @@
   position: relative;
 }
 
-.tab-pill-list [data-slot='tabs-trigger'][role='tab'] {
+.tab-pill-list [data-slot="tabs-trigger"][role="tab"] {
   position: relative;
   z-index: 1;
 }
 
-.tab-pill-list [data-slot='tabs-trigger'][role='tab'][aria-selected='true'] {
+.tab-pill-list [data-slot="tabs-trigger"][role="tab"][aria-selected="true"] {
   background: transparent;
   color: var(--tab-pill-foreground, var(--primary-foreground));
 }
@@ -411,28 +410,28 @@
   transform: translateX(var(--active-tab-left, 0));
 }
 
-[data-slot='tabs'][data-variant='cmd'] {
+[data-slot="tabs"][data-variant="cmd"] {
   --tab-pill-radius: 7px;
   --tab-pill-background: var(--foreground);
   --tab-pill-border: var(--foreground);
   --tab-pill-foreground: var(--background);
 }
 
-[data-slot='tabs'][data-variant='card'] {
+[data-slot="tabs"][data-variant="card"] {
   --tab-pill-radius: 9px;
   --tab-pill-background: var(--muted);
   --tab-pill-border: var(--border);
   --tab-pill-foreground: var(--foreground);
 }
 
-[data-slot='tabs'][data-variant='dock'] {
+[data-slot="tabs"][data-variant="dock"] {
   --tab-pill-radius: 7px;
   --tab-pill-background: var(--foreground);
   --tab-pill-border: var(--foreground);
   --tab-pill-foreground: var(--background);
 }
 
-[data-slot='tabs'][data-variant='segmented'] {
+[data-slot="tabs"][data-variant="segmented"] {
   --tab-pill-radius: 9px;
   --tab-pill-background: var(--background);
   --tab-pill-border: var(--border);
@@ -581,7 +580,7 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .burst[data-burst='active'] .burst-particle {
+  .burst[data-burst="active"] .burst-particle {
     animation-name: burst-fly;
     animation-duration: 600ms;
     animation-delay: calc(var(--burst-index, 0) * 20ms);
@@ -601,13 +600,7 @@
 
 .marquee {
   overflow: hidden;
-  mask-image: linear-gradient(
-    90deg,
-    transparent,
-    #000 10%,
-    #000 90%,
-    transparent
-  );
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
 }
 
 .marquee-track {
@@ -615,12 +608,12 @@
   width: max-content;
 }
 
-.marquee-track > [aria-hidden='true'] {
+.marquee-track > [aria-hidden="true"] {
   display: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .marquee-track > [aria-hidden='true'] {
+  .marquee-track > [aria-hidden="true"] {
     display: flex;
   }
 
@@ -645,7 +638,7 @@
 }
 
 .glow::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: -30%;
   z-index: -1;
@@ -666,7 +659,7 @@
   }
 }
 
-.glow[data-glow='dim']::before {
+.glow[data-glow="dim"]::before {
   opacity: 0.4;
 }
 

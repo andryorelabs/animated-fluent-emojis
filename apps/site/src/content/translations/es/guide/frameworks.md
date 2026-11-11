@@ -20,8 +20,8 @@ el componente de Astro incluyen sus propios estilos.
 Importa `Emoji` desde la subruta de React:
 
 ```jsx
-import { Emoji } from 'animated-fluent-emojis/react'
-import 'animated-fluent-emojis/style.css'
+import { Emoji } from "animated-fluent-emojis/react";
+import "animated-fluent-emojis/style.css";
 ```
 
 Si migras desde la 0.6 o anterior: la exportación `Emoji` de la raíz quedó
@@ -40,22 +40,17 @@ raíz.
 
 ```vue
 <script setup lang="ts">
-import { Emoji } from 'animated-fluent-emojis/vue'
+import { Emoji } from "animated-fluent-emojis/vue";
 
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 
 const handlePlaybackEnd = () => {
-  console.log('done')
-}
+  console.log("done");
+};
 </script>
 
 <template>
-  <Emoji
-    id="1f44b_wavinghand"
-    :size="64"
-    play-on-hover
-    @playback-end="handlePlaybackEnd"
-  >
+  <Emoji id="1f44b_wavinghand" :size="64" play-on-hover @playback-end="handlePlaybackEnd">
     <template #fallback><span>👋</span></template>
   </Emoji>
 </template>
@@ -97,7 +92,7 @@ falla.
 
 ```astro
 ---
-import Emoji from 'animated-fluent-emojis/astro'
+import Emoji from "animated-fluent-emojis/astro";
 ---
 
 <Emoji id="1f44b_wavinghand" size={64} playOnHover>
@@ -120,7 +115,7 @@ hoja de estilos: los keyframes viven en su shadow root.
 
 ```html
 <script type="module">
-  import 'animated-fluent-emojis/element'
+  import "animated-fluent-emojis/element";
 </script>
 
 <fluent-emoji id="1f44b_wavinghand" size="64" play-on-hover>
@@ -160,17 +155,17 @@ escribe la etiqueta.
 el núcleo sin framework de cada adaptador. Importarlo no toca el DOM.
 
 ```js
-import { createEmoji } from 'animated-fluent-emojis'
-import 'animated-fluent-emojis/style.css'
+import { createEmoji } from "animated-fluent-emojis";
+import "animated-fluent-emojis/style.css";
 
-const controller = createEmoji(document.querySelector('#slot'), {
-  id: '1f44b_wavinghand',
+const controller = createEmoji(document.querySelector("#slot"), {
+  id: "1f44b_wavinghand",
   size: 64,
-  fallback: () => document.createTextNode('👋'),
-})
+  fallback: () => document.createTextNode("👋"),
+});
 
-controller.update({ playing: false })
-controller.destroy()
+controller.update({ playing: false });
+controller.destroy();
 ```
 
 Sus opciones son las props de abajo, con `className`, `style` y `attributes`

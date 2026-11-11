@@ -38,7 +38,7 @@ Outros casos têm a mesma aparência e não são bugs:
 **Solução:** Importe a folha de estilo uma vez, na raiz do app:
 
 ```js
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 ```
 
 Se você a importou e o emoji continua parado, verifique a configuração de
@@ -162,15 +162,14 @@ animação nunca passa no jsdom.
 testes. Este repositório faz isso com MSW em `src/utils/emoji-manifest.test.ts`:
 
 ```ts
-import { http, HttpResponse } from 'msw/http'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from "msw/http";
+import { setupServer } from "msw/node";
 
 const server = setupServer(
-  http.get(
-    'https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json',
-    () => HttpResponse.json(compactManifest),
+  http.get("https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json", () =>
+    HttpResponse.json(compactManifest),
   ),
-)
+);
 ```
 
 `compactManifest` é o formato compacto do slim manifest; o fixture usado aqui é

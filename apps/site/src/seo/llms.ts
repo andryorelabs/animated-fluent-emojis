@@ -1,19 +1,19 @@
-import type { PublicEmoji } from '../gallery/public-index'
+import type { PublicEmoji } from "../gallery/public-index";
 
 /**
  * One page listed in an llms file.
  */
 interface LlmsLink {
-  title: string
-  url: string
-  description?: string
+  title: string;
+  url: string;
+  description?: string;
 }
 
 /**
  * An emoji page entry: the link plus the longer text `llms-full.txt` shows.
  */
 export interface LlmsEmojiEntry extends LlmsLink {
-  details: string
+  details: string;
 }
 
 /**
@@ -21,18 +21,18 @@ export interface LlmsEmojiEntry extends LlmsLink {
  */
 export type LlmsEmoji = Pick<
   PublicEmoji,
-  'slug' | 'description' | 'unicode' | 'category' | 'keywords'
->
+  "slug" | "description" | "unicode" | "category" | "keywords"
+>;
 
 /**
  * Everything the composed llms files are built from.
  */
 export interface LlmsInput {
-  siteName: string
-  description: string
-  landing: LlmsLink
-  docs: readonly LlmsLink[]
-  emojis: readonly LlmsEmojiEntry[]
+  siteName: string;
+  description: string;
+  landing: LlmsLink;
+  docs: readonly LlmsLink[];
+  emojis: readonly LlmsEmojiEntry[];
 }
 
 /**
@@ -40,19 +40,19 @@ export interface LlmsInput {
  * `starlight-llms-txt` plugin generates.
  */
 export interface LlmsFullInput extends LlmsInput {
-  docsMarkdown: string
+  docsMarkdown: string;
 }
 
 function linkLine({ title, url, description }: LlmsLink): string {
-  return `- [${title}](${url})${description ? `: ${description}` : ''}`
+  return `- [${title}](${url})${description ? `: ${description}` : ""}`;
 }
 
 function section(heading: string, body: string): string {
-  return `## ${heading}\n\n${body}`
+  return `## ${heading}\n\n${body}`;
 }
 
 function header(input: LlmsInput): string[] {
-  return [`# ${input.siteName}`, `> ${input.description}`]
+  return [`# ${input.siteName}`, `> ${input.description}`];
 }
 
 /**
@@ -62,16 +62,14 @@ function header(input: LlmsInput): string[] {
  * @returns The entry, with the Unicode sequence and category, and keywords in its details.
  */
 export function emojiEntry(emoji: LlmsEmoji, pageUrl: string): LlmsEmojiEntry {
-  const summary = `${emoji.unicode}, ${emoji.category}`
+  const summary = `${emoji.unicode}, ${emoji.category}`;
   return {
     title: emoji.description,
     url: pageUrl,
     description: summary,
     details:
-      emoji.keywords.length > 0
-        ? `${summary}. Keywords: ${emoji.keywords.join(', ')}`
-        : summary,
-  }
+      emoji.keywords.length > 0 ? `${summary}. Keywords: ${emoji.keywords.join(", ")}` : summary,
+  };
 }
 
 /**
@@ -84,14 +82,11 @@ export function buildLlmsTxt(input: LlmsInput): string {
   return (
     [
       ...header(input),
-      section('Landing', linkLine(input.landing)),
-      section(
-        'Documentation',
-        input.docs.map((link) => linkLine(link)).join('\n'),
-      ),
-      section('Emojis', input.emojis.map((link) => linkLine(link)).join('\n')),
-    ].join('\n\n') + '\n'
-  )
+      section("Landing", linkLine(input.landing)),
+      section("Documentation", input.docs.map((link) => linkLine(link)).join("\n")),
+      section("Emojis", input.emojis.map((link) => linkLine(link)).join("\n")),
+    ].join("\n\n") + "\n"
+  );
 }
 
 /**
@@ -104,14 +99,14 @@ export function buildLlmsFullTxt(input: LlmsFullInput): string {
   return (
     [
       ...header(input),
-      section('Landing', linkLine(input.landing)),
-      section('Documentation', input.docsMarkdown.trim()),
+      section("Landing", linkLine(input.landing)),
+      section("Documentation", input.docsMarkdown.trim()),
       section(
-        'Emojis',
+        "Emojis",
         input.emojis
           .map(({ title, url, details }) => `- [${title}](${url}): ${details}`)
-          .join('\n'),
+          .join("\n"),
       ),
-    ].join('\n\n') + '\n'
-  )
+    ].join("\n\n") + "\n"
+  );
 }

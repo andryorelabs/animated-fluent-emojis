@@ -9,15 +9,11 @@ manifest, что и `Emoji`, поэтому добавить его рядом �
 никогда не отклоняется:
 
 ```js
-import {
-  extractEmojis,
-  findEmojiByUnicode,
-  searchEmojis,
-} from 'animated-fluent-emojis/lookup'
+import { extractEmojis, findEmojiByUnicode, searchEmojis } from "animated-fluent-emojis/lookup";
 
-await findEmojiByUnicode('👍🏽') // { id: 'yes', skinTone: 'medium' }
-await extractEmojis('Hi 👋 there') // [{ id, text, index, length }]
-await searchEmojis('party', { limit: 5 }) // [{ id }]
+await findEmojiByUnicode("👍🏽"); // { id: 'yes', skinTone: 'medium' }
+await extractEmojis("Hi 👋 there"); // [{ id, text, index, length }]
+await searchEmojis("party", { limit: 5 }); // [{ id }]
 ```
 
 - `findEmojiByUnicode(text)` находит один эмодзи и сопоставляет единичный

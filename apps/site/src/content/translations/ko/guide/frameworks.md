@@ -19,8 +19,8 @@ React, Vue, Svelte adapter와 `createEmoji`는 키프레임을
 React 하위 경로에서 `Emoji`를 import하세요.
 
 ```jsx
-import { Emoji } from 'animated-fluent-emojis/react'
-import 'animated-fluent-emojis/style.css'
+import { Emoji } from "animated-fluent-emojis/react";
+import "animated-fluent-emojis/style.css";
 ```
 
 0.6 이하에서 마이그레이션하는 경우: 루트 `Emoji` export는 0.6에서 더 이상
@@ -39,22 +39,17 @@ Vue 3.3 이상이 필요합니다. `Emoji`는 아래 props를 camelCase로 받�
 
 ```vue
 <script setup lang="ts">
-import { Emoji } from 'animated-fluent-emojis/vue'
+import { Emoji } from "animated-fluent-emojis/vue";
 
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 
 const handlePlaybackEnd = () => {
-  console.log('done')
-}
+  console.log("done");
+};
 </script>
 
 <template>
-  <Emoji
-    id="1f44b_wavinghand"
-    :size="64"
-    play-on-hover
-    @playback-end="handlePlaybackEnd"
-  >
+  <Emoji id="1f44b_wavinghand" :size="64" play-on-hover @playback-end="handlePlaybackEnd">
     <template #fallback><span>👋</span></template>
   </Emoji>
 </template>
@@ -95,7 +90,7 @@ Astro 5 이상이 필요합니다. 컴포넌트는 빌드 시점에 emoji 마크
 
 ```astro
 ---
-import Emoji from 'animated-fluent-emojis/astro'
+import Emoji from "animated-fluent-emojis/astro";
 ---
 
 <Emoji id="1f44b_wavinghand" size={64} playOnHover>
@@ -118,7 +113,7 @@ props는 아래에 나온 것과 같지만 콜백은 없고, `class`와 문자�
 
 ```html
 <script type="module">
-  import 'animated-fluent-emojis/element'
+  import "animated-fluent-emojis/element";
 </script>
 
 <fluent-emoji id="1f44b_wavinghand" size="64" play-on-hover>
@@ -152,17 +147,17 @@ htmx도 마찬가지로 `animated-fluent-emojis/element`를 import하고 태그�
 adapter의 프레임워크 독립 코어입니다. import해도 DOM을 건드리지 않습니다.
 
 ```js
-import { createEmoji } from 'animated-fluent-emojis'
-import 'animated-fluent-emojis/style.css'
+import { createEmoji } from "animated-fluent-emojis";
+import "animated-fluent-emojis/style.css";
 
-const controller = createEmoji(document.querySelector('#slot'), {
-  id: '1f44b_wavinghand',
+const controller = createEmoji(document.querySelector("#slot"), {
+  id: "1f44b_wavinghand",
   size: 64,
-  fallback: () => document.createTextNode('👋'),
-})
+  fallback: () => document.createTextNode("👋"),
+});
 
-controller.update({ playing: false })
-controller.destroy()
+controller.update({ playing: false });
+controller.destroy();
 ```
 
 옵션은 아래 props에 더해, 루트 span을 위한 `className`, `style`, `attributes`,

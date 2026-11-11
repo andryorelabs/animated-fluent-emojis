@@ -12,7 +12,7 @@ sourceHash: 45537066a981f484
 `<fluent-emoji>`。该元素的样式封装在自己的 shadow root 中，因此无需导入样式表：
 
 ```ts
-import 'animated-fluent-emojis/element'
+import "animated-fluent-emojis/element";
 ```
 
 ## 在组件中允许该标签
@@ -20,10 +20,10 @@ import 'animated-fluent-emojis/element'
 除非组件允许自定义元素，否则 Angular 会拒绝未知标签：
 
 ```ts
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 
 @Component({
-  selector: 'app-greeting',
+  selector: "app-greeting",
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `<fluent-emoji id="1f44b_wavinghand" size="64" play-on-hover />`,
@@ -37,12 +37,7 @@ export class GreetingComponent {}
 `emoji-load`、`emoji-error` 和 `playback-end`：
 
 ```html
-<fluent-emoji
-  [id]="emojiId"
-  [size]="64"
-  [playOnHover]="true"
-  (playback-end)="onDone()"
->
+<fluent-emoji [id]="emojiId" [size]="64" [playOnHover]="true" (playback-end)="onDone()">
   <span slot="fallback">👋</span>
 </fluent-emoji>
 ```

@@ -1,21 +1,21 @@
-import { Emoji } from 'animated-fluent-emojis/react'
+import { Emoji } from "animated-fluent-emojis/react";
 
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion'
+} from "@/components/ui/accordion";
 
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 
-const QUESTION_EMOJI_SIZE = 28
+const QUESTION_EMOJI_SIZE = 28;
 
 export interface FaqEntry {
-  id: string
-  emojiId: string
-  question: string
-  answer: string
+  id: string;
+  emojiId: string;
+  question: string;
+  answer: string;
 }
 
 /**
@@ -44,12 +44,7 @@ export default function FaqAccordion({ items }: { items: FaqEntry[] }) {
               aria-hidden="true"
               className="grid size-7 shrink-0 place-items-center motion-safe:transition-scale-rotate motion-safe:duration-300 motion-safe:ease-spring motion-safe:group-aria-expanded/accordion-trigger:scale-135 motion-safe:group-aria-expanded/accordion-trigger:-rotate-10"
             >
-              <Emoji
-                id={item.emojiId}
-                size={QUESTION_EMOJI_SIZE}
-                alt=""
-                playOnHover
-              />
+              <Emoji id={item.emojiId} size={QUESTION_EMOJI_SIZE} alt="" playOnHover />
             </span>
             <span className="min-w-0 flex-1">{item.question}</span>
           </AccordionTrigger>
@@ -59,5 +54,5 @@ export default function FaqAccordion({ items }: { items: FaqEntry[] }) {
         </AccordionItem>
       ))}
     </Accordion>
-  )
+  );
 }

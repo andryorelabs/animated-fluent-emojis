@@ -1,21 +1,21 @@
-import type { Manifest } from '../../packages/animated-fluent-emojis/src/utils/types.js'
-import { indexEmoticons } from './constants.js'
+import type { Manifest } from "../../packages/animated-fluent-emojis/src/utils/types.js";
+import { indexEmoticons } from "./constants.js";
 
 /**
  * Animation data measured from a converted sprite sheet.
  */
 export interface AnimationState {
-  readonly fps: number
-  readonly framesCount: number
+  readonly fps: number;
+  readonly framesCount: number;
 }
 
 /**
  * A summary of how two manifests differ.
  */
 export interface ManifestDiff {
-  readonly added: readonly string[]
-  readonly removed: readonly string[]
-  readonly changed: readonly string[]
+  readonly added: readonly string[];
+  readonly removed: readonly string[];
+  readonly changed: readonly string[];
 }
 
 /**
@@ -24,12 +24,9 @@ export interface ManifestDiff {
  * @param next The new manifest.
  * @returns The ids added, removed and whose etag changed.
  */
-export function diffManifests(
-  previous: Manifest,
-  next: Manifest,
-): ManifestDiff {
-  const before = indexEmoticons(previous)
-  const after = indexEmoticons(next)
+export function diffManifests(previous: Manifest, next: Manifest): ManifestDiff {
+  const before = indexEmoticons(previous);
+  const after = indexEmoticons(next);
   return {
     added: after
       .keys()
@@ -41,13 +38,10 @@ export function diffManifests(
       .toArray(),
     changed: after
       .entries()
-      .filter(
-        ([id, emoticon]) =>
-          before.has(id) && before.get(id)?.etag !== emoticon.etag,
-      )
+      .filter(([id, emoticon]) => before.has(id) && before.get(id)?.etag !== emoticon.etag)
       .map(([id]) => id)
       .toArray(),
-  }
+  };
 }
 
 /**
@@ -56,19 +50,16 @@ export function diffManifests(
  * @param hdEtagById The HD-aware etag of every emoji published with HD sheets.
  * @returns A manifest where those emoticons carry `hd: true`.
  */
-export function applyHd(
-  manifest: Manifest,
-  hdEtagById: ReadonlyMap<string, string>,
-): Manifest {
+export function applyHd(manifest: Manifest, hdEtagById: ReadonlyMap<string, string>): Manifest {
   return {
     categories: manifest.categories.map((category) => ({
       ...category,
       emoticons: category.emoticons.map((emoticon) => {
-        const etag = hdEtagById.get(emoticon.id)
-        return etag === undefined ? emoticon : { ...emoticon, etag, hd: true }
+        const etag = hdEtagById.get(emoticon.id);
+        return etag === undefined ? emoticon : { ...emoticon, etag, hd: true };
       }),
     })),
-  }
+  };
 }
 
 /**
@@ -85,13 +76,11 @@ export function applyAnimations(
     categories: manifest.categories.map((category) => ({
       ...category,
       emoticons: category.emoticons.map((emoticon) => {
-        const animation = animationsById.get(emoticon.id)
-        return animation
-          ? { ...emoticon, animation: { ...animation, firstFrame: 1 } }
-          : emoticon
+        const animation = animationsById.get(emoticon.id);
+        return animation ? { ...emoticon, animation: { ...animation, firstFrame: 1 } } : emoticon;
       }),
     })),
-  }
+  };
 }
 
 /**
@@ -124,5 +113,5 @@ export function pruneManifest(
             .find((original) => original.id === category.id)
             ?.emoticons.some((emoticon) => skippedIds.has(emoticon.id)),
       ),
-  }
+  };
 }

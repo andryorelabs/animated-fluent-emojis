@@ -13,10 +13,10 @@ that have an HD sprite sheet (200px frames) also get a width-based `srcSet`
 when given ids, requests their sprite sheets once it is ready. It never rejects:
 
 ```js
-import { preloadEmojis } from 'animated-fluent-emojis'
+import { preloadEmojis } from "animated-fluent-emojis";
 
-void preloadEmojis()
-void preloadEmojis(['1f44b_wavinghand', '1f525_fire'], { skinTone: 'medium' })
+void preloadEmojis();
+void preloadEmojis(["1f44b_wavinghand", "1f525_fire"], { skinTone: "medium" });
 ```
 
 `skinTone` picks the variant to warm for emojis that have skin tones.
@@ -29,7 +29,7 @@ By default the manifest and sprite sheets come from
 your own copy, call `configureEmojis` once, before the first `Emoji` renders:
 
 ```js
-import { configureEmojis } from 'animated-fluent-emojis'
+import { configureEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
 ```

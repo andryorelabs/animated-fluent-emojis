@@ -12,9 +12,9 @@ sourceHash: 727a2637d064bf30
 で十分です。
 
 ```jsx
-import { preloadEmojis } from 'animated-fluent-emojis'
+import { preloadEmojis } from "animated-fluent-emojis";
 
-void preloadEmojis()
+void preloadEmojis();
 ```
 
 ユーザーがピッカーを開きそうなタイミングで呼び出します。たとえば、トリガーボタンのホバーやフォーカス時、またはアプリシェルのマウント時です。
@@ -25,10 +25,10 @@ id を渡すと、マニフェストの準備ができた時点でそのスプ�
 を渡して、ユーザーが目にするバリアントをウォームアップします。
 
 ```jsx
-const quickReactions = ['1f44b_wavinghand', '1f525_fire', '1f389_partypopper']
+const quickReactions = ["1f44b_wavinghand", "1f525_fire", "1f389_partypopper"];
 
 function handlePickerTriggerHover() {
-  void preloadEmojis(quickReactions, { skinTone: 'medium' })
+  void preloadEmojis(quickReactions, { skinTone: "medium" });
 }
 ```
 

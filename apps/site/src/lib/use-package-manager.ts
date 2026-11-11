@@ -1,11 +1,11 @@
-import { useSyncExternalStore } from 'react'
+import { useSyncExternalStore } from "react";
 
 import {
   DEFAULT_PACKAGE_MANAGER,
   sharedPackageManagerStore,
   type PackageManager,
   type PackageManagerStore,
-} from './package-manager'
+} from "./package-manager";
 
 /**
  * Reads and writes the page-wide package manager choice from any React island.
@@ -18,10 +18,6 @@ import {
 export function usePackageManager(
   store: PackageManagerStore = sharedPackageManagerStore,
 ): readonly [PackageManager, (manager: PackageManager) => void] {
-  const manager = useSyncExternalStore(
-    store.subscribe,
-    store.get,
-    () => DEFAULT_PACKAGE_MANAGER,
-  )
-  return [manager, store.set] as const
+  const manager = useSyncExternalStore(store.subscribe, store.get, () => DEFAULT_PACKAGE_MANAGER);
+  return [manager, store.set] as const;
 }

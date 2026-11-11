@@ -1,23 +1,19 @@
 ---
-import { Icon } from '@astrojs/starlight/components'
+import { Icon } from "@astrojs/starlight/components";
 
-import type { Locale } from '../../i18n/locales'
-import { getUi } from '../../i18n/ui'
-import { externalLinkAttributes } from '../../site-links'
+import type { Locale } from "../../i18n/locales";
+import { getUi } from "../../i18n/ui";
+import { externalLinkAttributes } from "../../site-links";
 
-const { editUrl, lang } = Astro.locals.starlightRoute
-const { common } = getUi(lang as Locale)
-const externalAttributes = externalLinkAttributes()
+const { editUrl, lang } = Astro.locals.starlightRoute;
+const { common } = getUi(lang as Locale);
+const externalAttributes = externalLinkAttributes();
 ---
 
 {editUrl && (
-  <a
-    href={editUrl}
-    class="sl-flex edit-link print:hidden"
-    {...externalAttributes}
-  >
+  <a href={editUrl} class="sl-flex edit-link print:hidden" {...externalAttributes}>
     <Icon name="pencil" size="1.2em" />
-    {Astro.locals.t('page.editLink')}
+    {Astro.locals.t("page.editLink")}
     <span class="sr-only"> ({common.opensInNewTab})</span>
   </a>
 )}

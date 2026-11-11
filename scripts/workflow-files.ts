@@ -1,39 +1,39 @@
-import { readdirSync, readFileSync } from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { parse } from 'yaml'
+import { readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { parse } from "yaml";
 
 const WORKFLOWS_DIRECTORY = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
-  '../.github/workflows',
-)
+  "../.github/workflows",
+);
 
 export interface WorkflowStep {
-  readonly id?: string
-  readonly name?: string
-  readonly if?: string
-  readonly 'continue-on-error'?: boolean
-  readonly uses?: string
-  readonly run?: string
-  readonly env?: Record<string, unknown>
-  readonly with?: Record<string, unknown>
+  readonly id?: string;
+  readonly name?: string;
+  readonly if?: string;
+  readonly "continue-on-error"?: boolean;
+  readonly uses?: string;
+  readonly run?: string;
+  readonly env?: Record<string, unknown>;
+  readonly with?: Record<string, unknown>;
 }
 
 interface WorkflowJob {
-  readonly name?: string
-  readonly if?: string
-  readonly 'continue-on-error'?: boolean
-  readonly needs?: unknown
-  readonly 'timeout-minutes'?: unknown
-  readonly uses?: string
-  readonly permissions?: unknown
-  readonly steps?: readonly WorkflowStep[]
+  readonly name?: string;
+  readonly if?: string;
+  readonly "continue-on-error"?: boolean;
+  readonly needs?: unknown;
+  readonly "timeout-minutes"?: unknown;
+  readonly uses?: string;
+  readonly permissions?: unknown;
+  readonly steps?: readonly WorkflowStep[];
 }
 
 export interface Workflow {
-  readonly on?: unknown
-  readonly permissions?: unknown
-  readonly jobs?: Record<string, WorkflowJob>
+  readonly on?: unknown;
+  readonly permissions?: unknown;
+  readonly jobs?: Record<string, WorkflowJob>;
 }
 
 /**
@@ -43,7 +43,7 @@ export interface Workflow {
 export function listWorkflowFiles(): string[] {
   return readdirSync(WORKFLOWS_DIRECTORY)
     .filter((name) => /\.ya?ml$/.test(name))
-    .toSorted((first, second) => first.localeCompare(second))
+    .toSorted((first, second) => first.localeCompare(second));
 }
 
 /**
@@ -52,7 +52,7 @@ export function listWorkflowFiles(): string[] {
  * @returns The unparsed file content.
  */
 export function readWorkflowText(fileName: string): string {
-  return readFileSync(path.join(WORKFLOWS_DIRECTORY, fileName), 'utf8')
+  return readFileSync(path.join(WORKFLOWS_DIRECTORY, fileName), "utf8");
 }
 
 /**
@@ -61,5 +61,5 @@ export function readWorkflowText(fileName: string): string {
  * @returns The workflow document as a plain object.
  */
 export function readWorkflow(fileName: string): Workflow {
-  return parse(readWorkflowText(fileName)) as Workflow
+  return parse(readWorkflowText(fileName)) as Workflow;
 }

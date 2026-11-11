@@ -13,7 +13,7 @@ d'entrée. Elle enregistre `<fluent-emoji>` et n'a besoin d'aucune feuille de
 style :
 
 ```tsx
-import 'animated-fluent-emojis/element'
+import "animated-fluent-emojis/element";
 ```
 
 ## Utiliser la balise
@@ -30,10 +30,10 @@ export function Greeting() {
       size={64}
       play-on-hover
       on:playback-end={() => {
-        console.log('done')
+        console.log("done");
       }}
     />
-  )
+  );
 }
 ```
 
@@ -44,7 +44,7 @@ l'élément :
 <fluent-emoji
   id="1f44b_wavinghand"
   ref={(element) => {
-    element.playing = false
+    element.playing = false;
   }}
 >
   <span slot="fallback">👋</span>

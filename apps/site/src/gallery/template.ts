@@ -6,10 +6,6 @@
  * @param value - The text to insert.
  * @returns The filled string.
  */
-export function fillTemplate(
-  template: string,
-  name: string,
-  value: string,
-): string {
-  return template.split(`{${name}}`).join(value)
+export function fillTemplate(template: string, name: string, value: string): string {
+  return template.split(`{${name}}`).join(value);
 }

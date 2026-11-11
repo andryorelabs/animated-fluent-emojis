@@ -1,24 +1,24 @@
 export interface PreferenceStorage {
-  getItem: (key: string) => string | null
-  setItem: (key: string, value: string) => void
+  getItem: (key: string) => string | null;
+  setItem: (key: string, value: string) => void;
 }
 
 export interface PreferenceEnvironment {
-  storage?: () => PreferenceStorage
-  target?: EventTarget
+  storage?: () => PreferenceStorage;
+  target?: EventTarget;
 }
 
 export interface PreferenceDefinition<Value extends string> {
-  storageKey: string
-  eventName: string
-  fallback: Value
-  isValue: (value: unknown) => value is Value
+  storageKey: string;
+  eventName: string;
+  fallback: Value;
+  isValue: (value: unknown) => value is Value;
 }
 
 export interface PreferenceStore<Value extends string> {
-  get: () => Value
-  set: (value: Value) => void
-  subscribe: (listener: (value: Value) => void) => () => void
+  get: () => Value;
+  set: (value: Value) => void;
+  subscribe: (listener: (value: Value) => void) => () => void;
 }
 
 /**
@@ -35,65 +35,65 @@ export function createPreferenceStore<Value extends string>(
   definition: PreferenceDefinition<Value>,
   environment: PreferenceEnvironment = {},
 ): PreferenceStore<Value> {
-  const { storageKey, eventName, fallback, isValue } = definition
-  const target = environment.target ?? globalThis
-  const getStorage = environment.storage ?? (() => globalThis.localStorage)
-  let current: Value | undefined
+  const { storageKey, eventName, fallback, isValue } = definition;
+  const target = environment.target ?? globalThis;
+  const getStorage = environment.storage ?? (() => globalThis.localStorage);
+  let current: Value | undefined;
 
   function readStored(): unknown {
     try {
-      return getStorage().getItem(storageKey)
+      return getStorage().getItem(storageKey);
     } catch {
-      return null
+      return null;
     }
   }
 
   function persist(value: Value): void {
     try {
-      getStorage().setItem(storageKey, value)
+      getStorage().setItem(storageKey, value);
     } catch {
-      return
+      return;
     }
   }
 
   return {
     get: () => {
       if (current !== undefined) {
-        return current
+        return current;
       }
-      const stored = readStored()
-      return isValue(stored) ? stored : fallback
+      const stored = readStored();
+      return isValue(stored) ? stored : fallback;
     },
     set: (value) => {
-      current = value
-      persist(value)
-      target.dispatchEvent(new CustomEvent(eventName, { detail: value }))
+      current = value;
+      persist(value);
+      target.dispatchEvent(new CustomEvent(eventName, { detail: value }));
     },
     subscribe: (listener) => {
       const handle = (event: Event): void => {
-        const { detail } = event as CustomEvent<unknown>
+        const { detail } = event as CustomEvent<unknown>;
         if (!isValue(detail)) {
-          return
+          return;
         }
 
-        current = detail
-        listener(detail)
-      }
+        current = detail;
+        listener(detail);
+      };
       const handleStorage = (event: Event): void => {
-        const { key, newValue } = event as StorageEvent
+        const { key, newValue } = event as StorageEvent;
         if (key !== storageKey || !isValue(newValue)) {
-          return
+          return;
         }
 
-        current = newValue
-        listener(newValue)
-      }
-      target.addEventListener(eventName, handle)
-      target.addEventListener('storage', handleStorage)
+        current = newValue;
+        listener(newValue);
+      };
+      target.addEventListener(eventName, handle);
+      target.addEventListener("storage", handleStorage);
       return () => {
-        target.removeEventListener(eventName, handle)
-        target.removeEventListener('storage', handleStorage)
-      }
+        target.removeEventListener(eventName, handle);
+        target.removeEventListener("storage", handleStorage);
+      };
     },
-  }
+  };
 }

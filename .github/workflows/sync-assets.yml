@@ -2,7 +2,7 @@ name: Sync Assets
 
 on:
   schedule:
-    - cron: '17 6 * * 1'
+    - cron: "17 6 * * 1"
   workflow_dispatch:
     inputs:
       rebuild:
@@ -10,8 +10,7 @@ on:
         type: boolean
         default: false
       bypass_guards:
-        description:
-          Skip the Teams discovery and catalog removal guards (the file-count
+        description: Skip the Teams discovery and catalog removal guards (the file-count
           guard always runs)
         type: boolean
         default: false
@@ -95,8 +94,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: 4.156.1
-          command:
-            pages deploy apps/assets/dist-assets
+          command: pages deploy apps/assets/dist-assets
             --project-name=animated-fluent-emojis --branch=main
 
       - name: Build the files site
@@ -112,8 +110,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: 4.156.1
-          command:
-            pages deploy apps/assets/dist-files
+          command: pages deploy apps/assets/dist-files
             --project-name=animated-fluent-emojis-files --branch=main
 
       - name: Smoke test the legacy layout
@@ -305,8 +302,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY: ${{ github.repository }}
-          RUN_URL:
-            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
             github.run_id }}
         run: |
           title="sync-assets failing"
@@ -331,8 +327,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY: ${{ github.repository }}
-          RUN_URL:
-            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
             github.run_id }}
         run: |
           title="sync-assets failing"

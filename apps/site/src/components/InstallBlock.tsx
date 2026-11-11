@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState } from "react";
 
 import {
   installCommand,
@@ -6,16 +6,16 @@ import {
   PACKAGE_MANAGERS,
   type PackageManager,
   type PackageManagerStore,
-} from '@/lib/package-manager'
-import { usePackageManager } from '@/lib/use-package-manager'
+} from "@/lib/package-manager";
+import { usePackageManager } from "@/lib/use-package-manager";
 
-import CodeBlock, { type CodeBlockLabels } from './CodeBlock'
-import CopyBurst from './CopyBurst'
+import CodeBlock, { type CodeBlockLabels } from "./CodeBlock";
+import CopyBurst from "./CopyBurst";
 
 export interface InstallBlockProps {
-  htmlByManager: Record<PackageManager, string>
-  labels: CodeBlockLabels
-  store?: PackageManagerStore
+  htmlByManager: Record<PackageManager, string>;
+  labels: CodeBlockLabels;
+  store?: PackageManagerStore;
 }
 
 /**
@@ -36,16 +36,16 @@ export default function InstallBlock({
   labels,
   store: providedStore,
 }: InstallBlockProps) {
-  const [manager, setManager] = usePackageManager(providedStore)
+  const [manager, setManager] = usePackageManager(providedStore);
 
-  const [burst, setBurst] = useState(0)
+  const [burst, setBurst] = useState(0);
 
   const tabs = PACKAGE_MANAGERS.map((id) => ({
     id,
     label: id,
     code: installCommand(id),
     html: htmlByManager[id],
-  }))
+  }));
 
   return (
     <CodeBlock
@@ -55,12 +55,12 @@ export default function InstallBlock({
       lineNumbers={false}
       activeId={manager}
       onCopied={() => {
-        setBurst((count) => count + 1)
+        setBurst((count) => count + 1);
       }}
       copyEffect={<CopyBurst burst={burst} />}
       onActiveChange={(id) => {
-        if (isPackageManager(id)) setManager(id)
+        if (isPackageManager(id)) setManager(id);
       }}
     />
-  )
+  );
 }

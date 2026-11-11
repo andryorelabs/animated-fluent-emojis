@@ -1,26 +1,21 @@
-import { cp, mkdir, writeFile } from 'node:fs/promises'
-import path from 'node:path'
+import { cp, mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 
-import type { Manifest } from '../../packages/animated-fluent-emojis/src/utils/types.js'
-import { DOWNLOAD_CONCURRENCY } from './build-context.js'
-import type { SpriteTask } from './catalog.js'
-import { indexEmoticons } from './constants.js'
-import { fetchOk, mapWithConcurrency, type FetchLike } from './http.js'
-import {
-  buildV1SpritePath,
-  toV1Manifest,
-  V1_DIRECTORY,
-  V1_HEADERS_FILE,
-} from './layout-v1.js'
-import { MIT_REPOSITORY } from './mit.js'
-import { toSlimManifest } from './slim-manifest.js'
+import type { Manifest } from "../../packages/animated-fluent-emojis/src/utils/types.js";
+import { DOWNLOAD_CONCURRENCY } from "./build-context.js";
+import type { SpriteTask } from "./catalog.js";
+import { indexEmoticons } from "./constants.js";
+import { fetchOk, mapWithConcurrency, type FetchLike } from "./http.js";
+import { buildV1SpritePath, toV1Manifest, V1_DIRECTORY, V1_HEADERS_FILE } from "./layout-v1.js";
+import { MIT_REPOSITORY } from "./mit.js";
+import { toSlimManifest } from "./slim-manifest.js";
 
 /**
  * How many files the license notice adds to the output.
  */
-export const LICENSE_FILE_COUNT = 1
+export const LICENSE_FILE_COUNT = 1;
 
-const LICENSE_FILE_NAME = 'LICENSE-fluentui-emoji-animated.txt'
+const LICENSE_FILE_NAME = "LICENSE-fluentui-emoji-animated.txt";
 
 const HEADERS_FILE = `/sprites/*
   Cache-Control: public, max-age=86400
@@ -37,36 +32,33 @@ const HEADERS_FILE = `/sprites/*
 /version.json
   Cache-Control: no-cache
   Access-Control-Allow-Origin: *
-`
+`;
 
 /**
  * The versions a published catalog was built from.
  */
 export interface PublishedVersion {
-  readonly teamsHash: string
-  readonly teamsLastModified: string
-  readonly mitSha: string
-  readonly builtAt: string
-  readonly pipelineVersion: number
-  readonly layouts: readonly string[]
+  readonly teamsHash: string;
+  readonly teamsLastModified: string;
+  readonly mitSha: string;
+  readonly builtAt: string;
+  readonly pipelineVersion: number;
+  readonly layouts: readonly string[];
   /**
    * Emoji that failed to build, or whose HD sheet failed. Present only when
    * non-empty; a published catalog that lists any is stale.
    */
-  readonly skippedIds?: readonly string[]
+  readonly skippedIds?: readonly string[];
   /**
    * Set when the build was cut short by `--limit`. Such a catalog is never
    * current.
    */
-  readonly limited?: true
+  readonly limited?: true;
 }
 
-async function copyFileInto(
-  source: string,
-  destination: string,
-): Promise<void> {
-  await mkdir(path.dirname(destination), { recursive: true })
-  await cp(source, destination)
+async function copyFileInto(source: string, destination: string): Promise<void> {
+  await mkdir(path.dirname(destination), { recursive: true });
+  await cp(source, destination);
 }
 
 /**
@@ -79,13 +71,13 @@ async function copyFileInto(
  * @param input.outputDirectory Where the site is assembled.
  */
 export async function copySpriteTrees(input: {
-  tasks: readonly SpriteTask[]
-  manifest: Manifest
-  cacheDirectory: string
-  outputDirectory: string
+  tasks: readonly SpriteTask[];
+  manifest: Manifest;
+  cacheDirectory: string;
+  outputDirectory: string;
 }): Promise<void> {
-  const { tasks, manifest, cacheDirectory, outputDirectory } = input
-  const emoticonById = indexEmoticons(manifest)
+  const { tasks, manifest, cacheDirectory, outputDirectory } = input;
+  const emoticonById = indexEmoticons(manifest);
   const copies = tasks.flatMap((task) =>
     [task.outputPath, task.hdOutputPath].flatMap((relativePath) =>
       relativePath === undefined
@@ -95,19 +87,12 @@ export async function copySpriteTrees(input: {
             etag: emoticonById.get(task.id)?.etag ?? task.etag,
           },
     ),
-  )
-  await mapWithConcurrency(
-    copies,
-    DOWNLOAD_CONCURRENCY,
-    async ({ relativePath, etag }) => {
-      const source = path.join(cacheDirectory, relativePath)
-      await copyFileInto(source, path.join(outputDirectory, relativePath))
-      await copyFileInto(
-        source,
-        path.join(outputDirectory, buildV1SpritePath(relativePath, etag)),
-      )
-    },
-  )
+  );
+  await mapWithConcurrency(copies, DOWNLOAD_CONCURRENCY, async ({ relativePath, etag }) => {
+    const source = path.join(cacheDirectory, relativePath);
+    await copyFileInto(source, path.join(outputDirectory, relativePath));
+    await copyFileInto(source, path.join(outputDirectory, buildV1SpritePath(relativePath, etag)));
+  });
 }
 
 /**
@@ -123,8 +108,8 @@ export async function fetchLicenseText(
   const response = await fetchOk(
     fetchImplementation,
     `https://raw.githubusercontent.com/${MIT_REPOSITORY}/${mitSha}/LICENSE`,
-  )
-  return response.text()
+  );
+  return response.text();
 }
 
 /**
@@ -132,11 +117,8 @@ export async function fetchLicenseText(
  * @param outputDirectory The directory being published.
  * @param text The license file content.
  */
-export async function writeLicense(
-  outputDirectory: string,
-  text: string,
-): Promise<void> {
-  await writeFile(path.join(outputDirectory, LICENSE_FILE_NAME), text)
+export async function writeLicense(outputDirectory: string, text: string): Promise<void> {
+  await writeFile(path.join(outputDirectory, LICENSE_FILE_NAME), text);
 }
 
 /**
@@ -147,30 +129,24 @@ export async function writeLicense(
  * @param input.outputDirectory Where the site is assembled.
  */
 export async function writeSiteFiles(input: {
-  manifest: Manifest
-  version: PublishedVersion
-  outputDirectory: string
+  manifest: Manifest;
+  version: PublishedVersion;
+  outputDirectory: string;
 }): Promise<void> {
-  const { manifest, version, outputDirectory } = input
-  const versionJson = JSON.stringify(version, null, 2)
+  const { manifest, version, outputDirectory } = input;
+  const versionJson = JSON.stringify(version, null, 2);
+  await writeFile(path.join(outputDirectory, "manifest.json"), JSON.stringify(manifest));
   await writeFile(
-    path.join(outputDirectory, 'manifest.json'),
-    JSON.stringify(manifest),
-  )
-  await writeFile(
-    path.join(outputDirectory, 'manifest.slim.json'),
+    path.join(outputDirectory, "manifest.slim.json"),
     JSON.stringify(toSlimManifest(manifest)),
-  )
-  await writeFile(path.join(outputDirectory, 'version.json'), versionJson)
-  const versionedDirectory = path.join(outputDirectory, V1_DIRECTORY)
-  await mkdir(versionedDirectory, { recursive: true })
+  );
+  await writeFile(path.join(outputDirectory, "version.json"), versionJson);
+  const versionedDirectory = path.join(outputDirectory, V1_DIRECTORY);
+  await mkdir(versionedDirectory, { recursive: true });
   await writeFile(
-    path.join(versionedDirectory, 'manifest.slim.json'),
+    path.join(versionedDirectory, "manifest.slim.json"),
     JSON.stringify(toV1Manifest(manifest)),
-  )
-  await writeFile(path.join(versionedDirectory, 'version.json'), versionJson)
-  await writeFile(
-    path.join(outputDirectory, '_headers'),
-    `${HEADERS_FILE}\n${V1_HEADERS_FILE}`,
-  )
+  );
+  await writeFile(path.join(versionedDirectory, "version.json"), versionJson);
+  await writeFile(path.join(outputDirectory, "_headers"), `${HEADERS_FILE}\n${V1_HEADERS_FILE}`);
 }

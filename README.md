@@ -113,10 +113,10 @@ stylesheet carries the animation keyframes; without it emojis render as static
 sprite sheets.
 
 ```jsx
-import { Emoji } from 'animated-fluent-emojis/react'
-import 'animated-fluent-emojis/style.css'
+import { Emoji } from "animated-fluent-emojis/react";
+import "animated-fluent-emojis/style.css";
 
-;<Emoji id="1f44b_wavinghand" size={64} playOnHover skinTone="medium" />
+<Emoji id="1f44b_wavinghand" size={64} playOnHover skinTone="medium" />;
 ```
 
 The manifest is fetched on first render, never at import; see the
@@ -251,21 +251,16 @@ publishes the notice for the emojis from Microsoft's MIT-licensed repository at
   Emojis][Tarikul Islam Anik Repo] project, which served as inspiration for this
   library
 
-[GitHub Stars]:
-  https://img.shields.io/github/stars/andryorelabs/animated-fluent-emojis?style=for-the-badge&logo=github&logoColor=white&labelColor=24292e
+[GitHub Stars]: https://img.shields.io/github/stars/andryorelabs/animated-fluent-emojis?style=for-the-badge&logo=github&logoColor=white&labelColor=24292e
 [GitHub-url]: https://github.com/andryorelabs/animated-fluent-emojis
-[X-follow]:
-  https://img.shields.io/badge/X-000000.svg?style=for-the-badge&logo=X&logoColor=white
+[X-follow]: https://img.shields.io/badge/X-000000.svg?style=for-the-badge&logo=X&logoColor=white
 [X-url]: https://twitter.com/andryore
-[GitHub Follow]:
-  https://img.shields.io/github/followers/andryore?style=for-the-badge&logo=github&logoColor=white&labelColor=24292e
+[GitHub Follow]: https://img.shields.io/github/followers/andryore?style=for-the-badge&logo=github&logoColor=white&labelColor=24292e
 [GitHub-follow-url]: https://github.com/andryore
 [Microsoft Fluent Emojis]: https://github.com/microsoft/fluentui-emoji
-[Microsoft Fluent Emojis Animated]:
-  https://github.com/microsoft/fluentui-emoji-animated
+[Microsoft Fluent Emojis Animated]: https://github.com/microsoft/fluentui-emoji-animated
 [Tarikul Islam Anik Profile]: https://github.com/Tarikul-Islam-Anik
-[Tarikul Islam Anik Repo]:
-  https://github.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis
+[Tarikul Islam Anik Repo]: https://github.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis
 
 Built by [AndryOre](https://andryore.dev)
 

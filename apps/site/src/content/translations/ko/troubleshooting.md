@@ -38,7 +38,7 @@ export로 배포됩니다. `emoji-play` 애니메이션 이름과 그 키프레�
 **해결:** 앱의 루트에서 스타일시트를 한 번 import하세요.
 
 ```js
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 ```
 
 이미 import했는데도 emoji가 멈춰 있다면 운영체제의 동작 줄이기 설정을
@@ -159,15 +159,14 @@ ESM 모드로 전환하거나, Vitest처럼 네이티브 ESM을 지원하는 러
 저장소는 `src/utils/emoji-manifest.test.ts`에서 MSW로 처리합니다.
 
 ```ts
-import { http, HttpResponse } from 'msw/http'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from "msw/http";
+import { setupServer } from "msw/node";
 
 const server = setupServer(
-  http.get(
-    'https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json',
-    () => HttpResponse.json(compactManifest),
+  http.get("https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json", () =>
+    HttpResponse.json(compactManifest),
   ),
-)
+);
 ```
 
 `compactManifest`는 압축된 slim manifest 형태이며, 여기서 사용한 fixture는

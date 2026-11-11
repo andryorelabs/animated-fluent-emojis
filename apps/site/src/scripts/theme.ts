@@ -1,8 +1,8 @@
-import { THEME_COLORS, THEME_STORAGE_KEY } from './theme-keys'
+import { THEME_COLORS, THEME_STORAGE_KEY } from "./theme-keys";
 
-export type Theme = 'system' | 'light' | 'dark'
+export type Theme = "system" | "light" | "dark";
 
-const listeners = new Set<() => void>()
+const listeners = new Set<() => void>();
 
 /**
  * Subscribes to stored-theme changes for `useSyncExternalStore`.
@@ -10,10 +10,10 @@ const listeners = new Set<() => void>()
  * @returns A function that removes the listener.
  */
 export function subscribeTheme(listener: () => void): () => void {
-  listeners.add(listener)
+  listeners.add(listener);
   return () => {
-    listeners.delete(listener)
-  }
+    listeners.delete(listener);
+  };
 }
 
 /**
@@ -22,9 +22,7 @@ export function subscribeTheme(listener: () => void): () => void {
  * @returns Whether the value is a known theme.
  */
 export function isTheme(value: unknown): value is Theme {
-  return (
-    typeof value === 'string' && ['system', 'light', 'dark'].includes(value)
-  )
+  return typeof value === "string" && ["system", "light", "dark"].includes(value);
 }
 
 /**
@@ -34,10 +32,10 @@ export function isTheme(value: unknown): value is Theme {
  */
 export function readStoredTheme(): Theme {
   try {
-    const stored = localStorage.getItem(THEME_STORAGE_KEY)
-    return stored === 'light' || stored === 'dark' ? stored : 'system'
+    const stored = localStorage.getItem(THEME_STORAGE_KEY);
+    return stored === "light" || stored === "dark" ? stored : "system";
   } catch {
-    return 'system'
+    return "system";
   }
 }
 
@@ -48,12 +46,12 @@ export function readStoredTheme(): Theme {
  */
 export function storeTheme(theme: Theme): void {
   try {
-    if (theme === 'system') localStorage.removeItem(THEME_STORAGE_KEY)
-    else localStorage.setItem(THEME_STORAGE_KEY, theme)
+    if (theme === "system") localStorage.removeItem(THEME_STORAGE_KEY);
+    else localStorage.setItem(THEME_STORAGE_KEY, theme);
   } catch {
-    document.documentElement.dataset.themeStorage = 'unavailable'
+    document.documentElement.dataset.themeStorage = "unavailable";
   }
-  for (const listener of listeners) listener()
+  for (const listener of listeners) listener();
 }
 
 /**
@@ -65,21 +63,20 @@ export function storeTheme(theme: Theme): void {
  * @param suppressTransitions - Whether to add `theme-switching` while applying.
  */
 export function applyTheme(theme: Theme, suppressTransitions = true): void {
-  const root = document.documentElement
+  const root = document.documentElement;
   if (suppressTransitions) {
-    root.classList.add('theme-switching')
+    root.classList.add("theme-switching");
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        root.classList.remove('theme-switching')
-      })
-    })
+        root.classList.remove("theme-switching");
+      });
+    });
   }
   const dark =
-    theme === 'dark' ||
-    (theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches)
-  root.classList.toggle('dark', dark)
-  root.dataset.theme = theme
-  syncThemeColor(theme)
+    theme === "dark" || (theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+  root.classList.toggle("dark", dark);
+  root.dataset.theme = theme;
+  syncThemeColor(theme);
 }
 
 /**
@@ -89,14 +86,14 @@ export function applyTheme(theme: Theme, suppressTransitions = true): void {
  * @param theme - The theme whose class and attribute are written.
  */
 export function applyThemeAnimated(theme: Theme): void {
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
-  if (reduced || typeof document.startViewTransition !== 'function') {
-    applyTheme(theme)
-    return
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced || typeof document.startViewTransition !== "function") {
+    applyTheme(theme);
+    return;
   }
   document.startViewTransition(() => {
-    applyTheme(theme)
-  })
+    applyTheme(theme);
+  });
 }
 
 /**
@@ -107,11 +104,11 @@ export function applyThemeAnimated(theme: Theme): void {
 function syncThemeColor(theme: Theme): void {
   for (const meta of document.querySelectorAll('meta[name="theme-color"]')) {
     const scheme =
-      theme === 'system'
-        ? meta.getAttribute('media')?.includes('dark')
-          ? 'dark'
-          : 'light'
-        : theme
-    meta.setAttribute('content', THEME_COLORS[scheme])
+      theme === "system"
+        ? meta.getAttribute("media")?.includes("dark")
+          ? "dark"
+          : "light"
+        : theme;
+    meta.setAttribute("content", THEME_COLORS[scheme]);
   }
 }

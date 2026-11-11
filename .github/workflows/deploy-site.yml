@@ -5,11 +5,11 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/site/**'
-      - 'docs/**'
-      - 'packages/animated-fluent-emojis/**'
-      - '.github/scripts/deploy-coolify.sh'
-      - '.github/workflows/deploy-site.yml'
+      - "apps/site/**"
+      - "docs/**"
+      - "packages/animated-fluent-emojis/**"
+      - ".github/scripts/deploy-coolify.sh"
+      - ".github/workflows/deploy-site.yml"
 
 concurrency:
   group: ${{ github.workflow }}
@@ -34,8 +34,7 @@ jobs:
 
       - name: Compute last-modified dates
         id: dates
-        run:
-          echo "map=$(bash apps/site/docker/last-modified.sh)" >>
+        run: echo "map=$(bash apps/site/docker/last-modified.sh)" >>
           "$GITHUB_OUTPUT"
 
       - name: Build container

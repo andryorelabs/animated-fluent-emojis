@@ -12,7 +12,7 @@ Solid에서는 `<fluent-emoji>` 요소로 emoji를 렌더링합니다. Solid 전
 `<fluent-emoji>`가 등록되며 스타일시트는 필요 없습니다.
 
 ```tsx
-import 'animated-fluent-emojis/element'
+import "animated-fluent-emojis/element";
 ```
 
 ## 태그 사용하기
@@ -28,10 +28,10 @@ export function Greeting() {
       size={64}
       play-on-hover
       on:playback-end={() => {
-        console.log('done')
+        console.log("done");
       }}
     />
-  )
+  );
 }
 ```
 
@@ -42,7 +42,7 @@ fallback은 `slot="fallback"`이 지정된 자식으로 전달하고, `ref`로 �
 <fluent-emoji
   id="1f44b_wavinghand"
   ref={(element) => {
-    element.playing = false
+    element.playing = false;
   }}
 >
   <span slot="fallback">👋</span>

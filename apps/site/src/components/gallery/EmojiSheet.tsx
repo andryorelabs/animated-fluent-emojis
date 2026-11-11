@@ -1,5 +1,5 @@
-import { Emoji } from 'animated-fluent-emojis/react'
-import { CopyIcon, ExternalLinkIcon, XIcon } from 'lucide-react'
+import { Emoji } from "animated-fluent-emojis/react";
+import { CopyIcon, ExternalLinkIcon, XIcon } from "lucide-react";
 import {
   useCallback,
   useRef,
@@ -7,42 +7,38 @@ import {
   type CSSProperties,
   type ReactNode,
   type RefObject,
-} from 'react'
+} from "react";
 
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Sheet, SheetClose, SheetContent } from '@/components/ui/sheet'
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Sheet, SheetClose, SheetContent } from "@/components/ui/sheet";
 
-import { effectiveTone } from '../../gallery/filter'
-import {
-  fileUrl,
-  type PublicEmoji,
-  type SkinTone,
-} from '../../gallery/public-index'
-import { localePath, type Locale } from '../../i18n/locales'
-import { CopySnippetButton } from './CopySnippetButton'
-import type { GalleryStrings } from './EmojiDetail'
-import { FileActionButton } from './FileActionButton'
-import { StatusToast, useStatusAnnouncer } from './StatusToast'
+import { effectiveTone } from "../../gallery/filter";
+import { fileUrl, type PublicEmoji, type SkinTone } from "../../gallery/public-index";
+import { localePath, type Locale } from "../../i18n/locales";
+import { CopySnippetButton } from "./CopySnippetButton";
+import type { GalleryStrings } from "./EmojiDetail";
+import { FileActionButton } from "./FileActionButton";
+import { StatusToast, useStatusAnnouncer } from "./StatusToast";
 
-const ZOOMS = [1, 2] as const
-const PREVIEW_SIZE = 64
-const KEYWORD_LIMIT = 8
+const ZOOMS = [1, 2] as const;
+const PREVIEW_SIZE = 64;
+const KEYWORD_LIMIT = 8;
 
-const STAGE_DOTS = 'bg-dots-border bg-grid-16'
+const STAGE_DOTS = "bg-dots-border bg-grid-16";
 
-export const EMOJI_SHEET_HEADING_ID = 'emoji-sheet-heading'
+export const EMOJI_SHEET_HEADING_ID = "emoji-sheet-heading";
 
 /**
  * Properties of {@link EmojiSheetBody}.
  */
 export interface EmojiSheetBodyProps {
-  emoji: PublicEmoji
-  name: string
-  tone: SkinTone | undefined
-  size: number
-  locale: Locale
-  strings: GalleryStrings
-  closeControl?: ReactNode
+  emoji: PublicEmoji;
+  name: string;
+  tone: SkinTone | undefined;
+  size: number;
+  locale: Locale;
+  strings: GalleryStrings;
+  closeControl?: ReactNode;
 }
 
 /**
@@ -55,23 +51,22 @@ export interface EmojiSheetBodyProps {
  * @returns The sheet content.
  */
 export function EmojiSheetBody(props: EmojiSheetBodyProps) {
-  type PreviewStatus = 'loading' | 'ready' | 'error'
+  type PreviewStatus = "loading" | "ready" | "error";
 
-  const { emoji, name, tone, size, locale, strings, closeControl } = props
-  const [zoom, setZoom] = useState<(typeof ZOOMS)[number]>(1)
-  const [preview, setPreview] = useState<{ key: string; state: PreviewStatus }>(
-    { key: '', state: 'loading' },
-  )
-  const [attempt, setAttempt] = useState(0)
-  const { message, visible, announce, copy, handleNotice } =
-    useStatusAnnouncer(strings)
+  const { emoji, name, tone, size, locale, strings, closeControl } = props;
+  const [zoom, setZoom] = useState<(typeof ZOOMS)[number]>(1);
+  const [preview, setPreview] = useState<{ key: string; state: PreviewStatus }>({
+    key: "",
+    state: "loading",
+  });
+  const [attempt, setAttempt] = useState(0);
+  const { message, visible, announce, copy, handleNotice } = useStatusAnnouncer(strings);
 
-  const appliedTone = effectiveTone(emoji, tone)
-  const files =
-    emoji.tones.find((variant) => variant.tone === appliedTone) ?? emoji
-  const previewKey = `${emoji.id}-${appliedTone ?? 'default'}-${String(attempt)}`
-  const previewState = preview.key === previewKey ? preview.state : 'loading'
-  const hasError = previewState === 'error'
+  const appliedTone = effectiveTone(emoji, tone);
+  const files = emoji.tones.find((variant) => variant.tone === appliedTone) ?? emoji;
+  const previewKey = `${emoji.id}-${appliedTone ?? "default"}-${String(attempt)}`;
+  const previewState = preview.key === previewKey ? preview.state : "loading";
+  const hasError = previewState === "error";
 
   return (
     <div className="grid gap-4 split:grid-cols-sheet split:gap-8">
@@ -89,7 +84,7 @@ export function EmojiSheetBody(props: EmojiSheetBodyProps) {
               type="button"
               aria-pressed={zoom === level}
               onClick={() => {
-                setZoom(level)
+                setZoom(level);
               }}
               className="h-6 min-w-8 cursor-pointer rounded-md px-1.5 font-mono text-xs text-muted-foreground transition-transform-color-bg duration-150 ease-(--ease-out-strong) outline-none select-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-97 aria-pressed:bg-muted aria-pressed:text-foreground pointer-coarse:size-9"
             >
@@ -97,7 +92,7 @@ export function EmojiSheetBody(props: EmojiSheetBodyProps) {
             </button>
           ))}
         </div>
-        {previewState === 'loading' && (
+        {previewState === "loading" && (
           <div
             data-testid="sheet-preview-skeleton"
             className="shimmer absolute inset-0 rounded-xl bg-secondary"
@@ -106,12 +101,12 @@ export function EmojiSheetBody(props: EmojiSheetBodyProps) {
         {!hasError && (
           <div
             data-testid="sheet-preview"
-            data-ready={previewState === 'ready'}
+            data-ready={previewState === "ready"}
             className="relative size-(--preview-size) transform-(--preview-transform) transition-transform-opacity durations-200-150 ease-(--ease-out-strong) data-[ready=false]:opacity-0"
             style={
               {
-                '--preview-size': `${String(PREVIEW_SIZE)}px`,
-                '--preview-transform': `scale(${String(zoom)})`,
+                "--preview-size": `${String(PREVIEW_SIZE)}px`,
+                "--preview-transform": `scale(${String(zoom)})`,
               } as CSSProperties
             }
           >
@@ -123,10 +118,10 @@ export function EmojiSheetBody(props: EmojiSheetBodyProps) {
               animationIterations="infinite"
               alt={name}
               onLoad={() => {
-                setPreview({ key: previewKey, state: 'ready' })
+                setPreview({ key: previewKey, state: "ready" });
               }}
               onError={() => {
-                setPreview({ key: previewKey, state: 'error' })
+                setPreview({ key: previewKey, state: "error" });
               }}
             />
           </div>
@@ -135,10 +130,7 @@ export function EmojiSheetBody(props: EmojiSheetBodyProps) {
       <div className="flex min-w-0 flex-col gap-2">
         <div>
           <div className="flex items-center gap-1">
-            <h2
-              id={EMOJI_SHEET_HEADING_ID}
-              className="min-w-0 truncate text-xl font-extrabold"
-            >
+            <h2 id={EMOJI_SHEET_HEADING_ID} className="min-w-0 truncate text-xl font-extrabold">
               {name}
             </h2>
             <Button
@@ -169,16 +161,11 @@ export function EmojiSheetBody(props: EmojiSheetBodyProps) {
           </div>
         </div>
         <p className="text-sm text-muted-foreground">
-          <span className="font-semibold text-foreground">
-            {strings.categoryLabel}:
-          </span>{' '}
+          <span className="font-semibold text-foreground">{strings.categoryLabel}:</span>{" "}
           {emoji.category}
         </p>
         {emoji.keywords.length > 0 && (
-          <ul
-            aria-label={strings.keywordsLabel}
-            className="flex flex-wrap gap-1.5"
-          >
+          <ul aria-label={strings.keywordsLabel} className="flex flex-wrap gap-1.5">
             {emoji.keywords.slice(0, KEYWORD_LIMIT).map((keyword) => (
               <li
                 key={keyword}
@@ -196,7 +183,7 @@ export function EmojiSheetBody(props: EmojiSheetBodyProps) {
               type="button"
               className="cursor-pointer font-semibold underline underline-offset-2"
               onClick={() => {
-                setAttempt((count) => count + 1)
+                setAttempt((count) => count + 1);
               }}
             >
               {strings.retry}
@@ -225,7 +212,7 @@ export function EmojiSheetBody(props: EmojiSheetBodyProps) {
         />
         <a
           href={localePath(locale, `/emojis/${emoji.slug}/`)}
-          className={buttonVariants({ variant: 'outline' })}
+          className={buttonVariants({ variant: "outline" })}
         >
           <ExternalLinkIcon />
           {strings.openPage}
@@ -233,17 +220,17 @@ export function EmojiSheetBody(props: EmojiSheetBodyProps) {
       </fieldset>
       <StatusToast message={message} visible={visible} />
     </div>
-  )
+  );
 }
 
 /**
  * Properties of {@link EmojiSheet}.
  */
 export interface EmojiSheetProps extends EmojiSheetBodyProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  finalFocus: RefObject<HTMLElement | null>
-  onHeightChange: (height: number) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  finalFocus: RefObject<HTMLElement | null>;
+  onHeightChange: (height: number) => void;
 }
 
 /**
@@ -256,34 +243,29 @@ export interface EmojiSheetProps extends EmojiSheetBodyProps {
  * @returns The portaled sheet.
  */
 export function EmojiSheet(props: EmojiSheetProps) {
-  const { open, onOpenChange, finalFocus, onHeightChange, ...body } = props
-  const observerRef = useRef<ResizeObserver | undefined>(undefined)
+  const { open, onOpenChange, finalFocus, onHeightChange, ...body } = props;
+  const observerRef = useRef<ResizeObserver | undefined>(undefined);
 
   const measure = useCallback(
     (element: HTMLElement | null) => {
-      observerRef.current?.disconnect()
-      observerRef.current = undefined
+      observerRef.current?.disconnect();
+      observerRef.current = undefined;
       if (!element) {
-        onHeightChange(0)
-        return
+        onHeightChange(0);
+        return;
       }
       const observer = new ResizeObserver(() => {
-        onHeightChange(element.offsetHeight)
-      })
-      observer.observe(element)
-      observerRef.current = observer
-      onHeightChange(element.offsetHeight)
+        onHeightChange(element.offsetHeight);
+      });
+      observer.observe(element);
+      observerRef.current = observer;
+      onHeightChange(element.offsetHeight);
     },
     [onHeightChange],
-  )
+  );
 
   return (
-    <Sheet
-      open={open}
-      onOpenChange={onOpenChange}
-      modal={false}
-      disablePointerDismissal
-    >
+    <Sheet open={open} onOpenChange={onOpenChange} modal={false} disablePointerDismissal>
       <SheetContent
         ref={measure}
         side="bottom"
@@ -300,11 +282,7 @@ export function EmojiSheet(props: EmojiSheetProps) {
             closeControl={
               <SheetClose
                 render={
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    aria-label={body.strings.closeDetail}
-                  />
+                  <Button variant="ghost" size="icon-sm" aria-label={body.strings.closeDetail} />
                 }
               >
                 <XIcon />
@@ -314,5 +292,5 @@ export function EmojiSheet(props: EmojiSheetProps) {
         </div>
       </SheetContent>
     </Sheet>
-  )
+  );
 }

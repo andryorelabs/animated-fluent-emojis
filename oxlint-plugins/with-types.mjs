@@ -1,24 +1,24 @@
-import { existsSync } from 'node:fs'
-import path from 'node:path'
-import ts from 'typescript'
+import { existsSync } from "node:fs";
+import path from "node:path";
+import ts from "typescript";
 
 /**
  * Parsed `tsconfig` files by absolute path, so each one is read once per
  * lint run. There is no invalidation: the cache lives as long as one CLI run.
  */
-const parsedConfigs = new Map()
+const parsedConfigs = new Map();
 
 /** Type-checked programs by the absolute path of the `tsconfig` they come from. */
-const programs = new Map()
+const programs = new Map();
 
 /** The `tsconfig` that covers each linted file, by absolute file path. */
-const configPathsByFile = new Map()
+const configPathsByFile = new Map();
 
 /** Parser services per TypeScript source file, shared by every wrapped rule. */
-const servicesBySourceFile = new WeakMap()
+const servicesBySourceFile = new WeakMap();
 
 /** Extensions ESLint lints without type information (`disableTypeChecked`). */
-const UNTYPED_EXTENSIONS = new Set(['.js', '.mjs', '.cjs', '.jsx'])
+const UNTYPED_EXTENSIONS = new Set([".js", ".mjs", ".cjs", ".jsx"]);
 
 /**
  * Reads and parses a `tsconfig`, throwing on a config TypeScript cannot read
@@ -27,8 +27,8 @@ const UNTYPED_EXTENSIONS = new Set(['.js', '.mjs', '.cjs', '.jsx'])
  * @returns The parsed command line for that config.
  */
 function parseConfig(configPath) {
-  const cached = parsedConfigs.get(configPath)
-  if (cached) return cached
+  const cached = parsedConfigs.get(configPath);
+  if (cached) return cached;
   const parsed = ts.getParsedCommandLineOfConfigFile(
     configPath,
     {},
@@ -36,14 +36,14 @@ function parseConfig(configPath) {
       ...ts.sys,
       onUnRecoverableConfigFileDiagnostic(diagnostic) {
         throw new Error(
-          `with-types: cannot read ${configPath}: ${ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')}`,
-        )
+          `with-types: cannot read ${configPath}: ${ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n")}`,
+        );
       },
     },
-  )
-  if (!parsed) throw new Error(`with-types: cannot read ${configPath}`)
-  parsedConfigs.set(configPath, parsed)
-  return parsed
+  );
+  if (!parsed) throw new Error(`with-types: cannot read ${configPath}`);
+  parsedConfigs.set(configPath, parsed);
+  return parsed;
 }
 
 /**
@@ -57,17 +57,17 @@ function parseConfig(configPath) {
  * @returns The covering config path, or `undefined` when none covers it.
  */
 function findCoveringConfig(configPath, fileName, visited) {
-  if (visited.has(configPath)) return
-  visited.add(configPath)
-  const parsed = parseConfig(configPath)
+  if (visited.has(configPath)) return;
+  visited.add(configPath);
+  const parsed = parseConfig(configPath);
   if (parsed.fileNames.some((name) => path.resolve(name) === fileName)) {
-    return configPath
+    return configPath;
   }
-  const references = parsed.projectReferences ?? []
+  const references = parsed.projectReferences ?? [];
   for (const reference of references) {
-    const referencePath = ts.resolveProjectReferencePath(reference)
-    const covering = findCoveringConfig(referencePath, fileName, visited)
-    if (covering) return covering
+    const referencePath = ts.resolveProjectReferencePath(reference);
+    const covering = findCoveringConfig(referencePath, fileName, visited);
+    if (covering) return covering;
   }
 }
 
@@ -78,22 +78,22 @@ function findCoveringConfig(configPath, fileName, visited) {
  * @returns The covering config path, or `undefined` when no config covers it.
  */
 function resolveConfigPath(fileName) {
-  if (configPathsByFile.has(fileName)) return configPathsByFile.get(fileName)
-  const visited = new Set()
-  let covering
-  let directory = path.dirname(fileName)
+  if (configPathsByFile.has(fileName)) return configPathsByFile.get(fileName);
+  const visited = new Set();
+  let covering;
+  let directory = path.dirname(fileName);
   for (;;) {
-    const candidate = path.join(directory, 'tsconfig.json')
+    const candidate = path.join(directory, "tsconfig.json");
     if (existsSync(candidate)) {
-      covering = findCoveringConfig(candidate, fileName, visited)
-      if (covering) break
+      covering = findCoveringConfig(candidate, fileName, visited);
+      if (covering) break;
     }
-    const parent = path.dirname(directory)
-    if (parent === directory) break
-    directory = parent
+    const parent = path.dirname(directory);
+    if (parent === directory) break;
+    directory = parent;
   }
-  configPathsByFile.set(fileName, covering)
-  return covering
+  configPathsByFile.set(fileName, covering);
+  return covering;
 }
 
 /**
@@ -102,17 +102,17 @@ function resolveConfigPath(fileName) {
  * @returns The program, with its type checker already created.
  */
 function programFor(configPath) {
-  const cached = programs.get(configPath)
-  if (cached) return cached
-  const parsed = parseConfig(configPath)
+  const cached = programs.get(configPath);
+  if (cached) return cached;
+  const parsed = parseConfig(configPath);
   const program = ts.createProgram({
     rootNames: parsed.fileNames,
     options: { ...parsed.options, noEmit: true },
     projectReferences: parsed.projectReferences,
-  })
-  program.getTypeChecker()
-  programs.set(configPath, program)
-  return program
+  });
+  program.getTypeChecker();
+  programs.set(configPath, program);
+  return program;
 }
 
 /**
@@ -122,16 +122,13 @@ function programFor(configPath) {
  * @returns TypeScript nodes keyed by `start:end`.
  */
 function indexNodesBySpan(sourceFile) {
-  const nodesBySpan = new Map()
+  const nodesBySpan = new Map();
   const visit = (node) => {
-    nodesBySpan.set(
-      `${String(node.getStart(sourceFile))}:${String(node.getEnd())}`,
-      node,
-    )
-    ts.forEachChild(node, visit)
-  }
-  visit(sourceFile)
-  return nodesBySpan
+    nodesBySpan.set(`${String(node.getStart(sourceFile))}:${String(node.getEnd())}`, node);
+    ts.forEachChild(node, visit);
+  };
+  visit(sourceFile);
+  return nodesBySpan;
 }
 
 /**
@@ -141,40 +138,38 @@ function indexNodesBySpan(sourceFile) {
  * @returns Parser services with the program, node map and type lookups.
  */
 function createParserServices(program, sourceFile) {
-  const cached = servicesBySourceFile.get(sourceFile)
-  if (cached) return cached
-  const checker = program.getTypeChecker()
-  let nodesBySpan
+  const cached = servicesBySourceFile.get(sourceFile);
+  if (cached) return cached;
+  const checker = program.getTypeChecker();
+  let nodesBySpan;
   const lookup = (node) => {
-    nodesBySpan ??= indexNodesBySpan(sourceFile)
-    return nodesBySpan.get(`${String(node.range[0])}:${String(node.range[1])}`)
-  }
+    nodesBySpan ??= indexNodesBySpan(sourceFile);
+    return nodesBySpan.get(`${String(node.range[0])}:${String(node.range[1])}`);
+  };
   const esTreeNodeToTSNodeMap = {
     get(node) {
-      const tsNode = lookup(node)
+      const tsNode = lookup(node);
       if (!tsNode) {
         throw new Error(
           `with-types: no TypeScript node at ${String(node.range[0])}-${String(node.range[1])} in ${sourceFile.fileName}`,
-        )
+        );
       }
-      return tsNode
+      return tsNode;
     },
     has: (node) => lookup(node) !== undefined,
-  }
+  };
   const services = {
     program,
     esTreeNodeToTSNodeMap,
     tsNodeToESTreeNodeMap: new WeakMap(),
-    getTypeAtLocation: (node) =>
-      checker.getTypeAtLocation(esTreeNodeToTSNodeMap.get(node)),
-    getSymbolAtLocation: (node) =>
-      checker.getSymbolAtLocation(esTreeNodeToTSNodeMap.get(node)),
+    getTypeAtLocation: (node) => checker.getTypeAtLocation(esTreeNodeToTSNodeMap.get(node)),
+    getSymbolAtLocation: (node) => checker.getSymbolAtLocation(esTreeNodeToTSNodeMap.get(node)),
     emitDecoratorMetadata: false,
     experimentalDecorators: false,
     isolatedDeclarations: false,
-  }
-  servicesBySourceFile.set(sourceFile, services)
-  return services
+  };
+  servicesBySourceFile.set(sourceFile, services);
+  return services;
 }
 
 /**
@@ -189,12 +184,12 @@ function forwardWith(target, overrides) {
     {},
     {
       get(_, key) {
-        if (Object.hasOwn(overrides, key)) return overrides[key]
-        const value = Reflect.get(target, key, target)
-        return typeof value === 'function' ? value.bind(target) : value
+        if (Object.hasOwn(overrides, key)) return overrides[key];
+        const value = Reflect.get(target, key, target);
+        return typeof value === "function" ? value.bind(target) : value;
       },
     },
-  )
+  );
 }
 
 /**
@@ -205,18 +200,18 @@ function forwardWith(target, overrides) {
  * @returns The parser services, or `undefined`.
  */
 function servicesFor(context) {
-  const fileName = path.resolve(context.physicalFilename ?? context.filename)
-  if (UNTYPED_EXTENSIONS.has(path.extname(fileName))) return
-  const configPath = resolveConfigPath(fileName)
-  if (!configPath) return
-  const program = programFor(configPath)
-  const sourceFile = program.getSourceFile(fileName)
-  return sourceFile ? createParserServices(program, sourceFile) : undefined
+  const fileName = path.resolve(context.physicalFilename ?? context.filename);
+  if (UNTYPED_EXTENSIONS.has(path.extname(fileName))) return;
+  const configPath = resolveConfigPath(fileName);
+  if (!configPath) return;
+  const program = programFor(configPath);
+  const sourceFile = program.getSourceFile(fileName);
+  return sourceFile ? createParserServices(program, sourceFile) : undefined;
 }
 
 /** Message reported when a file that needs types has no covering `tsconfig`. */
 const UNCOVERED_FILE_MESSAGE =
-  'No tsconfig covers {{fileName}}, so this file cannot be type-checked. Add it to a tsconfig `include`.'
+  "No tsconfig covers {{fileName}}, so this file cannot be type-checked. Add it to a tsconfig `include`.";
 
 /**
  * Runs an ESLint rule under Oxlint with the TypeScript parser services ESLint
@@ -247,30 +242,30 @@ export function withTypes(rule, { requireTypes }) {
         }
       : rule.meta,
     create(context) {
-      const parserServices = servicesFor(context)
+      const parserServices = servicesFor(context);
       if (!parserServices) {
-        if (!requireTypes) return rule.create(context)
-        const fileName = context.physicalFilename ?? context.filename
+        if (!requireTypes) return rule.create(context);
+        const fileName = context.physicalFilename ?? context.filename;
         return {
           Program(node) {
             context.report({
               node,
-              messageId: 'uncoveredFile',
+              messageId: "uncoveredFile",
               data: { fileName },
-            })
+            });
           },
-        }
+        };
       }
-      const sourceCode = forwardWith(context.sourceCode, { parserServices })
+      const sourceCode = forwardWith(context.sourceCode, { parserServices });
       return rule.create(
         forwardWith(context, {
           sourceCode,
           parserServices,
           getSourceCode: () => sourceCode,
         }),
-      )
+      );
     },
-  }
+  };
 }
 
 /**
@@ -285,10 +280,7 @@ export function withTypesPlugin(plugin, name, options) {
   return {
     meta: { name },
     rules: Object.fromEntries(
-      Object.entries(plugin.rules).map(([ruleName, rule]) => [
-        ruleName,
-        withTypes(rule, options),
-      ]),
+      Object.entries(plugin.rules).map(([ruleName, rule]) => [ruleName, withTypes(rule, options)]),
     ),
-  }
+  };
 }

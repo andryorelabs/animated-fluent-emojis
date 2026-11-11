@@ -1,16 +1,16 @@
-import { lastCommitDate } from '../seo/last-modified'
-import type { SitemapSource } from '../seo/sitemap'
+import { lastCommitDate } from "../seo/last-modified";
+import type { SitemapSource } from "../seo/sitemap";
 
 /**
  * Source files that change what the gallery page shows, relative to
  * `apps/site`.
  */
 const GALLERY_SOURCES = [
-  'src/components/GalleryPage.astro',
-  'src/components/gallery',
-  'src/gallery',
-  'src/pages/emojis/index.astro',
-] as const
+  "src/components/GalleryPage.astro",
+  "src/components/gallery",
+  "src/gallery",
+  "src/pages/emojis/index.astro",
+] as const;
 
 /**
  * Sitemap source for the gallery page, in every locale, dated by the newest
@@ -19,8 +19,8 @@ const GALLERY_SOURCES = [
  */
 export const gallerySitemapSource: SitemapSource = () => [
   {
-    path: '/emojis/',
+    path: "/emojis/",
     localized: true,
     lastmod: lastCommitDate(GALLERY_SOURCES),
   },
-]
+];

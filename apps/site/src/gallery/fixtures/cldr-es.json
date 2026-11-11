@@ -5,13 +5,7 @@
     },
     "annotations": {
       "😃": {
-        "default": [
-          "cara",
-          "cara sonriendo con ojos grandes",
-          "divertido",
-          "risa",
-          "sonriendo"
-        ],
+        "default": ["cara", "cara sonriendo con ojos grandes", "divertido", "risa", "sonriendo"],
         "tts": ["cara sonriendo con ojos grandes"]
       },
       "👋": {

@@ -32,10 +32,10 @@
   pointer-events: none;
 }
 
-.faq-scope:has([data-faq='chat'][data-open]) [data-faq-mascot='chat'],
-.faq-scope:not(:has([data-faq][data-open])) [data-faq-mascot='chat'],
-.faq-scope:has([data-faq='speed'][data-open]) [data-faq-mascot='speed'],
-.faq-scope:has([data-faq='motion'][data-open]) [data-faq-mascot='motion'] {
+.faq-scope:has([data-faq="chat"][data-open]) [data-faq-mascot="chat"],
+.faq-scope:not(:has([data-faq][data-open])) [data-faq-mascot="chat"],
+.faq-scope:has([data-faq="speed"][data-open]) [data-faq-mascot="speed"],
+.faq-scope:has([data-faq="motion"][data-open]) [data-faq-mascot="motion"] {
   opacity: 1;
   scale: 1;
 }
@@ -47,10 +47,10 @@
     transition-timing-function: var(--ease-out-strong);
   }
 
-  .faq-scope:has([data-faq='chat'][data-open]) [data-faq-mascot='chat'],
-  .faq-scope:not(:has([data-faq][data-open])) [data-faq-mascot='chat'],
-  .faq-scope:has([data-faq='speed'][data-open]) [data-faq-mascot='speed'],
-  .faq-scope:has([data-faq='motion'][data-open]) [data-faq-mascot='motion'] {
+  .faq-scope:has([data-faq="chat"][data-open]) [data-faq-mascot="chat"],
+  .faq-scope:not(:has([data-faq][data-open])) [data-faq-mascot="chat"],
+  .faq-scope:has([data-faq="speed"][data-open]) [data-faq-mascot="speed"],
+  .faq-scope:has([data-faq="motion"][data-open]) [data-faq-mascot="motion"] {
     animation: faq-mascot-pop 500ms cubic-bezier(0.2, 1.4, 0.4, 1);
   }
 }
@@ -345,8 +345,7 @@
   }
 
   .bento-cell[data-wake] {
-    animation: bento-wave 6s var(--ease-in-out-strong) var(--wake-delay, 0s)
-      infinite both;
+    animation: bento-wave 6s var(--ease-in-out-strong) var(--wake-delay, 0s) infinite both;
   }
 
   .bento-link path {

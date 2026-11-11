@@ -1,22 +1,22 @@
-import { createHash } from 'node:crypto'
+import { createHash } from "node:crypto";
 
 /**
  * Token in `docker/security-headers.conf` replaced with the built script
  * hashes.
  */
-const SCRIPT_HASHES_PLACEHOLDER = '__SCRIPT_HASHES__'
+const SCRIPT_HASHES_PLACEHOLDER = "__SCRIPT_HASHES__";
 
-const HASH_SOURCE = /'sha(?:256|384|512)-[^']+'/g
-const OPENING_TAG = /<([a-z][\w-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/gi
+const HASH_SOURCE = /'sha(?:256|384|512)-[^']+'/g;
+const OPENING_TAG = /<([a-z][\w-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/gi;
 const META_CSP_TAG =
-  /<meta http-equiv="content-security-policy" content="(?<policy>[^"]*)"[^>]*>/gi
+  /<meta http-equiv="content-security-policy" content="(?<policy>[^"]*)"[^>]*>/gi;
 
 /**
  * A built HTML page.
  */
 export interface BuiltPage {
-  file: string
-  html: string
+  file: string;
+  html: string;
 }
 
 /**
@@ -25,12 +25,12 @@ export interface BuiltPage {
  * @returns The quoted hash sources, or an empty list without a CSP meta tag.
  */
 export function collectMetaScriptHashes(html: string): string[] {
-  const policy = new RegExp(META_CSP_TAG.source, 'i').exec(html)?.groups?.policy
-  const scriptDirective = (policy ?? '')
-    .split(';')
+  const policy = new RegExp(META_CSP_TAG.source, "i").exec(html)?.groups?.policy;
+  const scriptDirective = (policy ?? "")
+    .split(";")
     .map((directive) => directive.trim())
-    .find((directive) => directive.startsWith('script-src '))
-  return scriptDirective?.match(HASH_SOURCE) ?? []
+    .find((directive) => directive.startsWith("script-src "));
+  return scriptDirective?.match(HASH_SOURCE) ?? [];
 }
 
 /**
@@ -39,7 +39,7 @@ export function collectMetaScriptHashes(html: string): string[] {
  * @returns The page without its CSP meta tag.
  */
 export function stripMetaCsp(html: string): string {
-  return html.replaceAll(META_CSP_TAG, '')
+  return html.replaceAll(META_CSP_TAG, "");
 }
 
 /**
@@ -48,20 +48,20 @@ export function stripMetaCsp(html: string): string {
  * @returns One quoted hash source per inline script that is not a data block.
  */
 export function findInlineScriptHashes(html: string): string[] {
-  const tag = new RegExp(OPENING_TAG.source, 'gi')
-  const hashes: string[] = []
+  const tag = new RegExp(OPENING_TAG.source, "gi");
+  const hashes: string[] = [];
   for (let match = tag.exec(html); match; match = tag.exec(html)) {
-    if (match[1]?.toLowerCase() !== 'script') continue
-    const end = html.indexOf('</script', tag.lastIndex)
-    const body = html.slice(tag.lastIndex, end === -1 ? undefined : end)
-    tag.lastIndex = end === -1 ? html.length : end
-    const attributes = match[2] ?? ''
-    const type = /\btype\s*=\s*["']?([^"'\s>]*)/i.exec(attributes)?.[1]
-    if (/\ssrc\s*=/i.test(attributes) || (type && type !== 'module')) continue
-    const digest = createHash('sha256').update(body).digest('base64')
-    hashes.push(`'sha256-${digest}'`)
+    if (match[1]?.toLowerCase() !== "script") continue;
+    const end = html.indexOf("</script", tag.lastIndex);
+    const body = html.slice(tag.lastIndex, end === -1 ? undefined : end);
+    tag.lastIndex = end === -1 ? html.length : end;
+    const attributes = match[2] ?? "";
+    const type = /\btype\s*=\s*["']?([^"'\s>]*)/i.exec(attributes)?.[1];
+    if (/\ssrc\s*=/i.test(attributes) || (type && type !== "module")) continue;
+    const digest = createHash("sha256").update(body).digest("base64");
+    hashes.push(`'sha256-${digest}'`);
   }
-  return hashes
+  return hashes;
 }
 
 /**
@@ -71,17 +71,14 @@ export function findInlineScriptHashes(html: string): string[] {
  * @returns The rendered snippet.
  * @throws {Error} When no hashes are given, which would silently block every script.
  */
-export function renderSecurityHeaders(
-  template: string,
-  hashes: readonly string[],
-): string {
+export function renderSecurityHeaders(template: string, hashes: readonly string[]): string {
   if (hashes.length === 0) {
-    throw new Error('No script hashes found in the built pages')
+    throw new Error("No script hashes found in the built pages");
   }
   const rendered = [...new Set(hashes)]
     .toSorted((first, second) => first.localeCompare(second))
-    .join(' ')
-  return template.replace(SCRIPT_HASHES_PLACEHOLDER, () => rendered)
+    .join(" ");
+  return template.replace(SCRIPT_HASHES_PLACEHOLDER, () => rendered);
 }
 
 /**
@@ -99,24 +96,22 @@ export function prepareSecurityHeaders(
   template: string,
   writePage: (page: BuiltPage) => void,
 ): string {
-  const allowed = new Set<string>()
+  const allowed = new Set<string>();
   for (const { html } of readPages()) {
-    for (const hash of collectMetaScriptHashes(html)) allowed.add(hash)
+    for (const hash of collectMetaScriptHashes(html)) allowed.add(hash);
   }
-  const unhashed: string[] = []
+  const unhashed: string[] = [];
   for (const { file, html } of readPages()) {
     for (const hash of findInlineScriptHashes(html)) {
-      if (!allowed.has(hash)) unhashed.push(`${file} ${hash}`)
+      if (!allowed.has(hash)) unhashed.push(`${file} ${hash}`);
     }
   }
   if (unhashed.length > 0) {
-    throw new Error(
-      `Inline scripts missing from the CSP:\n${unhashed.join('\n')}`,
-    )
+    throw new Error(`Inline scripts missing from the CSP:\n${unhashed.join("\n")}`);
   }
-  const snippet = renderSecurityHeaders(template, [...allowed])
+  const snippet = renderSecurityHeaders(template, [...allowed]);
   for (const { file, html } of readPages()) {
-    writePage({ file, html: stripMetaCsp(html) })
+    writePage({ file, html: stripMetaCsp(html) });
   }
-  return snippet
+  return snippet;
 }

@@ -1,44 +1,38 @@
 ---
-import Emoji from 'animated-fluent-emojis/astro'
+import Emoji from "animated-fluent-emojis/astro";
 
-import { buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from "@/components/ui/button";
 
-import { loadAnnotations, localizeEmojis } from '../../gallery/annotations'
-import { loadPublicIndex } from '../../gallery/public-index'
-import { localePath, type Locale } from '../../i18n/locales'
-import { getUi } from '../../i18n/ui'
-import { pickTeaserEmojis } from '../content'
-import { eyebrow, heading, section } from './styles'
+import { loadAnnotations, localizeEmojis } from "../../gallery/annotations";
+import { loadPublicIndex } from "../../gallery/public-index";
+import { localePath, type Locale } from "../../i18n/locales";
+import { getUi } from "../../i18n/ui";
+import { pickTeaserEmojis } from "../content";
+import { eyebrow, heading, section } from "./styles";
 
 interface Props {
-  locale: Locale
+  locale: Locale;
 }
 
-const TEASER_EMOJI_SIZE = 46
+const TEASER_EMOJI_SIZE = 46;
 
-const { locale } = Astro.props
-const { home } = getUi(locale)
+const { locale } = Astro.props;
+const { home } = getUi(locale);
 
-const galleryHref = localePath(locale, '/emojis/')
-const [index, annotations] = await Promise.all([
-  loadPublicIndex(),
-  loadAnnotations(locale),
-])
-const names = new Map(
-  localizeEmojis(index, annotations).map((entry) => [entry.slug, entry.name]),
-)
-const tiles = pickTeaserEmojis(
-  index,
-  Boolean(process.env.SITE_EMOJI_SLUGS),
-).map(({ emoji, hue }) => ({
-  id: emoji.id,
-  hue,
-  name: names.get(emoji.slug) ?? emoji.description,
-}))
+const galleryHref = localePath(locale, "/emojis/");
+const [index, annotations] = await Promise.all([loadPublicIndex(), loadAnnotations(locale)]);
+const names = new Map(localizeEmojis(index, annotations).map((entry) => [entry.slug, entry.name]));
+const tiles = pickTeaserEmojis(index, Boolean(process.env.SITE_EMOJI_SLUGS)).map(
+  ({ emoji, hue }) => ({
+    id: emoji.id,
+    hue,
+    name: names.get(emoji.slug) ?? emoji.description,
+  }),
+);
 const secondaryButton = buttonVariants({
-  variant: 'outline',
-  className: 'h-auto min-h-11 rounded-xl px-5 text-base font-semibold',
-})
+  variant: "outline",
+  className: "h-auto min-h-11 rounded-xl px-5 text-base font-semibold",
+});
 ---
 
 <section class={section} aria-labelledby="teaser-title">
@@ -60,7 +54,7 @@ const secondaryButton = buttonVariants({
           <a
             href={galleryHref}
             class="teaser-tile relative isolate flex w-full flex-col items-center gap-2 overflow-hidden rounded-18 border border-border bg-card px-1.5 pt-5.5 pb-3.5 outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            style={{ '--glow-hue': tile.hue }}
+            style={{ "--glow-hue": tile.hue }}
           >
             <Emoji id={tile.id} size={TEASER_EMOJI_SIZE} alt="" />
             <small class="max-w-full truncate font-mono text-caption text-muted-foreground lowercase">

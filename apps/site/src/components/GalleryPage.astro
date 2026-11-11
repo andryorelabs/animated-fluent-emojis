@@ -1,16 +1,16 @@
 ---
-import { localeSegment, type Locale } from '../i18n/locales'
-import { getUi } from '../i18n/ui'
-import Layout from '../layouts/Layout.astro'
-import { Gallery } from './gallery/Gallery'
-import { GallerySkeleton } from './gallery/GallerySkeleton'
+import { localeSegment, type Locale } from "../i18n/locales";
+import { getUi } from "../i18n/ui";
+import Layout from "../layouts/Layout.astro";
+import { Gallery } from "./gallery/Gallery";
+import { GallerySkeleton } from "./gallery/GallerySkeleton";
 
 interface Props {
-  locale: Locale
+  locale: Locale;
 }
 
-const { locale } = Astro.props
-const { gallery } = getUi(locale)
+const { locale } = Astro.props;
+const { gallery } = getUi(locale);
 ---
 
 <Layout
@@ -18,12 +18,10 @@ const { gallery } = getUi(locale)
   title={gallery.title}
   description={gallery.description}
   path="/emojis/"
-  trail={[{ name: gallery.title, path: '/emojis/' }]}
+  trail={[{ name: gallery.title, path: "/emojis/" }]}
 >
   <main id="main" class="site-container flex-1 py-8">
-    <h1 class="mb-6 text-heading-sm leading-tight font-extrabold text-balance">
-      {gallery.title}
-    </h1>
+    <h1 class="mb-6 text-heading-sm leading-tight font-extrabold text-balance">{gallery.title}</h1>
     <Gallery
       client:only="react"
       locale={locale}

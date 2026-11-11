@@ -24,9 +24,9 @@ Call `configureEmojis` once, before the first `Emoji` renders. A trailing slash
 on the URL is ignored:
 
 ```jsx
-import { configureEmojis } from 'animated-fluent-emojis'
+import { configureEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
 ```
 
 Calling it after the manifest was requested resets the manifest and warns in

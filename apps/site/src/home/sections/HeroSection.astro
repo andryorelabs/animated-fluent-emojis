@@ -1,90 +1,90 @@
 ---
-import Emoji from 'animated-fluent-emojis/astro'
+import Emoji from "animated-fluent-emojis/astro";
 
-import { buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from "@/components/ui/button";
 
-import InstallBlock from '../../components/InstallBlock'
-import { loadPublicIndex } from '../../gallery/public-index'
-import { localePath, type Locale } from '../../i18n/locales'
-import { getUi } from '../../i18n/ui'
-import { buildInstallHtml } from '../content'
-import { wrap } from './styles'
+import InstallBlock from "../../components/InstallBlock";
+import { loadPublicIndex } from "../../gallery/public-index";
+import { localePath, type Locale } from "../../i18n/locales";
+import { getUi } from "../../i18n/ui";
+import { buildInstallHtml } from "../content";
+import { wrap } from "./styles";
 
 interface Props {
-  locale: Locale
+  locale: Locale;
 }
 
-const { locale } = Astro.props
-const { home } = getUi(locale)
+const { locale } = Astro.props;
+const { home } = getUi(locale);
 
-const galleryHref = localePath(locale, '/emojis/')
-const docsHref = localePath(locale, '/docs/')
-const installHtml = await buildInstallHtml()
-const index = await loadPublicIndex()
+const galleryHref = localePath(locale, "/emojis/");
+const docsHref = localePath(locale, "/docs/");
+const installHtml = await buildInstallHtml();
+const index = await loadPublicIndex();
 
 const decorations = [
   {
-    id: '1f44b_wavinghand',
-    placement: 'top-23 -left-8.5',
-    size: 'size-42.5',
-    tilt: '-rotate-12',
-    delay: '0s',
+    id: "1f44b_wavinghand",
+    placement: "top-23 -left-8.5",
+    size: "size-42.5",
+    tilt: "-rotate-12",
+    delay: "0s",
     playOnHover: true,
   },
   {
-    id: 'launch',
-    placement: 'top-8.5 left-pct-17',
-    size: 'size-23',
-    tilt: 'rotate-6',
-    delay: '1s',
+    id: "launch",
+    placement: "top-8.5 left-pct-17",
+    size: "size-23",
+    tilt: "rotate-6",
+    delay: "1s",
     playOnHover: false,
   },
   {
-    id: 'stareyes',
-    placement: 'top-3.5 left-pct-44',
-    size: 'size-33',
-    tilt: 'rotate-0',
-    delay: '0.4s',
+    id: "stareyes",
+    placement: "top-3.5 left-pct-44",
+    size: "size-33",
+    tilt: "rotate-0",
+    delay: "0.4s",
     playOnHover: false,
   },
   {
-    id: '1f389_partypopper',
-    placement: 'top-9.5 right-pct-17',
-    size: 'size-24',
-    tilt: '-rotate-6',
-    delay: '1.6s',
+    id: "1f389_partypopper",
+    placement: "top-9.5 right-pct-17",
+    size: "size-24",
+    tilt: "-rotate-6",
+    delay: "1.6s",
     playOnHover: false,
   },
   {
-    id: 'fire',
-    placement: 'top-27.5 -right-9',
-    size: 'size-42.5',
-    tilt: 'rotate-10',
-    delay: '0.8s',
+    id: "fire",
+    placement: "top-27.5 -right-9",
+    size: "size-42.5",
+    tilt: "rotate-10",
+    delay: "0.8s",
     playOnHover: false,
   },
-].filter((decoration) => index.some((emoji) => emoji.id === decoration.id))
+].filter((decoration) => index.some((emoji) => emoji.id === decoration.id));
 
 const mobileDecorations = decorations.filter((decoration) =>
-  ['1f44b_wavinghand', 'launch'].includes(decoration.id),
-)
+  ["1f44b_wavinghand", "launch"].includes(decoration.id),
+);
 
 const readyChips = [
-  { id: 'react', label: home.hero.ready.react },
-  { id: 'vue', label: home.hero.ready.vue },
-  { id: 'svelte', label: home.hero.ready.svelte },
-  { id: 'astro', label: home.hero.ready.astro },
-  { id: 'html', label: home.hero.ready.html },
-]
+  { id: "react", label: home.hero.ready.react },
+  { id: "vue", label: home.hero.ready.vue },
+  { id: "svelte", label: home.hero.ready.svelte },
+  { id: "astro", label: home.hero.ready.astro },
+  { id: "html", label: home.hero.ready.html },
+];
 
 const secondaryButton = buttonVariants({
-  variant: 'outline',
-  className: 'h-auto min-h-11 rounded-xl px-5 text-base font-semibold',
-})
+  variant: "outline",
+  className: "h-auto min-h-11 rounded-xl px-5 text-base font-semibold",
+});
 const primaryButton = buttonVariants({
   className:
-    'h-auto min-h-11 rounded-xl bg-foreground px-5 text-base font-semibold text-background hover:bg-foreground/90',
-})
+    "h-auto min-h-11 rounded-xl bg-foreground px-5 text-base font-semibold text-background hover:bg-foreground/90",
+});
 ---
 
 <section class="dock-hero relative pt-3">
@@ -94,12 +94,7 @@ const primaryButton = buttonVariants({
         <div data-hero-emojis class="flex justify-center gap-6 split:hidden">
           {mobileDecorations.map((decoration) => (
             <span class={`pointer-events-auto block ${decoration.tilt}`}>
-              <Emoji
-                id={decoration.id}
-                size={56}
-                alt=""
-                playOnHover={decoration.playOnHover}
-              />
+              <Emoji id={decoration.id} size={56} alt="" playOnHover={decoration.playOnHover} />
             </span>
           ))}
         </div>
@@ -107,14 +102,9 @@ const primaryButton = buttonVariants({
           {decorations.map((decoration) => (
             <span
               class={`emoji-float pointer-events-auto absolute ${decoration.size} ${decoration.tilt} ${decoration.placement}`}
-              style={{ '--float-delay': decoration.delay }}
+              style={{ "--float-delay": decoration.delay }}
             >
-              <Emoji
-                id={decoration.id}
-                size="100%"
-                alt=""
-                playOnHover={decoration.playOnHover}
-              />
+              <Emoji id={decoration.id} size="100%" alt="" playOnHover={decoration.playOnHover} />
             </span>
           ))}
         </div>
@@ -127,8 +117,7 @@ const primaryButton = buttonVariants({
           {home.hero.badge}
         </p>
         <h1 class="text-fluid-hero leading-display font-extrabold tracking-display text-balance">
-          {home.hero.titleLead}{' '}
-          <span class="block text-primary">{home.hero.titleAccent}</span>
+          {home.hero.titleLead} <span class="block text-primary">{home.hero.titleAccent}</span>
         </h1>
         <p
           class="hero-enter max-w-2xl text-lg text-pretty text-muted-foreground md:text-xl"
@@ -136,10 +125,7 @@ const primaryButton = buttonVariants({
         >
           {home.hero.subtitle}
         </p>
-        <div
-          class="hero-enter flex flex-wrap justify-center gap-3"
-          style="--enter-index: 2"
-        >
+        <div class="hero-enter flex flex-wrap justify-center gap-3" style="--enter-index: 2">
           <a href={docsHref} class={primaryButton}>
             {home.hero.ctaDocs}
           </a>
@@ -147,10 +133,7 @@ const primaryButton = buttonVariants({
             {home.hero.ctaGallery}
           </a>
         </div>
-        <div
-          class="hero-enter flex w-full flex-col items-center gap-4"
-          style="--enter-index: 3"
-        >
+        <div class="hero-enter flex w-full flex-col items-center gap-4" style="--enter-index: 3">
           <div class="w-full max-w-lg text-left">
             <InstallBlock
               client:load
@@ -162,10 +145,7 @@ const primaryButton = buttonVariants({
               }}
             />
           </div>
-          <ul
-            class="m-0 flex list-none flex-wrap justify-center gap-2 p-0"
-            data-hero-ready
-          >
+          <ul class="m-0 flex list-none flex-wrap justify-center gap-2 p-0" data-hero-ready>
             {readyChips.map((chip) => (
               <li
                 class="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-sm font-semibold text-muted-foreground"

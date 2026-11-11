@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from 'react'
+import { useEffect, useSyncExternalStore } from "react";
 
 import {
   getManifestSnapshot,
@@ -6,13 +6,13 @@ import {
   startManifestLoad,
   subscribeToManifest,
   type EmojiManifest,
-} from '../utils/index.js'
+} from "../utils/index.js";
 
 export type UseEmojiStyleResult =
-  | { status: 'loading'; emoji: null }
-  | { status: 'ready'; emoji: EmojiManifest }
-  | { status: 'missing'; emoji: null }
-  | { status: 'error'; emoji: null }
+  | { status: "loading"; emoji: null }
+  | { status: "ready"; emoji: EmojiManifest }
+  | { status: "missing"; emoji: null }
+  | { status: "error"; emoji: null };
 
 /**
  * Reads the manifest entry for an emoji from the shared manifest store.
@@ -27,14 +27,14 @@ export const useEmojiStyle = (id: string): UseEmojiStyleResult => {
     subscribeToManifest,
     getManifestSnapshot,
     getServerManifestSnapshot,
-  )
+  );
 
   useEffect(() => {
-    void startManifestLoad()
-  }, [])
+    void startManifestLoad();
+  }, []);
 
-  if (snapshot.status === 'error') return { status: 'error', emoji: null }
-  if (snapshot.status !== 'ready') return { status: 'loading', emoji: null }
-  const emoji = snapshot.manifest[id]
-  return emoji ? { status: 'ready', emoji } : { status: 'missing', emoji: null }
-}
+  if (snapshot.status === "error") return { status: "error", emoji: null };
+  if (snapshot.status !== "ready") return { status: "loading", emoji: null };
+  const emoji = snapshot.manifest[id];
+  return emoji ? { status: "ready", emoji } : { status: "missing", emoji: null };
+};

@@ -1,14 +1,14 @@
 ---
-import { type Locale } from '../../i18n/locales'
-import { getUi } from '../../i18n/ui'
-import DockInstall from '../DockInstall'
+import { type Locale } from "../../i18n/locales";
+import { getUi } from "../../i18n/ui";
+import DockInstall from "../DockInstall";
 
 interface Props {
-  locale: Locale
+  locale: Locale;
 }
 
-const { locale } = Astro.props
-const { home } = getUi(locale)
+const { locale } = Astro.props;
+const { home } = getUi(locale);
 ---
 
 <div

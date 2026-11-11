@@ -28,9 +28,9 @@ Chame `configureEmojis` uma vez, antes de o primeiro `Emoji` ser renderizado.
 Uma barra final na URL é ignorada:
 
 ```jsx
-import { configureEmojis } from 'animated-fluent-emojis'
+import { configureEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
 ```
 
 Chamá-lo depois de o manifest ter sido requisitado reinicia o manifest e emite

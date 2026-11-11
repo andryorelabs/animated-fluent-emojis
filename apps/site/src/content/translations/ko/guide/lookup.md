@@ -8,15 +8,11 @@ sourceHash: 27d4efa631898e63
 로드할 수 없으면 reject하지 않고 `undefined`나 빈 배열로 resolve합니다.
 
 ```js
-import {
-  extractEmojis,
-  findEmojiByUnicode,
-  searchEmojis,
-} from 'animated-fluent-emojis/lookup'
+import { extractEmojis, findEmojiByUnicode, searchEmojis } from "animated-fluent-emojis/lookup";
 
-await findEmojiByUnicode('👍🏽') // { id: 'yes', skinTone: 'medium' }
-await extractEmojis('Hi 👋 there') // [{ id, text, index, length }]
-await searchEmojis('party', { limit: 5 }) // [{ id }]
+await findEmojiByUnicode("👍🏽"); // { id: 'yes', skinTone: 'medium' }
+await extractEmojis("Hi 👋 there"); // [{ id, text, index, length }]
+await searchEmojis("party", { limit: 5 }); // [{ id }]
 ```
 
 - `findEmojiByUnicode(text)`는 emoji 하나를 찾고 단일 피부색 modifier를

@@ -1,11 +1,8 @@
-import { useSyncExternalStore } from 'react'
+import { useSyncExternalStore } from "react";
 
-import {
-  getPrefersReducedMotion,
-  subscribeToReducedMotion,
-} from '../core/environment-signals.js'
+import { getPrefersReducedMotion, subscribeToReducedMotion } from "../core/environment-signals.js";
 
-const getServerSnapshot = (): boolean => false
+const getServerSnapshot = (): boolean => false;
 
 /**
  * Tracks the `prefers-reduced-motion: reduce` media query through one
@@ -13,8 +10,4 @@ const getServerSnapshot = (): boolean => false
  * @returns Whether the user asked the system to reduce motion.
  */
 export const usePrefersReducedMotion = (): boolean =>
-  useSyncExternalStore(
-    subscribeToReducedMotion,
-    getPrefersReducedMotion,
-    getServerSnapshot,
-  )
+  useSyncExternalStore(subscribeToReducedMotion, getPrefersReducedMotion, getServerSnapshot);

@@ -2,23 +2,17 @@ import {
   createPreferenceStore,
   type PreferenceEnvironment,
   type PreferenceStore,
-} from './persisted-preference'
+} from "./persisted-preference";
 
-export const SNIPPET_ADAPTERS = [
-  'react',
-  'vue',
-  'svelte',
-  'astro',
-  'element',
-] as const
+export const SNIPPET_ADAPTERS = ["react", "vue", "svelte", "astro", "element"] as const;
 
-export type SnippetAdapter = (typeof SNIPPET_ADAPTERS)[number]
+export type SnippetAdapter = (typeof SNIPPET_ADAPTERS)[number];
 
-export const DEFAULT_SNIPPET_ADAPTER: SnippetAdapter = 'react'
+export const DEFAULT_SNIPPET_ADAPTER: SnippetAdapter = "react";
 
-export const SNIPPET_ADAPTER_STORAGE_KEY = 'afe:snippet-adapter'
+export const SNIPPET_ADAPTER_STORAGE_KEY = "afe:snippet-adapter";
 
-const SNIPPET_ADAPTER_EVENT = 'afe:snippet-adapter-change'
+const SNIPPET_ADAPTER_EVENT = "afe:snippet-adapter-change";
 
 /**
  * Narrows a stored or user-provided value to a supported snippet adapter.
@@ -26,7 +20,7 @@ const SNIPPET_ADAPTER_EVENT = 'afe:snippet-adapter-change'
  * @returns Whether it names a supported adapter.
  */
 export function isSnippetAdapter(value: unknown): value is SnippetAdapter {
-  return SNIPPET_ADAPTERS.includes(value as SnippetAdapter)
+  return SNIPPET_ADAPTERS.includes(value as SnippetAdapter);
 }
 
 /**
@@ -47,5 +41,5 @@ export function createSnippetAdapterStore(
       isValue: isSnippetAdapter,
     },
     environment,
-  )
+  );
 }

@@ -1,23 +1,23 @@
-import sharp from 'sharp'
+import sharp from "sharp";
 
-import type { Manifest } from '../../packages/animated-fluent-emojis/src/utils/types.js'
-import type { FetchLike } from './http.js'
+import type { Manifest } from "../../packages/animated-fluent-emojis/src/utils/types.js";
+import type { FetchLike } from "./http.js";
 
 /**
  * A canned response for {@link createFakeFetch}.
  */
 export interface FakeResponse {
-  readonly status?: number
-  readonly headers?: Record<string, string>
-  readonly body?: string | Uint8Array | object
+  readonly status?: number;
+  readonly headers?: Record<string, string>;
+  readonly body?: string | Uint8Array | object;
 }
 
 /**
  * A fake fetch and the requests it received.
  */
 export interface FakeFetch {
-  readonly fetch: FetchLike
-  readonly requests: string[]
+  readonly fetch: FetchLike;
+  readonly requests: string[];
 }
 
 /**
@@ -26,28 +26,23 @@ export interface FakeFetch {
  * @param routes Canned responses keyed by `GET https://example.com/a`.
  * @returns The fake fetch and its request log.
  */
-export function createFakeFetch(
-  routes: Record<string, FakeResponse>,
-): FakeFetch {
-  const requests: string[] = []
+export function createFakeFetch(routes: Record<string, FakeResponse>): FakeFetch {
+  const requests: string[] = [];
   const fakeFetch: FetchLike = (input, init) => {
-    const key = `${init?.method ?? 'GET'} ${input}`
-    requests.push(key)
-    const route = routes[key]
-    if (!route)
-      return Promise.resolve(new Response('not found', { status: 404 }))
-    const { body = '', status = 200, headers = {} } = route
+    const key = `${init?.method ?? "GET"} ${input}`;
+    requests.push(key);
+    const route = routes[key];
+    if (!route) return Promise.resolve(new Response("not found", { status: 404 }));
+    const { body = "", status = 200, headers = {} } = route;
     const payload =
-      typeof body === 'string'
+      typeof body === "string"
         ? body
         : body instanceof Uint8Array
           ? new Uint8Array(body)
-          : JSON.stringify(body)
-    return Promise.resolve(
-      new Response(new Blob([payload]), { status, headers }),
-    )
-  }
-  return { fetch: fakeFetch, requests }
+          : JSON.stringify(body);
+    return Promise.resolve(new Response(new Blob([payload]), { status, headers }));
+  };
+  return { fetch: fakeFetch, requests };
 }
 
 /**
@@ -58,47 +53,47 @@ export function createTeamsManifest(): Manifest {
   return {
     categories: [
       {
-        id: 'smilies-id',
-        title: 'Smilies',
-        description: 'Smilies',
+        id: "smilies-id",
+        title: "Smilies",
+        description: "Smilies",
         emoticons: [
           {
-            id: '1f603_grinningfacewithbigeyes',
-            description: 'Grinning face with big eyes',
+            id: "1f603_grinningfacewithbigeyes",
+            description: "Grinning face with big eyes",
             shortcuts: [],
-            unicode: '😃',
-            etag: 'v11',
+            unicode: "😃",
+            etag: "v11",
             diverse: false,
             animation: { fps: 24, framesCount: 72, firstFrame: 1 },
-            keywords: ['grinning'],
+            keywords: ["grinning"],
           },
         ],
       },
       {
-        id: 'hands-id',
-        title: 'Hand gestures',
-        description: 'Hand gestures',
+        id: "hands-id",
+        title: "Hand gestures",
+        description: "Hand gestures",
         emoticons: [
           {
-            id: '1f44b_wavinghand',
-            description: 'Waving hand',
+            id: "1f44b_wavinghand",
+            description: "Waving hand",
             shortcuts: [],
-            unicode: '👋',
-            etag: 'v5',
+            unicode: "👋",
+            etag: "v5",
             diverse: true,
             animation: { fps: 24, framesCount: 21, firstFrame: 1 },
-            keywords: ['wave'],
+            keywords: ["wave"],
           },
         ],
       },
       {
-        id: 'symbols-id',
-        title: 'Symbols',
-        description: 'Symbols',
+        id: "symbols-id",
+        title: "Symbols",
+        description: "Symbols",
         emoticons: [],
       },
     ],
-  }
+  };
 }
 
 /**
@@ -113,7 +108,7 @@ export async function createSpritePng(
   framesCount: number,
   options: { frameSize?: number; width?: number } = {},
 ): Promise<Buffer> {
-  const frameSize = options.frameSize ?? 100
+  const frameSize = options.frameSize ?? 100;
   return sharp({
     create: {
       width: options.width ?? frameSize,
@@ -123,5 +118,5 @@ export async function createSpritePng(
     },
   })
     .png()
-    .toBuffer()
+    .toBuffer();
 }

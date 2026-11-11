@@ -1,16 +1,16 @@
-import { localizeEmojis, type AnnotationTable } from './annotations'
-import type { PublicEmoji } from './public-index'
+import { localizeEmojis, type AnnotationTable } from "./annotations";
+import type { PublicEmoji } from "./public-index";
 
 /**
  * One row of the client search index. The English fields are present only
  * when they differ from the localized ones.
  */
 export interface SearchEntry {
-  slug: string
-  name: string
-  keywords: string[]
-  englishName?: string
-  englishKeywords?: string[]
+  slug: string;
+  name: string;
+  keywords: string[];
+  englishName?: string;
+  englishKeywords?: string[];
 }
 
 /**
@@ -19,12 +19,7 @@ export interface SearchEntry {
  * @returns The comparable form.
  */
 export function normalizeText(text: string): string {
-  return text
-    .normalize('NFD')
-    .replaceAll(/[̀-ͯ]/g, '')
-    .normalize('NFC')
-    .toLocaleLowerCase()
-    .trim()
+  return text.normalize("NFD").replaceAll(/[̀-ͯ]/g, "").normalize("NFC").toLocaleLowerCase().trim();
 }
 
 /**
@@ -38,20 +33,20 @@ export function buildSearchIndex(
   emojis: readonly PublicEmoji[],
   annotations: AnnotationTable,
 ): SearchEntry[] {
-  const localized = localizeEmojis(emojis, annotations)
+  const localized = localizeEmojis(emojis, annotations);
   return localized.map((entry, position) => {
-    const source = emojis[position]
+    const source = emojis[position];
     const row: SearchEntry = {
       slug: entry.slug,
       name: entry.name,
       keywords: entry.keywords,
-    }
+    };
     if (source && !entry.fellBack) {
-      row.englishName = source.description
-      row.englishKeywords = source.keywords
+      row.englishName = source.description;
+      row.englishKeywords = source.keywords;
     }
-    return row
-  })
+    return row;
+  });
 }
 
 const SCORES = {
@@ -64,34 +59,32 @@ const SCORES = {
   prefixKeyword: 40,
   prefixEnglishKeyword: 30,
   containsName: 20,
-} as const
+} as const;
 
 function scoreEntry(entry: SearchEntry, query: string): number {
-  const name = normalizeText(entry.name)
-  const englishName = normalizeText(entry.englishName ?? '')
-  const keywords = entry.keywords.map((keyword) => normalizeText(keyword))
-  const englishKeywords = (entry.englishKeywords ?? []).map((keyword) =>
-    normalizeText(keyword),
-  )
-  const candidates: number[] = [0]
-  if (name === query) candidates.push(SCORES.exactName)
-  if (englishName === query) candidates.push(SCORES.exactEnglishName)
-  if (name.startsWith(query)) candidates.push(SCORES.prefixName)
-  if (englishName.startsWith(query)) candidates.push(SCORES.prefixEnglishName)
-  if (keywords.includes(query)) candidates.push(SCORES.exactKeyword)
+  const name = normalizeText(entry.name);
+  const englishName = normalizeText(entry.englishName ?? "");
+  const keywords = entry.keywords.map((keyword) => normalizeText(keyword));
+  const englishKeywords = (entry.englishKeywords ?? []).map((keyword) => normalizeText(keyword));
+  const candidates: number[] = [0];
+  if (name === query) candidates.push(SCORES.exactName);
+  if (englishName === query) candidates.push(SCORES.exactEnglishName);
+  if (name.startsWith(query)) candidates.push(SCORES.prefixName);
+  if (englishName.startsWith(query)) candidates.push(SCORES.prefixEnglishName);
+  if (keywords.includes(query)) candidates.push(SCORES.exactKeyword);
   if (englishKeywords.includes(query)) {
-    candidates.push(SCORES.exactEnglishKeyword)
+    candidates.push(SCORES.exactEnglishKeyword);
   }
   if (keywords.some((keyword) => keyword.startsWith(query))) {
-    candidates.push(SCORES.prefixKeyword)
+    candidates.push(SCORES.prefixKeyword);
   }
   if (englishKeywords.some((keyword) => keyword.startsWith(query))) {
-    candidates.push(SCORES.prefixEnglishKeyword)
+    candidates.push(SCORES.prefixEnglishKeyword);
   }
   if (name.includes(query) || englishName.includes(query)) {
-    candidates.push(SCORES.containsName)
+    candidates.push(SCORES.containsName);
   }
-  return Math.max(...candidates)
+  return Math.max(...candidates);
 }
 
 /**
@@ -107,9 +100,9 @@ export function searchEmojis(
   query: string,
   limit = Infinity,
 ): string[] {
-  const needle = normalizeText(query)
-  if (needle === '') {
-    return []
+  const needle = normalizeText(query);
+  if (needle === "") {
+    return [];
   }
   return index
     .map((entry, position) => ({
@@ -120,5 +113,5 @@ export function searchEmojis(
     .filter((hit) => hit.score > 0)
     .toSorted((a, b) => b.score - a.score || a.position - b.position)
     .slice(0, limit)
-    .map((hit) => hit.slug)
+    .map((hit) => hit.slug);
 }

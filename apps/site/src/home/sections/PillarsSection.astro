@@ -1,56 +1,53 @@
 ---
-import Emoji from 'animated-fluent-emojis/astro'
+import Emoji from "animated-fluent-emojis/astro";
 
-import { type Locale } from '../../i18n/locales'
-import { getUi } from '../../i18n/ui'
-import { eyebrow, heading, section } from './styles'
+import { type Locale } from "../../i18n/locales";
+import { getUi } from "../../i18n/ui";
+import { eyebrow, heading, section } from "./styles";
 
 interface Props {
-  locale: Locale
+  locale: Locale;
 }
 
-const { locale } = Astro.props
-const { home } = getUi(locale)
+const { locale } = Astro.props;
+const { home } = getUi(locale);
 
 const wall = [
-  '1f603_grinningfacewithbigeyes',
-  'happyface',
-  'grinningfacewithsmilingeyes',
-  '1f601_beamingfacewithsmilingeyes',
-  'laugh',
-  'sweatgrinning',
-  'rofl',
-  '1f44b_wavinghand',
-  'smile',
-  'wink',
-  'stareyes',
-  'fire',
-  'heart',
-  'star',
-  '1f4a7_droplet',
-  '1f33f_herb',
-  '1f52e_crystalball',
-  '1f389_partypopper',
-]
-const wallColumns = 6
-const wallPlayingFirst = 3
-const wallPlayingSecond = 8
-const wakeLastColumn = 3
+  "1f603_grinningfacewithbigeyes",
+  "happyface",
+  "grinningfacewithsmilingeyes",
+  "1f601_beamingfacewithsmilingeyes",
+  "laugh",
+  "sweatgrinning",
+  "rofl",
+  "1f44b_wavinghand",
+  "smile",
+  "wink",
+  "stareyes",
+  "fire",
+  "heart",
+  "star",
+  "1f4a7_droplet",
+  "1f33f_herb",
+  "1f52e_crystalball",
+  "1f389_partypopper",
+];
+const wallColumns = 6;
+const wallPlayingFirst = 3;
+const wallPlayingSecond = 8;
+const wakeLastColumn = 3;
 
 const wakeDelay = (position: number) => {
-  const column = position % wallColumns
-  const row = Math.floor(position / wallColumns)
-  return column <= wakeLastColumn
-    ? `${(0.5 + column * 0.45 + row * 0.15).toFixed(2)}s`
-    : undefined
-}
+  const column = position % wallColumns;
+  const row = Math.floor(position / wallColumns);
+  return column <= wakeLastColumn ? `${(0.5 + column * 0.45 + row * 0.15).toFixed(2)}s` : undefined;
+};
 
 const cardClass =
-  'scroll-reveal spotlight flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 transition-colors duration-250 ease-(--ease-out-strong) hover-fine:hover:border-primary-edge'
+  "scroll-reveal spotlight flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 transition-colors duration-250 ease-(--ease-out-strong) hover-fine:hover:border-primary-edge";
 const stageClass =
-  'bento-stage relative flex items-center justify-center overflow-hidden rounded-xl border border-border bg-background/60'
-const cursorMarkup =
-  'fake-cursor bento-cursor absolute top-0 left-0 size-4 text-foreground'
+  "bento-stage relative flex items-center justify-center overflow-hidden rounded-xl border border-border bg-background/60";
+const cursorMarkup = "fake-cursor bento-cursor absolute top-0 left-0 size-4 text-foreground";
 ---
 
 <section class={section} aria-labelledby="pillars-title">
@@ -66,29 +63,19 @@ const cursorMarkup =
   >
     <li class={`${cardClass} min-[860px]:row-span-2`}>
       <div class="flex flex-col gap-1">
-        <h3 class="text-lg font-extrabold text-balance">
-          {home.bento.alive.title}
-        </h3>
+        <h3 class="text-lg font-extrabold text-balance">{home.bento.alive.title}</h3>
         <p class="text-pretty text-muted-foreground">{home.bento.alive.body}</p>
       </div>
-      <div
-        class={`${stageClass} min-[860px]:flex-1`}
-        style="--stage-base: 168"
-        aria-hidden="true"
-      >
+      <div class={`${stageClass} min-[860px]:flex-1`} style="--stage-base: 168" aria-hidden="true">
         <div class="relative grid h-62 w-126.5 grid-cols-6 gap-2.5 max-narrow:zoom-55">
           {wall.map((id, position) => (
             <span
               class="bento-cell relative block size-19 rounded-18 border border-border bg-card"
-              data-wake={wakeDelay(position) ? '' : undefined}
-              style={
-                wakeDelay(position)
-                  ? { '--wake-delay': wakeDelay(position) }
-                  : undefined
-              }
+              data-wake={wakeDelay(position) ? "" : undefined}
+              style={wakeDelay(position) ? { "--wake-delay": wakeDelay(position) } : undefined}
             >
               <span
-                class={`absolute inset-0 grid place-items-center ${position === wallPlayingFirst ? 'fake-cursor-target' : ''}`}
+                class={`absolute inset-0 grid place-items-center ${position === wallPlayingFirst ? "fake-cursor-target" : ""}`}
               >
                 <span class="relative block size-15.5">
                   <Emoji id={id} size={62} autoPlay={false} alt="" />
@@ -133,9 +120,7 @@ const cursorMarkup =
 
     <li class={cardClass}>
       <div class="flex flex-col gap-1">
-        <h3 class="text-lg font-extrabold text-balance">
-          {home.bento.light.title}
-        </h3>
+        <h3 class="text-lg font-extrabold text-balance">{home.bento.light.title}</h3>
         <p class="text-pretty text-muted-foreground">{home.bento.light.body}</p>
       </div>
       <div class={`${stageClass} flex-col gap-3`} style="--stage-base: 168">
@@ -148,20 +133,14 @@ const cursorMarkup =
             <Emoji id="feather" size={40} alt="" />
           </span>
         </span>
-        <span class="font-mono text-xs text-muted-foreground">
-          {home.bento.layoutShift}
-        </span>
+        <span class="font-mono text-xs text-muted-foreground">{home.bento.layoutShift}</span>
       </div>
     </li>
 
     <li class={cardClass}>
       <div class="flex flex-col gap-1">
-        <h3 class="text-lg font-extrabold text-balance">
-          {home.bento.considerate.title}
-        </h3>
-        <p class="text-pretty text-muted-foreground">
-          {home.bento.considerate.body}
-        </p>
+        <h3 class="text-lg font-extrabold text-balance">{home.bento.considerate.title}</h3>
+        <p class="text-pretty text-muted-foreground">{home.bento.considerate.body}</p>
       </div>
       <div class={stageClass} style="--stage-base: 168" aria-hidden="true">
         <div class="flex items-center gap-4">
@@ -198,9 +177,7 @@ const cursorMarkup =
             <span class="bento-label-off col-start-1 row-start-1">
               {home.bento.reduceMotion.off}
             </span>
-            <span class="bento-label-on col-start-1 row-start-1">
-              {home.bento.reduceMotion.on}
-            </span>
+            <span class="bento-label-on col-start-1 row-start-1">{home.bento.reduceMotion.on}</span>
           </span>
         </div>
       </div>
@@ -208,24 +185,13 @@ const cursorMarkup =
 
     <li class={`${cardClass} min-[860px]:col-span-2`}>
       <div class="flex flex-col gap-1">
-        <h3 class="text-lg font-extrabold text-balance">
-          {home.bento.credit.title}
-        </h3>
-        <p class="text-pretty text-muted-foreground">
-          {home.bento.credit.body}
-        </p>
+        <h3 class="text-lg font-extrabold text-balance">{home.bento.credit.title}</h3>
+        <p class="text-pretty text-muted-foreground">{home.bento.credit.body}</p>
       </div>
-      <div
-        class={`${stageClass} grid grid-cols-balanced gap-2 px-3`}
-        style="--stage-base: 168"
-      >
+      <div class={`${stageClass} grid grid-cols-balanced gap-2 px-3`} style="--stage-base: 168">
         <span class="flex flex-col items-center gap-1 rounded-xl border border-border bg-card px-3 py-4 text-center">
-          <span class="font-mono text-xs text-muted-foreground">
-            {home.bento.artwork.label}
-          </span>
-          <span class="text-sm font-semibold text-balance">
-            {home.bento.artwork.value}
-          </span>
+          <span class="font-mono text-xs text-muted-foreground">{home.bento.artwork.label}</span>
+          <span class="text-sm font-semibold text-balance">{home.bento.artwork.value}</span>
         </span>
         <svg
           viewBox="0 0 40 24"
@@ -239,12 +205,8 @@ const cursorMarkup =
           <path d="M2 12C14 2 26 22 38 12" pathLength="60"></path>
         </svg>
         <span class="flex flex-col items-center gap-1 rounded-xl border border-border bg-card px-3 py-4 text-center">
-          <span class="font-mono text-xs text-muted-foreground">
-            {home.bento.code.label}
-          </span>
-          <span class="text-sm font-semibold text-balance">
-            {home.bento.code.value}
-          </span>
+          <span class="font-mono text-xs text-muted-foreground">{home.bento.code.label}</span>
+          <span class="text-sm font-semibold text-balance">{home.bento.code.value}</span>
         </span>
         <span
           class="pointer-events-none absolute -right-2 -bottom-7.5 block size-21.5"
@@ -258,10 +220,8 @@ const cursorMarkup =
 </section>
 
 <script>
-  import { attachPillarSpotlight } from '../../scripts/pillar-spotlight'
+  import { attachPillarSpotlight } from "../../scripts/pillar-spotlight";
 
-  const cards = document.querySelectorAll<HTMLElement>(
-    '[data-pillar-spotlight] > .spotlight',
-  )
-  attachPillarSpotlight(cards)
+  const cards = document.querySelectorAll<HTMLElement>("[data-pillar-spotlight] > .spotlight");
+  attachPillarSpotlight(cards);
 </script>

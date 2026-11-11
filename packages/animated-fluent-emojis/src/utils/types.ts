@@ -3,11 +3,11 @@
  */
 interface Animation {
   /** The frames per second of the animation. */
-  fps: number
+  fps: number;
   /** The total number of frames in the animation. */
-  framesCount: number
+  framesCount: number;
   /** The index of the first frame in the animation. */
-  firstFrame: number
+  firstFrame: number;
 }
 
 /**
@@ -15,19 +15,19 @@ interface Animation {
  */
 interface SlimEmoticon {
   /** Unique identifier for the emoticon. */
-  id: string
+  id: string;
   /** Human-readable description of the emoticon. */
-  description: string
+  description: string;
   /** Entity tag for caching purposes. */
-  etag: string
+  etag: string;
   /** Whether this emoticon has diverse (skin tone) variants. */
-  diverse: boolean
+  diverse: boolean;
   /** Animation properties for this emoticon. */
-  animation: Animation
+  animation: Animation;
   /** Whether the asset site also serves an HD sprite sheet for this emoticon. */
-  hd?: boolean
+  hd?: boolean;
   /** The emoji as a Unicode string, used as the fallback glyph. */
-  unicode?: string
+  unicode?: string;
 }
 
 /**
@@ -36,19 +36,19 @@ interface SlimEmoticon {
  */
 interface CompactEmoticon {
   /** Unique identifier for the emoticon. */
-  id: string
+  id: string;
   /** Human-readable description of the emoticon. */
-  description: string
+  description: string;
   /** Entity tag for caching purposes. */
-  etag: string
+  etag: string;
   /** The emoji as a Unicode string, used as the fallback glyph. */
-  unicode?: string
+  unicode?: string;
   /** Animation properties; `fps` and `firstFrame` are omitted at their defaults. */
-  animation: Partial<Animation> & Pick<Animation, 'framesCount'>
+  animation: Partial<Animation> & Pick<Animation, "framesCount">;
   /** Present and true when the emoticon has skin tone variants. */
-  diverse?: true
+  diverse?: true;
   /** Present and true when the asset site serves an HD sprite sheet. */
-  hd?: true
+  hd?: true;
 }
 
 /**
@@ -57,11 +57,11 @@ interface CompactEmoticon {
 export interface CompactManifest {
   /** The emoji categories. */
   categories: {
-    id: string
-    title: string
-    description: string
-    emoticons: CompactEmoticon[]
-  }[]
+    id: string;
+    title: string;
+    description: string;
+    emoticons: CompactEmoticon[];
+  }[];
 }
 
 /**
@@ -69,23 +69,23 @@ export interface CompactManifest {
  */
 interface Emoticon {
   /** Unique identifier for the emoticon. */
-  id: string
+  id: string;
   /** Human-readable description of the emoticon. */
-  description: string
+  description: string;
   /** Array of shortcut strings to represent this emoticon. */
-  shortcuts: string[]
+  shortcuts: string[];
   /** Unicode representation of the emoticon. */
-  unicode: string
+  unicode: string;
   /** Entity tag for caching purposes. */
-  etag: string
+  etag: string;
   /** Whether this emoticon has diverse (skin tone) variants. */
-  diverse: boolean
+  diverse: boolean;
   /** Animation properties for this emoticon. */
-  animation: Animation
+  animation: Animation;
   /** Set to `"official"` on emoticons sourced from the official repository. Ignored at runtime. */
-  origin?: 'official'
+  origin?: "official";
   /** Array of keywords associated with this emoticon. */
-  keywords: string[]
+  keywords: string[];
 }
 
 /**
@@ -93,13 +93,13 @@ interface Emoticon {
  */
 interface Category {
   /** Unique identifier for the category. */
-  id: string
+  id: string;
   /** The display title of the category. */
-  title: string
+  title: string;
   /** A brief description of the category. */
-  description: string
+  description: string;
   /** An array of Emoticon objects in this category. */
-  emoticons: Emoticon[]
+  emoticons: Emoticon[];
 }
 
 /**
@@ -107,7 +107,7 @@ interface Category {
  */
 export interface Manifest {
   /** An array of Category objects representing all emoji categories. */
-  categories: Category[]
+  categories: Category[];
 }
 
 /**
@@ -115,16 +115,10 @@ export interface Manifest {
  */
 export interface EmojiManifest extends SlimEmoticon {
   /** The category to which this emoji belongs. */
-  category: string
+  category: string;
 }
 
 /**
  * Skin tones an emoji can be rendered with.
  */
-export type SkinTone =
-  | 'default'
-  | 'light'
-  | 'medium-light'
-  | 'medium'
-  | 'medium-dark'
-  | 'dark'
+export type SkinTone = "default" | "light" | "medium-light" | "medium" | "medium-dark" | "dark";

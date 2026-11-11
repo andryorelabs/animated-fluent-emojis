@@ -38,7 +38,7 @@ Otros casos se ven igual y no son errores:
 **Solución:** Importa la hoja de estilos una sola vez, en la raíz de la app:
 
 ```js
-import 'animated-fluent-emojis/style.css'
+import "animated-fluent-emojis/style.css";
 ```
 
 Si ya la importaste y el emoji sigue quieto, revisa la configuración de
@@ -165,15 +165,14 @@ se cumple en jsdom.
 pruebas. Este repositorio lo hace con MSW en `src/utils/emoji-manifest.test.ts`:
 
 ```ts
-import { http, HttpResponse } from 'msw/http'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from "msw/http";
+import { setupServer } from "msw/node";
 
 const server = setupServer(
-  http.get(
-    'https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json',
-    () => HttpResponse.json(compactManifest),
+  http.get("https://animated-fluent-emojis-cdn.andryore.dev/v1/manifest.slim.json", () =>
+    HttpResponse.json(compactManifest),
   ),
-)
+);
 ```
 
 `compactManifest` es la forma compacta del manifest slim; el fixture usado aquí

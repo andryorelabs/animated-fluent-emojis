@@ -10,12 +10,12 @@ import {
   findEmojiByShortcode,
   findEmojiByUnicode,
   searchEmojis,
-} from 'animated-fluent-emojis/lookup'
+} from "animated-fluent-emojis/lookup";
 
-await findEmojiByUnicode('👍🏽') // { id: 'yes', skinTone: 'medium' }
-await findEmojiByShortcode(':launch:') // { id: '1f680_launch' }
-await extractEmojis('Hi 👋 there') // [{ id, text, index, length }]
-await searchEmojis('party', { limit: 5 }) // [{ id }]
+await findEmojiByUnicode("👍🏽"); // { id: 'yes', skinTone: 'medium' }
+await findEmojiByShortcode(":launch:"); // { id: '1f680_launch' }
+await extractEmojis("Hi 👋 there"); // [{ id, text, index, length }]
+await searchEmojis("party", { limit: 5 }); // [{ id }]
 ```
 
 - `findEmojiByUnicode(text)` resolves one emoji and maps a single skin tone

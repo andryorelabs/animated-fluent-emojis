@@ -1,7 +1,7 @@
 name: Enhancement Request
 description: Suggest an improvement to an existing feature or behavior
-title: 'feat: '
-labels: ['Type: Enhancement', 'Status: Needs Info']
+title: "feat: "
+labels: ["Type: Enhancement", "Status: Needs Info"]
 
 body:
   - type: checkboxes
@@ -9,8 +9,7 @@ body:
     attributes:
       label: Pre-flight checklist
       options:
-        - label:
-            I have searched the existing issues and confirmed this hasn't been
+        - label: I have searched the existing issues and confirmed this hasn't been
             proposed.
           required: true
 
@@ -47,5 +46,4 @@ body:
     id: context
     attributes:
       label: Additional context
-      description:
-        Screenshots, references, related issues, or any other context.
+      description: Screenshots, references, related issues, or any other context.

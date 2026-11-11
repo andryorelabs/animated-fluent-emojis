@@ -1,8 +1,8 @@
-const FINE_HOVER_QUERY = '(hover: hover) and (pointer: fine)'
-const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
+const FINE_HOVER_QUERY = "(hover: hover) and (pointer: fine)";
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 const detachNothing = () => {
-  return
-}
+  return;
+};
 
 /**
  * Makes a soft glow follow the pointer over the given cards by writing
@@ -12,41 +12,36 @@ const detachNothing = () => {
  * @param cards - The elements that host the spotlight.
  * @returns A function that removes the listeners and cancels pending frames.
  */
-export function attachPillarSpotlight(
-  cards: Iterable<HTMLElement>,
-): () => void {
-  if (
-    !matchMedia(FINE_HOVER_QUERY).matches ||
-    matchMedia(REDUCED_MOTION_QUERY).matches
-  )
-    return detachNothing
+export function attachPillarSpotlight(cards: Iterable<HTMLElement>): () => void {
+  if (!matchMedia(FINE_HOVER_QUERY).matches || matchMedia(REDUCED_MOTION_QUERY).matches)
+    return detachNothing;
 
   const detachers = [...cards].map((card) => {
-    let frame: number | undefined
-    let clientX = 0
-    let clientY = 0
+    let frame: number | undefined;
+    let clientX = 0;
+    let clientY = 0;
 
     const onPointerMove = (event: PointerEvent) => {
-      clientX = event.clientX
-      clientY = event.clientY
-      if (frame !== undefined) return
+      clientX = event.clientX;
+      clientY = event.clientY;
+      if (frame !== undefined) return;
       frame = requestAnimationFrame(() => {
-        frame = undefined
-        const { left, top } = card.getBoundingClientRect()
-        card.style.setProperty('--spotlight-x', `${String(clientX - left)}px`)
-        card.style.setProperty('--spotlight-y', `${String(clientY - top)}px`)
-      })
-    }
+        frame = undefined;
+        const { left, top } = card.getBoundingClientRect();
+        card.style.setProperty("--spotlight-x", `${String(clientX - left)}px`);
+        card.style.setProperty("--spotlight-y", `${String(clientY - top)}px`);
+      });
+    };
 
-    card.addEventListener('pointermove', onPointerMove)
+    card.addEventListener("pointermove", onPointerMove);
     return () => {
-      card.removeEventListener('pointermove', onPointerMove)
-      if (frame !== undefined) cancelAnimationFrame(frame)
-      frame = undefined
-    }
-  })
+      card.removeEventListener("pointermove", onPointerMove);
+      if (frame !== undefined) cancelAnimationFrame(frame);
+      frame = undefined;
+    };
+  });
 
   return () => {
-    for (const detach of detachers) detach()
-  }
+    for (const detach of detachers) detach();
+  };
 }

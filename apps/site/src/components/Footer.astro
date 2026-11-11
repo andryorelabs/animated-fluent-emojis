@@ -1,29 +1,24 @@
 ---
-import ExternalLink from '@lucide/astro/icons/external-link'
+import ExternalLink from "@lucide/astro/icons/external-link";
 
-import { localePath, type Locale } from '../i18n/locales'
-import { getUi } from '../i18n/ui'
-import {
-  externalLinkAttributes,
-  isExternalHref,
-  NPM_URL,
-  REPOSITORY_URL,
-} from '../site-links'
-import FooterCredit from './FooterCredit.astro'
+import { localePath, type Locale } from "../i18n/locales";
+import { getUi } from "../i18n/ui";
+import { externalLinkAttributes, isExternalHref, NPM_URL, REPOSITORY_URL } from "../site-links";
+import FooterCredit from "./FooterCredit.astro";
 
 interface Props {
-  locale: Locale
+  locale: Locale;
 }
 
-const { locale } = Astro.props
-const { common, footer } = getUi(locale)
-const externalAttributes = externalLinkAttributes()
+const { locale } = Astro.props;
+const { common, footer } = getUi(locale);
+const externalAttributes = externalLinkAttributes();
 const links = [
-  { href: localePath(locale, '/emojis/'), label: footer.links.gallery },
-  { href: localePath(locale, '/docs/'), label: footer.links.docs },
+  { href: localePath(locale, "/emojis/"), label: footer.links.gallery },
+  { href: localePath(locale, "/docs/"), label: footer.links.docs },
   { href: REPOSITORY_URL, label: footer.links.github },
   { href: NPM_URL, label: footer.links.npm },
-].map((link) => ({ ...link, external: isExternalHref(link.href) }))
+].map((link) => ({ ...link, external: isExternalHref(link.href) }));
 ---
 
 <footer class="border-t border-border text-sm text-muted-foreground">
@@ -38,8 +33,8 @@ const links = [
           href={link.href}
           class={
             link.external
-              ? 'inline-flex items-center gap-1 text-primary-text underline-offset-4 hover:underline'
-              : 'text-primary-text underline-offset-4 hover:underline'
+              ? "inline-flex items-center gap-1 text-primary-text underline-offset-4 hover:underline"
+              : "text-primary-text underline-offset-4 hover:underline"
           }
           {...(link.external ? externalAttributes : {})}
         >

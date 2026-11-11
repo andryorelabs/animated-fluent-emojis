@@ -18,10 +18,10 @@ sprite sheet（200px フレーム）を持つ絵文字には、幅ベースの `
 sheet をリクエストします。reject されることはありません。
 
 ```js
-import { preloadEmojis } from 'animated-fluent-emojis'
+import { preloadEmojis } from "animated-fluent-emojis";
 
-void preloadEmojis()
-void preloadEmojis(['1f44b_wavinghand', '1f525_fire'], { skinTone: 'medium' })
+void preloadEmojis();
+void preloadEmojis(["1f44b_wavinghand", "1f525_fire"], { skinTone: "medium" });
 ```
 
 `skinTone`
@@ -37,7 +37,7 @@ void preloadEmojis(['1f44b_wavinghand', '1f525_fire'], { skinTone: 'medium' })
 がレンダリングされる前に、`configureEmojis` を一度だけ呼び出します。
 
 ```js
-import { configureEmojis } from 'animated-fluent-emojis'
+import { configureEmojis } from "animated-fluent-emojis";
 
-configureEmojis({ assetSiteUrl: 'https://emojis.example.com' })
+configureEmojis({ assetSiteUrl: "https://emojis.example.com" });
 ```

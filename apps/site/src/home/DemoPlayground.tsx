@@ -1,5 +1,5 @@
-import { Emoji } from 'animated-fluent-emojis/react'
-import { RotateCcwIcon } from 'lucide-react'
+import { Emoji } from "animated-fluent-emojis/react";
+import { RotateCcwIcon } from "lucide-react";
 import {
   useMemo,
   useState,
@@ -7,16 +7,16 @@ import {
   type ComponentProps,
   type PointerEvent,
   type ReactNode,
-} from 'react'
-import 'animated-fluent-emojis/style.css'
+} from "react";
+import "animated-fluent-emojis/style.css";
 
-import CodeBlock, { type CodeBlockLabels } from '@/components/CodeBlock'
-import { ToneDot } from '@/components/ToneDot'
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import CodeBlock, { type CodeBlockLabels } from "@/components/CodeBlock";
+import { ToneDot } from "@/components/ToneDot";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import type { PublicEmoji } from '../gallery/public-index'
-import type { SnippetKind } from '../gallery/snippets'
+import type { PublicEmoji } from "../gallery/public-index";
+import type { SnippetKind } from "../gallery/snippets";
 import {
   DEMO_EMOJIS,
   DEMO_PLAYS,
@@ -32,54 +32,50 @@ import {
   type DemoEmojiName,
   type DemoState,
   type DemoTabs,
-} from './demo'
+} from "./demo";
 
 interface DemoLabels {
-  emojiLabel: string
-  sizeLabel: string
-  toneLabel: string
-  playsLabel: string
-  reset: string
-  emojis: Record<DemoEmojiName, string>
-  tones: Record<'default' | 'light' | 'medium' | 'dark', string>
-  plays: Record<'hover' | 'hoverTap' | 'load' | 'loop', string>
-  code: CodeBlockLabels
+  emojiLabel: string;
+  sizeLabel: string;
+  toneLabel: string;
+  playsLabel: string;
+  reset: string;
+  emojis: Record<DemoEmojiName, string>;
+  tones: Record<"default" | "light" | "medium" | "dark", string>;
+  plays: Record<"hover" | "hoverTap" | "load" | "loop", string>;
+  code: CodeBlockLabels;
 }
 
 export interface DemoPlaygroundProps {
-  emojis: readonly PublicEmoji[]
-  tabs: DemoTabs
-  labels: DemoLabels
-  initialState?: DemoState
+  emojis: readonly PublicEmoji[];
+  tabs: DemoTabs;
+  labels: DemoLabels;
+  initialState?: DemoState;
 }
 
 interface SegmentedProps<Value extends string | number> {
-  label: string
+  label: string;
   options: readonly {
-    value: Value
-    text: string
-    coarseText?: string | undefined
-    name?: string
-    leading?: ReactNode
-  }[]
-  selected: Value
-  onSelect: (value: Value) => void
-  disabled?: boolean
-  className?: string
+    value: Value;
+    text: string;
+    coarseText?: string | undefined;
+    name?: string;
+    leading?: ReactNode;
+  }[];
+  selected: Value;
+  onSelect: (value: Value) => void;
+  disabled?: boolean;
+  className?: string;
 }
 
-function OptionText({
-  option,
-}: {
-  option: { text: string; coarseText?: string | undefined }
-}) {
-  if (option.coarseText === undefined) return option.text
+function OptionText({ option }: { option: { text: string; coarseText?: string | undefined } }) {
+  if (option.coarseText === undefined) return option.text;
   return (
     <>
       <span className="pointer-coarse:hidden">{option.text}</span>
       <span className="hidden pointer-coarse:inline">{option.coarseText}</span>
     </>
-  )
+  );
 }
 
 function Segmented<Value extends string | number>({
@@ -88,7 +84,7 @@ function Segmented<Value extends string | number>({
   selected,
   onSelect,
   disabled = false,
-  className = '',
+  className = "",
 }: SegmentedProps<Value>) {
   return (
     <div className={`flex min-w-0 flex-col gap-1.5 ${className}`}>
@@ -102,17 +98,11 @@ function Segmented<Value extends string | number>({
         variant="segmented"
         value={String(selected)}
         onValueChange={(tabValue) => {
-          const next = options.find(
-            (option) => String(option.value) === tabValue,
-          )
-          if (next) onSelect(next.value)
+          const next = options.find((option) => String(option.value) === tabValue);
+          if (next) onSelect(next.value);
         }}
       >
-        <TabsList
-          pill
-          aria-label={label}
-          className="group-data-[variant=segmented]/tabs:w-full"
-        >
+        <TabsList pill aria-label={label} className="group-data-[variant=segmented]/tabs:w-full">
           {options.map((option) => (
             <TabsTrigger
               key={option.value}
@@ -134,37 +124,37 @@ function Segmented<Value extends string | number>({
         </TabsList>
       </Tabs>
     </div>
-  )
+  );
 }
 
 /**
  * The no-op unsubscribe of {@link subscribeNever}.
  */
 function unsubscribe(): void {
-  return
+  return;
 }
 
 function subscribeNever(): typeof unsubscribe {
-  return unsubscribe
+  return unsubscribe;
 }
 
 interface StageEmojiProps {
-  emojiProps: ComponentProps<typeof Emoji>
-  animateIn: boolean
+  emojiProps: ComponentProps<typeof Emoji>;
+  animateIn: boolean;
 }
 
 function StageEmoji({ emojiProps, animateIn }: StageEmojiProps) {
-  const [settled, setSettled] = useState(!animateIn)
+  const [settled, setSettled] = useState(!animateIn);
   const settle = () => {
-    setSettled(true)
-  }
+    setSettled(true);
+  };
   return (
     <span
-      className={`inline-flex transition-opacity-transform duration-150 ease-(--ease-out-strong) ${settled ? '' : 'scale-96 opacity-0 motion-reduce:scale-100'}`}
+      className={`inline-flex transition-opacity-transform duration-150 ease-(--ease-out-strong) ${settled ? "" : "scale-96 opacity-0 motion-reduce:scale-100"}`}
     >
       <Emoji {...emojiProps} onLoad={settle} onError={settle} />
     </span>
-  )
+  );
 }
 
 /**
@@ -187,46 +177,41 @@ export default function DemoPlayground({
   labels,
   initialState = INITIAL_DEMO_STATE,
 }: DemoPlaygroundProps) {
-  const [state, setState] = useState<DemoState>(initialState)
-  const [tap, setTap] = useState({ key: '', run: 0 })
+  const [state, setState] = useState<DemoState>(initialState);
+  const [tap, setTap] = useState({ key: "", run: 0 });
   const ready = useSyncExternalStore(
     subscribeNever,
     () => true,
     () => false,
-  )
-  const emoji = emojis.find((candidate) => candidate.id === state.emojiId)
-  const initialEmoji = emojis.find(
-    (candidate) => candidate.id === INITIAL_DEMO_STATE.emojiId,
-  )
-  const current = emoji ?? initialEmoji
-  const hasTones = (current?.tones.length ?? 0) > 0
+  );
+  const emoji = emojis.find((candidate) => candidate.id === state.emojiId);
+  const initialEmoji = emojis.find((candidate) => candidate.id === INITIAL_DEMO_STATE.emojiId);
+  const current = emoji ?? initialEmoji;
+  const hasTones = (current?.tones.length ?? 0) > 0;
   const slotValues = useMemo(
     () => (current ? demoSlotValues(current, state) : undefined),
     [current, state],
-  )
-  if (!current) return null
+  );
+  if (!current) return null;
 
-  const toned = demoTone(current, state) !== undefined
-  const tabs = demoTabs[state.play][toned ? 'toned' : 'plain'].map((tab) => ({
+  const toned = demoTone(current, state) !== undefined;
+  const tabs = demoTabs[state.play][toned ? "toned" : "plain"].map((tab) => ({
     ...tab,
     code: demoSnippetCode(current, tab.id as SnippetKind, state),
-  }))
-  const playKey = `${state.emojiId}-${state.play}-${state.tone}-${String(state.size)}`
-  const tapRun = tap.key === playKey ? tap.run : 0
+  }));
+  const playKey = `${state.emojiId}-${state.play}-${state.tone}-${String(state.size)}`;
+  const tapRun = tap.key === playKey ? tap.run : 0;
   const startTapPlay = (event: PointerEvent<HTMLDivElement>) => {
     if (
       !isTapPlayTrigger(state.play, event.pointerType) ||
-      (event.target instanceof Element && event.target.closest('button'))
+      (event.target instanceof Element && event.target.closest("button"))
     ) {
-      return
+      return;
     }
-    setTap((previous) => ({ key: playKey, run: previous.run + 1 }))
-  }
+    setTap((previous) => ({ key: playKey, run: previous.run + 1 }));
+  };
   const name =
-    labels.emojis[
-      DEMO_EMOJIS.find((candidate) => candidate.id === current.id)?.name ??
-        'wave'
-    ]
+    labels.emojis[DEMO_EMOJIS.find((candidate) => candidate.id === current.id)?.name ?? "wave"];
 
   return (
     <div className="grid min-w-0 gap-3 split:grid-cols-demo">
@@ -242,7 +227,7 @@ export default function DemoPlayground({
             id: current.id,
             alt: name,
             ...demoEmojiProps(current, state),
-            ...(tapRun > 0 && state.play === 'hover' && { playing: true }),
+            ...(tapRun > 0 && state.play === "hover" && { playing: true }),
           }}
         />
         <Button
@@ -251,7 +236,7 @@ export default function DemoPlayground({
           className="absolute top-2 right-2"
           disabled={isInitialDemoState(state)}
           onClick={() => {
-            setState(INITIAL_DEMO_STATE)
+            setState(INITIAL_DEMO_STATE);
           }}
         >
           <RotateCcwIcon aria-hidden="true" />
@@ -267,14 +252,12 @@ export default function DemoPlayground({
               emojis.some((candidate) => candidate.id === option.id),
             ).map((option) => ({
               value: option.id,
-              text:
-                emojis.find((candidate) => candidate.id === option.id)
-                  ?.unicode ?? '',
+              text: emojis.find((candidate) => candidate.id === option.id)?.unicode ?? "",
               name: labels.emojis[option.name],
             }))}
             selected={state.emojiId}
             onSelect={(emojiId) => {
-              setState((previous) => ({ ...previous, emojiId }))
+              setState((previous) => ({ ...previous, emojiId }));
             }}
           />
           <Segmented
@@ -286,7 +269,7 @@ export default function DemoPlayground({
             }))}
             selected={state.size}
             onSelect={(size) => {
-              setState((previous) => ({ ...previous, size }))
+              setState((previous) => ({ ...previous, size }));
             }}
           />
           <Segmented
@@ -295,12 +278,11 @@ export default function DemoPlayground({
             options={DEMO_PLAYS.map((play) => ({
               value: play.id,
               text: labels.plays[play.id],
-              coarseText:
-                play.id === 'hover' ? labels.plays.hoverTap : undefined,
+              coarseText: play.id === "hover" ? labels.plays.hoverTap : undefined,
             }))}
             selected={state.play}
             onSelect={(play) => {
-              setState((previous) => ({ ...previous, play }))
+              setState((previous) => ({ ...previous, play }));
             }}
           />
           <Segmented
@@ -314,7 +296,7 @@ export default function DemoPlayground({
             }))}
             selected={state.tone}
             onSelect={(tone) => {
-              setState((previous) => ({ ...previous, tone }))
+              setState((previous) => ({ ...previous, tone }));
             }}
           />
         </div>
@@ -323,5 +305,5 @@ export default function DemoPlayground({
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,25 +1,25 @@
 ---
-import Emoji from 'animated-fluent-emojis/astro'
+import Emoji from "animated-fluent-emojis/astro";
 
-import { type Locale } from '../../i18n/locales'
-import { getUi } from '../../i18n/ui'
-import FaqAccordion from '../FaqAccordion'
-import { eyebrow, heading, section } from './styles'
+import { type Locale } from "../../i18n/locales";
+import { getUi } from "../../i18n/ui";
+import FaqAccordion from "../FaqAccordion";
+import { eyebrow, heading, section } from "./styles";
 
 interface Props {
-  locale: Locale
+  locale: Locale;
 }
 
-const MASCOT_SIZE = 250
+const MASCOT_SIZE = 250;
 
-const { locale } = Astro.props
-const { home } = getUi(locale)
+const { locale } = Astro.props;
+const { home } = getUi(locale);
 
 const faq = [
-  { id: 'chat', emojiId: 'speechbubble', ...home.faq.chat },
-  { id: 'speed', emojiId: '26a1_highvoltagesign', ...home.faq.speed },
-  { id: 'motion', emojiId: '1f319_crescentmoon', ...home.faq.motion },
-]
+  { id: "chat", emojiId: "speechbubble", ...home.faq.chat },
+  { id: "speed", emojiId: "26a1_highvoltagesign", ...home.faq.speed },
+  { id: "motion", emojiId: "1f319_crescentmoon", ...home.faq.motion },
+];
 ---
 
 <section class={section} aria-labelledby="faq-title">
@@ -43,7 +43,7 @@ const faq = [
         <span
           data-faq-mascot={entry.id}
           class="absolute -right-9 -bottom-11 block size-(--mascot-size) -rotate-8"
-          style={{ '--mascot-size': `${MASCOT_SIZE}px` }}
+          style={{ "--mascot-size": `${MASCOT_SIZE}px` }}
         >
           <Emoji id={entry.emojiId} size={MASCOT_SIZE} alt="" />
         </span>

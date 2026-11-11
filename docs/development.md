@@ -416,11 +416,11 @@ An adapter plugs in with a driver, about 15 lines of glue in
 `src/test/conformance/<adapter>.conformance.test.ts(x)`:
 
 ```ts
-defineConformanceSuite('my-adapter', () => ({
+defineConformanceSuite("my-adapter", () => ({
   mount: (container, options) => {},
   update: (options) => {},
   unmount: () => {},
-}))
+}));
 ```
 
 - `mount(container, options)` renders the emoji into `container`, forwarding

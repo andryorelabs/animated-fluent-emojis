@@ -8,26 +8,26 @@ import {
   type ReactNode,
   type Ref,
   type RefAttributes,
-} from 'react'
+} from "react";
 
-import { normalizeSize, toCssLength } from '../core/normalize.js'
-import { useEmojiAnimation, useEmojiStyle } from '../hooks/index.js'
-import type { EmojiProps } from '../react/types.js'
-import { getSpriteSourceSet, getSpriteUrl } from '../utils/index.js'
-import { isDevelopment } from '../utils/is-development.js'
-import { createSharedSubscription } from '../utils/shared-subscription.js'
-import styles from './Emoji.module.css'
+import { normalizeSize, toCssLength } from "../core/normalize.js";
+import { useEmojiAnimation, useEmojiStyle } from "../hooks/index.js";
+import type { EmojiProps } from "../react/types.js";
+import { getSpriteSourceSet, getSpriteUrl } from "../utils/index.js";
+import { isDevelopment } from "../utils/is-development.js";
+import { createSharedSubscription } from "../utils/shared-subscription.js";
+import styles from "./Emoji.module.css";
 
-const DEFAULT_SIZE = 100
+const DEFAULT_SIZE = 100;
 
-const warnedMissingIds = new Set<string>()
+const warnedMissingIds = new Set<string>();
 
 const subscribeToOnline = createSharedSubscription((notify) => {
-  globalThis.addEventListener('online', notify)
+  globalThis.addEventListener("online", notify);
   return () => {
-    globalThis.removeEventListener('online', notify)
-  }
-})
+    globalThis.removeEventListener("online", notify);
+  };
+});
 
 const EmojiComponent = (
   {
@@ -38,7 +38,7 @@ const EmojiComponent = (
     autoPlay = true,
     playing,
     onPlaybackEnd,
-    skinTone = 'default',
+    skinTone = "default",
     alt,
     fallback,
     onLoad,
@@ -49,67 +49,63 @@ const EmojiComponent = (
   }: EmojiProps,
   ref: Ref<HTMLSpanElement>,
 ): ReactElement | null => {
-  const size = normalizeSize(requestedSize)
-  const { status, emoji } = useEmojiStyle(id)
-  const spriteSource = emoji ? getSpriteUrl(emoji, skinTone) : undefined
-  const [failedSource, setFailedSource] = useState<string | null>(null)
-  const { isInitialAnimationComplete, animationStyle, imageRef } =
-    useEmojiAnimation(
-      emoji,
-      playOnHover,
-      animationIterations,
-      autoPlay,
-      typeof size === 'number' ? size : '100%',
-      spriteSource,
-      failedSource !== null && failedSource === spriteSource,
-      { playing, onPlaybackEnd },
-    )
-  const onErrorRef = useRef(onError)
-  const hasReportedErrorRef = useRef(false)
-  const hasObservedOwnAttemptRef = useRef(false)
+  const size = normalizeSize(requestedSize);
+  const { status, emoji } = useEmojiStyle(id);
+  const spriteSource = emoji ? getSpriteUrl(emoji, skinTone) : undefined;
+  const [failedSource, setFailedSource] = useState<string | null>(null);
+  const { isInitialAnimationComplete, animationStyle, imageRef } = useEmojiAnimation(
+    emoji,
+    playOnHover,
+    animationIterations,
+    autoPlay,
+    typeof size === "number" ? size : "100%",
+    spriteSource,
+    failedSource !== null && failedSource === spriteSource,
+    { playing, onPlaybackEnd },
+  );
+  const onErrorRef = useRef(onError);
+  const hasReportedErrorRef = useRef(false);
+  const hasObservedOwnAttemptRef = useRef(false);
   useEffect(() => {
-    onErrorRef.current = onError
-  })
+    onErrorRef.current = onError;
+  });
   useEffect(() => {
-    if (status === 'loading') hasObservedOwnAttemptRef.current = true
-    if (status !== 'error') {
-      hasReportedErrorRef.current = false
-    } else if (
-      hasObservedOwnAttemptRef.current &&
-      !hasReportedErrorRef.current
-    ) {
-      hasReportedErrorRef.current = true
-      onErrorRef.current?.()
+    if (status === "loading") hasObservedOwnAttemptRef.current = true;
+    if (status !== "error") {
+      hasReportedErrorRef.current = false;
+    } else if (hasObservedOwnAttemptRef.current && !hasReportedErrorRef.current) {
+      hasReportedErrorRef.current = true;
+      onErrorRef.current?.();
     }
-  }, [status])
+  }, [status]);
   useEffect(() => {
-    if (status !== 'missing' || !isDevelopment() || warnedMissingIds.has(id)) {
-      return
+    if (status !== "missing" || !isDevelopment() || warnedMissingIds.has(id)) {
+      return;
     }
-    warnedMissingIds.add(id)
-    console.warn(`Unknown emoji id "${id}".`)
-  }, [status, id])
+    warnedMissingIds.add(id);
+    console.warn(`Unknown emoji id "${id}".`);
+  }, [status, id]);
   useEffect(() => {
     const retry = () => {
-      setFailedSource(null)
-    }
-    const unsubscribe = subscribeToOnline(retry)
+      setFailedSource(null);
+    };
+    const unsubscribe = subscribeToOnline(retry);
     return () => {
-      unsubscribe()
-      retry()
-    }
-  }, [spriteSource])
+      unsubscribe();
+      retry();
+    };
+  }, [spriteSource]);
 
-  const cssSize = toCssLength(size)
+  const cssSize = toCssLength(size);
   const containerStyle = {
     width: cssSize,
     height: cssSize,
-    display: 'inline-block',
-    overflow: 'hidden',
+    display: "inline-block",
+    overflow: "hidden",
     ...style,
-  }
+  };
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
       <span
         {...spanProps}
@@ -118,10 +114,10 @@ const EmojiComponent = (
         style={containerStyle}
         className={className}
       />
-    )
+    );
   }
 
-  const isDecorative = alt === ''
+  const isDecorative = alt === "";
   const renderFallback = (content: ReactNode): ReactElement => (
     <span
       {...spanProps}
@@ -132,38 +128,32 @@ const EmojiComponent = (
     >
       {content}
     </span>
-  )
+  );
 
-  if (status === 'error' || !emoji) {
-    return fallback === undefined || fallback === null
-      ? null
-      : renderFallback(fallback)
+  if (status === "error" || !emoji) {
+    return fallback === undefined || fallback === null ? null : renderFallback(fallback);
   }
 
-  const source = getSpriteUrl(emoji, skinTone)
+  const source = getSpriteUrl(emoji, skinTone);
   if (failedSource === source) {
-    if (fallback === null) return null
-    if (fallback !== undefined) return renderFallback(fallback)
-    if (!emoji.unicode) return null
+    if (fallback === null) return null;
+    if (fallback !== undefined) return renderFallback(fallback);
+    if (!emoji.unicode) return null;
     return renderFallback(
       <span
         role="img"
         aria-label={alt ?? emoji.description}
         style={{
-          fontSize:
-            typeof size === 'number'
-              ? `${String(size * 0.75)}px`
-              : `calc(${size} * 0.75)`,
+          fontSize: typeof size === "number" ? `${String(size * 0.75)}px` : `calc(${size} * 0.75)`,
           lineHeight: cssSize,
         }}
       >
         {emoji.unicode}
       </span>,
-    )
+    );
   }
 
-  const containerClassName =
-    isInitialAnimationComplete && playOnHover ? styles.animateOnHover : ''
+  const containerClassName = isInitialAnimationComplete && playOnHover ? styles.animateOnHover : "";
 
   return (
     <span
@@ -171,9 +161,7 @@ const EmojiComponent = (
       ref={ref}
       aria-hidden={isDecorative || undefined}
       style={containerStyle}
-      className={
-        [className, containerClassName].filter(Boolean).join(' ') || undefined
-      }
+      className={[className, containerClassName].filter(Boolean).join(" ") || undefined}
     >
       <img
         ref={imageRef}
@@ -183,29 +171,28 @@ const EmojiComponent = (
         draggable="false"
         src={source}
         srcSet={getSpriteSourceSet(emoji, skinTone)}
-        sizes={typeof size === 'number' ? cssSize : undefined}
+        sizes={typeof size === "number" ? cssSize : undefined}
         style={animationStyle}
         className={styles.emojiImage}
         onLoad={onLoad}
         onError={(event) => {
-          setFailedSource(source)
-          onError?.(event)
+          setFailedSource(source);
+          onError?.(event);
         }}
       />
     </span>
-  )
-}
+  );
+};
 
 // eslint-disable-next-line @eslint-react/no-forward-ref -- React 18 is a supported peer, where ref is not a prop
-const ForwardedEmoji: ForwardRefExoticComponent<
-  EmojiProps & RefAttributes<HTMLSpanElement>
-> = forwardRef(EmojiComponent)
-ForwardedEmoji.displayName = 'Emoji'
+const ForwardedEmoji: ForwardRefExoticComponent<EmojiProps & RefAttributes<HTMLSpanElement>> =
+  forwardRef(EmojiComponent);
+ForwardedEmoji.displayName = "Emoji";
 
 type EmojiComponentType = (<Id extends string = string>(
   props: EmojiProps<Id> & RefAttributes<HTMLSpanElement>,
 ) => ReactElement | null) &
-  Pick<typeof ForwardedEmoji, 'displayName'>
+  Pick<typeof ForwardedEmoji, "displayName">;
 
 /**
  * Emoji component for displaying animated emojis. Other props, including
@@ -227,4 +214,4 @@ type EmojiComponentType = (<Id extends string = string>(
  * @param ref - Forwarded to the root span.
  * @returns The emoji, an empty placeholder of the final size while the manifest loads, or null if the manifest failed to load or the emoji is not found, unless a fallback is given.
  */
-export const Emoji: EmojiComponentType = ForwardedEmoji as EmojiComponentType
+export const Emoji: EmojiComponentType = ForwardedEmoji as EmojiComponentType;

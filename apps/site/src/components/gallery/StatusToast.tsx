@@ -1,24 +1,24 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from "react";
 
-import type { UiStrings } from '../../i18n/ui'
+import type { UiStrings } from "../../i18n/ui";
 import {
   createTransientStatus,
   type TransientStatus,
   type TransientStatusState,
-} from '../../lib/transient-status'
-import type { FileActionNotice } from './FileActionButton'
+} from "../../lib/transient-status";
+import type { FileActionNotice } from "./FileActionButton";
 
-const TOAST_MILLISECONDS = 2000
+const TOAST_MILLISECONDS = 2000;
 
 /**
  * Result of {@link useStatusAnnouncer}.
  */
 export interface StatusAnnouncer {
-  message: string
-  visible: boolean
-  announce: (message: string) => void
-  copy: (text: string) => Promise<void>
-  handleNotice: (notice: FileActionNotice) => void
+  message: string;
+  visible: boolean;
+  announce: (message: string) => void;
+  copy: (text: string) => Promise<void>;
+  handleNotice: (notice: FileActionNotice) => void;
 }
 
 /**
@@ -28,49 +28,47 @@ export interface StatusAnnouncer {
  * @param strings - The gallery strings holding the messages.
  * @returns The current message, its visibility and the handlers that set it.
  */
-export function useStatusAnnouncer(
-  strings: UiStrings['gallery'],
-): StatusAnnouncer {
+export function useStatusAnnouncer(strings: UiStrings["gallery"]): StatusAnnouncer {
   const [state, setState] = useState<TransientStatusState>({
-    message: '',
+    message: "",
     visible: false,
-  })
-  const statusRef = useRef<TransientStatus | undefined>(undefined)
+  });
+  const statusRef = useRef<TransientStatus | undefined>(undefined);
 
   useEffect(
     () => () => {
-      statusRef.current?.dispose()
+      statusRef.current?.dispose();
     },
     [],
-  )
+  );
 
   function announce(message: string) {
-    statusRef.current ??= createTransientStatus(setState, TOAST_MILLISECONDS)
-    statusRef.current.show(message)
+    statusRef.current ??= createTransientStatus(setState, TOAST_MILLISECONDS);
+    statusRef.current.show(message);
   }
 
   async function copy(text: string) {
     try {
-      await navigator.clipboard.writeText(text)
-      announce(strings.copied)
+      await navigator.clipboard.writeText(text);
+      announce(strings.copied);
     } catch {
-      announce(strings.downloadFailed)
+      announce(strings.downloadFailed);
     }
   }
 
   function handleNotice(notice: FileActionNotice) {
-    announce(notice.kind === 'copied' ? notice.message : strings.downloadFailed)
+    announce(notice.kind === "copied" ? notice.message : strings.downloadFailed);
   }
 
-  return { ...state, announce, copy, handleNotice }
+  return { ...state, announce, copy, handleNotice };
 }
 
 /**
  * Properties of {@link StatusToast}.
  */
 export interface StatusToastProps {
-  message: string
-  visible: boolean
+  message: string;
+  visible: boolean;
 }
 
 /**
@@ -82,7 +80,7 @@ export interface StatusToastProps {
  * @returns The toast and its live region.
  */
 export function StatusToast(props: StatusToastProps) {
-  const { message, visible } = props
+  const { message, visible } = props;
   return (
     <>
       <div
@@ -93,8 +91,8 @@ export function StatusToast(props: StatusToastProps) {
         {message}
       </div>
       <p role="status" aria-live="polite" className="sr-only">
-        {visible ? message : ''}
+        {visible ? message : ""}
       </p>
     </>
-  )
+  );
 }
