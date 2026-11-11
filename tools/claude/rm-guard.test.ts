@@ -157,6 +157,8 @@ describe('isAllowedRemoval', () => {
       'nohup bun run rm /x',
       'xargs grep rm /etc',
       'cd /tmp && ls',
+      'docker ps -aq | xargs -r docker rm',
+      'sudo -E docker rm /web',
     ]
     expect(blockedAmong(commands)).toEqual([])
   })
@@ -182,6 +184,9 @@ describe('isAllowedRemoval', () => {
       'cd / && sh -c "rm etc"',
       'env -C / rm etc',
       'sudo -D / rm etc',
+      'builtin cd /tmp && rm scratch',
+      'command cd /tmp; rm scratch',
+      'eval "cd /tmp"; rm scratch',
     ]
     expect(allowedAmong(commands)).toEqual([])
     expect(

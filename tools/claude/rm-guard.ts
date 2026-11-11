@@ -58,6 +58,31 @@ const DIRECTORY_COMMANDS = new Set(['cd', 'pushd', 'popd'])
 const DIRECTORY_FLAG = /^(-C|-D|--chdir)/
 const SCRIPT_FLAG = /^-[a-zA-Z]*c$/
 const WRAPPER_VALUE = /^\d+(\.\d+)?[smhd]?$/
+const WRAPPER_VALUE_FLAGS = new Set([
+  '-u',
+  '-g',
+  '-D',
+  '-C',
+  '-n',
+  '-I',
+  '-P',
+  '-L',
+  '-d',
+  '-s',
+  '-k',
+  '--user',
+  '--group',
+  '--chdir',
+  '--unset',
+  '--adjustment',
+  '--signal',
+  '--kill-after',
+  '--max-args',
+  '--max-procs',
+  '--max-lines',
+  '--delimiter',
+])
+const MENTIONS_DIRECTORY_COMMAND = /(^|[^\w.-])(cd|pushd|popd)($|[^\w.-])/
 const MENTIONS_RM = /(^|[^\w.-])rm($|[^\w.-])/
 const GLOB_CHARACTER = /[*?[]/
 const HEREDOC_DELIMITER_END = /[\s;|&()<>]/
@@ -339,7 +364,7 @@ function isWrapperArgument(word: Word, previous: Word | undefined): boolean {
     word.text.startsWith('-') ||
     /^\w+=/.test(word.text) ||
     WRAPPER_VALUE.test(word.text) ||
-    (previous?.text.startsWith('-') ?? false)
+    WRAPPER_VALUE_FLAGS.has(previous?.text ?? '')
   )
 }
 
@@ -390,8 +415,13 @@ function findCommandIndex(
 }
 
 function changesDirectory(segment: Segment): boolean {
-  const head = segment.words.find((word) => !isPrefixWord(word))
-  return DIRECTORY_COMMANDS.has(commandName(head))
+  const { words } = segment
+  if (findCommandIndex(words, DIRECTORY_COMMANDS) !== -1) return true
+  const head = words.find((word) => !isPrefixWord(word))
+  return (
+    commandName(head) === 'eval' &&
+    words.some((word) => MENTIONS_DIRECTORY_COMMAND.test(word.text))
+  )
 }
 
 function findRepositoryRoot(cwd: string): string {
