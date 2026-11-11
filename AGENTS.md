@@ -86,7 +86,8 @@ work up this ladder — never disable the rule file-wide or project-wide:
   [`apps/assets/AGENTS.md`](apps/assets/AGENTS.md).
 - Actions are SHA-pinned and workflows are linted; edit them with care:
   [`docs/development.md#ci`](docs/development.md#ci).
-- Repository settings are applied by hand, not by code:
+- Repository settings live in `.github/rulesets` and `docs/brand/apply-spec.md`
+  and are applied by hand; `bun run repo-settings:check` reports drift:
   [`docs/development.md#repository-settings`](docs/development.md#repository-settings).
 - Releases are tag-driven with npm OIDC; never run `npm publish` locally:
   [`docs/how-to/cut-a-release.md`](docs/how-to/cut-a-release.md).

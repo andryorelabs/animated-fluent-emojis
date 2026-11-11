@@ -145,3 +145,43 @@ export async function acquireLock(
     await sleep(pollIntervalMs)
   }
 }
+
+/** One `skills-lock.json` entry, as far as the lock checks read it. */
+export interface SkillsLockEntry {
+  readonly ref?: unknown
+}
+
+/** The parts of `skills-lock.json` the lock checks read. */
+export interface SkillsLock {
+  readonly skills: Readonly<Record<string, SkillsLockEntry>>
+}
+
+const COMMIT_SHA = /^[0-9a-f]{40}$/
+
+/**
+ * Checks `skills-lock.json` against the vendored skills: every entry is
+ * pinned to a full commit SHA in `ref`, and the lock and `.claude/skills`
+ * list the same skills.
+ * @param lock The parsed `skills-lock.json`.
+ * @param vendoredSkills The directory names under `.claude/skills`.
+ * @returns One message per problem; empty when the lock is consistent.
+ */
+export function findSkillsLockProblems(
+  lock: SkillsLock,
+  vendoredSkills: readonly string[],
+): string[] {
+  const lockedSkills = Object.keys(lock.skills)
+  const unpinned = Object.entries(lock.skills)
+    .filter(
+      ([, entry]) =>
+        typeof entry.ref !== 'string' || !COMMIT_SHA.test(entry.ref),
+    )
+    .map(([name]) => `${name}: \`ref\` must be a full commit SHA`)
+  const unvendored = lockedSkills
+    .filter((name) => !vendoredSkills.includes(name))
+    .map((name) => `${name}: locked but missing from .claude/skills`)
+  const unlocked = vendoredSkills
+    .filter((name) => !lockedSkills.includes(name))
+    .map((name) => `${name}: in .claude/skills but missing from the lock`)
+  return [...unpinned, ...unvendored, ...unlocked]
+}

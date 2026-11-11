@@ -16,6 +16,7 @@
     "oxlint-plugins",
     "docs/adr",
     "docs/brand/tools",
-    "scripts"
+    "scripts",
+    "tools"
   ]
 }

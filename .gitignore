@@ -24,9 +24,13 @@ dist-ssr
 *.sw?
 
 # emet
-.emet
-.claude/worktrees
+.emet/
+.claude/worktrees/
 .eslintcache
+
+# Secrets
+.env
+.env.keys
 
 **/coverage
 .vitest

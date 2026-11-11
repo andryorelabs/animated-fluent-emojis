@@ -203,7 +203,10 @@ test.describe('faq mascot', () => {
   test('the closing panel links to GitHub', async ({ page }) => {
     await page.goto('/')
     const link = page.locator(`${CLOSING} [data-closing-github]`)
-    await expect(link).toHaveAttribute('href', /github\.com\/AndryOre/)
+    await expect(link).toHaveAttribute(
+      'href',
+      /github\.com\/andryorelabs\/animated-fluent-emojis/,
+    )
   })
 })
 /* eslint-enable unicorn-js/isolated-functions -- end of the browser callbacks */

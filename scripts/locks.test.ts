@@ -3,6 +3,7 @@ import {
   existsSync,
   mkdirSync,
   mkdtempSync,
+  readdirSync,
   readFileSync,
   rmSync,
   writeFileSync,
@@ -14,10 +15,12 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   acquireLock,
   didAcquireLock,
+  findSkillsLockProblems,
   isLockStale,
   readLockHolder,
   releaseLock,
   type LockHolder,
+  type SkillsLock,
 } from './locks'
 
 function deadPid(): number {
@@ -109,5 +112,46 @@ describe('locks', () => {
     releaseLock(lockDirectory)
     expect(existsSync(lockDirectory)).toBe(false)
     expect(didAcquireLock(lockDirectory, buildHolder())).toBe(true)
+  })
+})
+
+describe('skills lock', () => {
+  const repositoryRoot = path.resolve(import.meta.dirname, '..')
+  const lock = JSON.parse(
+    readFileSync(path.join(repositoryRoot, 'skills-lock.json'), 'utf8'),
+  ) as SkillsLock
+  const vendoredSkills = readdirSync(
+    path.join(repositoryRoot, '.claude', 'skills'),
+    { withFileTypes: true },
+  )
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+  const ref = 'a'.repeat(40)
+
+  it('pins every skill to a commit and matches .claude/skills', () => {
+    expect(Object.keys(lock.skills)).not.toHaveLength(0)
+    expect(findSkillsLockProblems(lock, vendoredSkills)).toEqual([])
+  })
+
+  it('reports an entry without a full commit SHA in `ref`', () => {
+    const problems = findSkillsLockProblems(
+      { skills: { pinned: { ref }, missing: {}, short: { ref: 'e8a175d' } } },
+      ['pinned', 'missing', 'short'],
+    )
+    expect(problems).toEqual([
+      'missing: `ref` must be a full commit SHA',
+      'short: `ref` must be a full commit SHA',
+    ])
+  })
+
+  it('reports a skill that only one side lists', () => {
+    const problems = findSkillsLockProblems(
+      { skills: { locked: { ref }, both: { ref } } },
+      ['both', 'vendored'],
+    )
+    expect(problems).toEqual([
+      'locked: locked but missing from .claude/skills',
+      'vendored: in .claude/skills but missing from the lock',
+    ])
   })
 })
