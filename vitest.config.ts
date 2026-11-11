@@ -5,6 +5,7 @@ export default defineConfig({
     environment: 'node',
     include: [
       'scripts/**/*.test.ts',
+      'tools/**/*.test.ts',
       'eslint-rules/**/*.test.ts',
       'oxlint-plugins/**/*.test.ts',
       'docs/adr/**/*.test.ts',
@@ -14,12 +15,14 @@ export default defineConfig({
       provider: 'v8',
       include: [
         'scripts/**/*.ts',
+        'tools/**/*.ts',
         'eslint-rules/**/*.mjs',
         'oxlint-plugins/**/*.mjs',
         'docs/brand/tools/**/*.mjs',
       ],
       exclude: [
         'scripts/**/*.test.ts',
+        'tools/**/*.test.ts',
         'eslint-rules/**/*.test.ts',
         'oxlint-plugins/**/*.test.ts',
         'docs/brand/tools/**/*.test.ts',
