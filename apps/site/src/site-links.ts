@@ -2,7 +2,7 @@
  * The public GitHub repository.
  */
 export const REPOSITORY_URL =
-  'https://github.com/AndryOre/animated-fluent-emojis'
+  'https://github.com/andryorelabs/animated-fluent-emojis'
 
 /**
  * The npm package page.

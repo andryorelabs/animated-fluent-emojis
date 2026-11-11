@@ -2,7 +2,7 @@
   "name": "animated-fluent-emojis",
   "version": "0.8.0",
   "description": "Microsoft's animated Fluent emojis as one component. They play on load or hover, rest under reduced motion and hold their space while they load.",
-  "author": "Andry Orellana",
+  "author": "Andry Orellana <hello@andryore.dev>",
   "license": "MIT",
   "private": false,
   "sideEffects": [
@@ -39,11 +39,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AndryOre/animated-fluent-emojis.git",
+    "url": "git+https://github.com/andryorelabs/animated-fluent-emojis.git",
     "directory": "packages/animated-fluent-emojis"
   },
   "homepage": "https://animated-fluent-emojis.andryore.dev",
-  "bugs": "https://github.com/AndryOre/animated-fluent-emojis/issues",
+  "bugs": {
+    "url": "https://github.com/andryorelabs/animated-fluent-emojis/issues"
+  },
   "module": "./dist/animated-fluent-emojis.js",
   "types": "./dist/index.d.ts",
   "files": [

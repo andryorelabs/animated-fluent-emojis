@@ -8,7 +8,7 @@ import {
   PUBLISHED_DOCS,
 } from './published'
 
-const BLOB = 'https://github.com/AndryOre/animated-fluent-emojis/blob/main'
+const BLOB = 'https://github.com/andryorelabs/animated-fluent-emojis/blob/main'
 
 describe('rewriteDocumentLink', () => {
   it('maps a published doc to its route', () => {

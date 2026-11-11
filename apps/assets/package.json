@@ -3,6 +3,17 @@
   "private": true,
   "type": "module",
   "description": "The pipeline that builds the animated Fluent emoji catalog and publishes it to the asset and files sites.",
+  "license": "MIT",
+  "author": "Andry Orellana <hello@andryore.dev>",
+  "homepage": "https://animated-fluent-emojis.andryore.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andryorelabs/animated-fluent-emojis.git",
+    "directory": "apps/assets"
+  },
+  "bugs": {
+    "url": "https://github.com/andryorelabs/animated-fluent-emojis/issues"
+  },
   "scripts": {
     "sync:detect": "bun sync.ts detect",
     "sync:build": "bun sync.ts build",
