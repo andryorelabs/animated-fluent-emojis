@@ -22,7 +22,8 @@ templates without losing or loosening a single rule the repository enforces.
 
 ## Decision
 
-- **Oxfmt replaces Prettier.** `.oxfmtrc.json` reproduces the Prettier options,
+- **Oxfmt replaces Prettier.** `.oxfmtrc.json` keeps the Oxfmt defaults (width
+  100, semicolons, double quotes, `proseWrap` preserve) and adds only
   Tailwind class sorting (`./apps/site/src/styles/global.css`, `cn`, `cva`,
   `clsx`), `astro` formatting and import sorting (`sortImports`, with a group
   for `astro`, `astro/**` and `astro:*`). The formatted file set is unchanged,
