@@ -151,8 +151,52 @@ describe('isAllowedRemoval', () => {
       'echo "unterminated',
       'case "$x" in a) echo one ;; esac',
       'find /etc -name "*.conf" -exec cat {} +',
+      'docker ps -aq | xargs docker rm',
+      'sudo docker rm /web',
+      'sudo npm rm /x',
+      'nohup bun run rm /x',
+      'xargs grep rm /etc',
+      'cd /tmp && ls',
     ]
     expect(blockedAmong(commands)).toEqual([])
+  })
+
+  test('blocks an rm behind a wrapper and its options', () => {
+    const commands = [
+      'sudo -u root rm /etc/hosts',
+      'sudo -E env PATH=/bin rm /etc/hosts',
+      'timeout 5 rm /etc/hosts',
+      'nice -n 5 rm /etc/hosts',
+      'xargs -n 1 rm',
+    ]
+    expect(allowedAmong(commands)).toEqual([])
+  })
+
+  test('blocks a relative target once the command changes directory', () => {
+    const commands = [
+      'cd /tmp && rm scratch',
+      'cd / ; rm etc',
+      'pushd /etc; rm hosts',
+      '(cd / && rm etc)',
+      'sh -c "cd / && rm etc"',
+      'cd / && sh -c "rm etc"',
+      'env -C / rm etc',
+      'sudo -D / rm etc',
+    ]
+    expect(allowedAmong(commands)).toEqual([])
+    expect(
+      blockedAmong([`cd packages && rm ${path.join(repository, 'dist')}`]),
+    ).toEqual([])
+  })
+
+  test('reads the script of a combined shell flag', () => {
+    const commands = [
+      'bash -lc "rm /etc/hosts"',
+      'bash -ec "rm /etc/hosts"',
+      'sudo bash -lc "rm /etc/hosts"',
+    ]
+    expect(allowedAmong(commands)).toEqual([])
+    expect(blockedAmong(['bash -lc "rm dist"'])).toEqual([])
   })
 
   test('skips a heredoc body unless a shell reads it', () => {

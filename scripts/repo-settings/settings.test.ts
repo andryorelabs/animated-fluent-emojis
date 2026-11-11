@@ -403,8 +403,11 @@ describe('docs/brand/apply-spec.md', () => {
     (key, value) => {
       const text = typeof value === 'string' ? value : JSON.stringify(value)
 
-      expect(applySpec).toContain(`| \`${key}\``)
-      expect(applySpec).toContain(`\`${text}\``)
+      const row = applySpec
+        .split('\n')
+        .find((line) => line.startsWith(`| \`${key}\` `))
+
+      expect(row?.split('|', 3)[2]?.trim()).toBe(`\`${text}\``)
     },
   )
 })

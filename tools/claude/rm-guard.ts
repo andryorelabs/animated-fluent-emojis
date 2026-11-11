@@ -54,6 +54,10 @@ const PREFIX_WORDS = new Set([
   'time',
 ])
 const FIND_EXEC_FLAGS = new Set(['-exec', '-execdir', '-ok', '-okdir'])
+const DIRECTORY_COMMANDS = new Set(['cd', 'pushd', 'popd'])
+const DIRECTORY_FLAG = /^(-C|-D|--chdir)/
+const SCRIPT_FLAG = /^-[a-zA-Z]*c$/
+const WRAPPER_VALUE = /^\d+(\.\d+)?[smhd]?$/
 const MENTIONS_RM = /(^|[^\w.-])rm($|[^\w.-])/
 const GLOB_CHARACTER = /[*?[]/
 const HEREDOC_DELIMITER_END = /[\s;|&()<>]/
@@ -330,10 +334,38 @@ function isPrefixWord(word: Word): boolean {
   return PREFIX_WORDS.has(word.text) || /^\w+=/.test(word.text)
 }
 
+function isWrapperArgument(word: Word, previous: Word | undefined): boolean {
+  return (
+    word.text.startsWith('-') ||
+    /^\w+=/.test(word.text) ||
+    WRAPPER_VALUE.test(word.text) ||
+    (previous?.text.startsWith('-') ?? false)
+  )
+}
+
+function findWrappedCommandIndex(
+  words: readonly Word[],
+  names: ReadonlySet<string>,
+  start: number,
+): number {
+  for (let index = start + 1; index < words.length; index += 1) {
+    const word = words[index]
+    if (word === undefined) return -1
+    const name = commandName(word)
+    if (names.has(name)) return index
+    const isSkipped =
+      WRAPPER_COMMANDS.has(name) || isWrapperArgument(word, words[index - 1])
+    if (!isSkipped) return -1
+  }
+  return -1
+}
+
 /**
  * Index of the word that runs one of `names` in a segment: the command word
- * itself, any later word behind a wrapper such as `sudo` or `xargs`, or the
- * word after a `find -exec` flag. A `git` subcommand never counts.
+ * itself, the command a wrapper such as `sudo` or `xargs` runs, or the word
+ * after a `find -exec` flag. Behind a wrapper only its options, their values,
+ * assignments and further wrappers are skipped, so the subcommand of another
+ * program (`xargs docker rm`, `sudo git rm`) never counts.
  * @param words The words of one command segment.
  * @param names The command names to look for.
  * @returns The index of the matching word, or `-1` when none runs.
@@ -345,15 +377,21 @@ function findCommandIndex(
   const start = words.findIndex((word) => !isPrefixWord(word))
   const head = commandName(words[start])
   if (names.has(head)) return start
-  const isWrapped = WRAPPER_COMMANDS.has(head)
-  if (!isWrapped && head !== 'find') return -1
-  return words.findIndex((word, index) => {
-    if (index <= start || !names.has(commandName(word))) return false
-    const previous = words[index - 1]
-    return isWrapped
-      ? commandName(previous) !== 'git'
-      : FIND_EXEC_FLAGS.has(previous?.text ?? '')
-  })
+  if (WRAPPER_COMMANDS.has(head)) {
+    return findWrappedCommandIndex(words, names, start)
+  }
+  if (head !== 'find') return -1
+  return words.findIndex(
+    (word, index) =>
+      index > start &&
+      names.has(commandName(word)) &&
+      FIND_EXEC_FLAGS.has(words[index - 1]?.text ?? ''),
+  )
+}
+
+function changesDirectory(segment: Segment): boolean {
+  const head = segment.words.find((word) => !isPrefixWord(word))
+  return DIRECTORY_COMMANDS.has(commandName(head))
 }
 
 function findRepositoryRoot(cwd: string): string {
@@ -366,8 +404,14 @@ function findRepositoryRoot(cwd: string): string {
   }
 }
 
-function isTargetAllowed(target: Word, cwd: string, root: string): boolean {
+function isTargetAllowed(
+  target: Word,
+  cwd: string,
+  root: string,
+  isDirectoryKnown: boolean,
+): boolean {
   if (target.isDynamic) return false
+  if (!isDirectoryKnown && !path.isAbsolute(target.text)) return false
   const components = target.text.split('/')
   const hasHiddenGlob =
     target.hasGlob &&
@@ -386,7 +430,11 @@ function isTargetAllowed(target: Word, cwd: string, root: string): boolean {
   )
 }
 
-function isRemovalAllowed(words: readonly Word[], cwd: string): boolean {
+function isRemovalAllowed(
+  words: readonly Word[],
+  cwd: string,
+  isDirectoryKnown: boolean,
+): boolean {
   const targets: Word[] = []
   let haveOptionsEnded = false
   for (const argument of words) {
@@ -398,34 +446,72 @@ function isRemovalAllowed(words: readonly Word[], cwd: string): boolean {
   const root = findRepositoryRoot(cwd)
   return (
     targets.length > 0 &&
-    targets.every((target) => isTargetAllowed(target, cwd, root))
+    targets.every((target) =>
+      isTargetAllowed(target, cwd, root, isDirectoryKnown),
+    )
   )
 }
 
-function isNestedScriptAllowed(segment: Segment, cwd: string): boolean {
+function isNestedScriptAllowed(
+  segment: Segment,
+  cwd: string,
+  isDirectoryKnown: boolean,
+): boolean {
   const { words, heredocs } = segment
   const start = words.findIndex((word) => !isPrefixWord(word))
   if (commandName(words[start]) === 'eval') {
     const script = words.slice(start + 1).map((word) => word.text)
-    return isAllowedRemoval(script.join(' '), cwd)
+    return isScriptAllowed(script.join(' '), cwd, isDirectoryKnown)
   }
   const shellIndex = findCommandIndex(words, SHELL_COMMANDS)
   if (shellIndex === -1) return true
   const flagIndex = words.findIndex(
-    (word, index) => index > shellIndex && word.text === '-c',
+    (word, index) => index > shellIndex && SCRIPT_FLAG.test(word.text),
   )
   const script = flagIndex === -1 ? undefined : words[flagIndex + 1]
   const scripts = [...heredocs, ...(script === undefined ? [] : [script.text])]
-  return scripts.every((nested) => isAllowedRemoval(nested, cwd))
+  return scripts.every((nested) =>
+    isScriptAllowed(nested, cwd, isDirectoryKnown),
+  )
 }
 
-function isSegmentAllowed(segment: Segment, cwd: string): boolean {
-  if (!isNestedScriptAllowed(segment, cwd)) return false
-  const removalIndex = findCommandIndex(segment.words, REMOVE_COMMANDS)
+function isSegmentAllowed(
+  segment: Segment,
+  cwd: string,
+  isDirectoryKnown: boolean,
+): boolean {
+  const { words } = segment
+  const removalIndex = findCommandIndex(words, REMOVE_COMMANDS)
+  const shellIndex = findCommandIndex(words, SHELL_COMMANDS)
+  const commandIndex = removalIndex === -1 ? shellIndex : removalIndex
+  const isRedirected = words
+    .slice(0, Math.max(commandIndex, 0))
+    .some((word) => DIRECTORY_FLAG.test(word.text))
+  const isKnown = isDirectoryKnown && !isRedirected
   return (
-    removalIndex === -1 ||
-    isRemovalAllowed(segment.words.slice(removalIndex + 1), cwd)
+    isNestedScriptAllowed(segment, cwd, isKnown) &&
+    (removalIndex === -1 ||
+      isRemovalAllowed(words.slice(removalIndex + 1), cwd, isKnown))
   )
+}
+
+function isScriptAllowed(
+  command: string,
+  cwd: string,
+  isDirectoryKnown: boolean,
+): boolean {
+  let segments: Segment[]
+  try {
+    segments = new ShellScanner(command).scan()
+  } catch (error) {
+    if (error instanceof UnparsableCommandError) {
+      return !MENTIONS_RM.test(command)
+    }
+    throw error
+  }
+  const isKnown =
+    isDirectoryKnown && segments.every((segment) => !changesDirectory(segment))
+  return segments.every((segment) => isSegmentAllowed(segment, cwd, isKnown))
 }
 
 /**
@@ -436,24 +522,17 @@ function isSegmentAllowed(segment: Segment, cwd: string): boolean {
  * that contains `cwd` and is not `.git` or a path under it. A target that
  * cannot be resolved without a shell (a variable, `~`, a substitution, a
  * brace expansion, a glob that could match a dotfile) is blocked, and so is
- * an `rm` with no target. A command that cannot be parsed is blocked when it
- * mentions `rm`. A command that does not run `rm` (including `git rm`) is
- * always allowed.
+ * an `rm` with no target. When the command changes directory (`cd`, `pushd`,
+ * `popd`, `env -C`, `sudo -D`), only absolute targets are accepted, because a
+ * relative one no longer resolves against `cwd`. A command that cannot be
+ * parsed is blocked when it mentions `rm`. A command that does not run `rm`
+ * (including `git rm`) is always allowed.
  * @param command The Bash command line to check.
  * @param cwd The directory the command would run in.
  * @returns Whether the command may run.
  */
 export function isAllowedRemoval(command: string, cwd: string): boolean {
-  let segments: Segment[]
-  try {
-    segments = new ShellScanner(command).scan()
-  } catch (error) {
-    if (error instanceof UnparsableCommandError) {
-      return !MENTIONS_RM.test(command)
-    }
-    throw error
-  }
-  return segments.every((segment) => isSegmentAllowed(segment, cwd))
+  return isScriptAllowed(command, cwd, true)
 }
 
 function denyDecision(reason: string): string {
@@ -490,7 +569,7 @@ export function decideRemovalGuard(hookInput: string): string | undefined {
   return typeof command !== 'string' || isAllowedRemoval(command, directory)
     ? undefined
     : denyDecision(
-        'rm guard: every rm target must resolve inside this repository or worktree and outside .git, and the command must be parsable without a shell; remove explicit in-repo paths or ask the user',
+        'rm guard: every rm target must resolve inside this repository or worktree and outside .git, and the command must be parsable without a shell; remove explicit in-repo paths, use absolute paths when the command also changes directory, or ask the user',
       )
 }
 
