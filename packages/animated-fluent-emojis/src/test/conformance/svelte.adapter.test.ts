@@ -7,8 +7,10 @@ import { configureEmojis } from '../../utils/index.js'
 
 const knownId = 'grinning-face'
 
-const mounted: { container: HTMLElement; instance?: Record<string, unknown> } =
-  { container: document.createElement('div') }
+const mounted: {
+  container: HTMLElement
+  instance?: Record<string, unknown> | undefined
+} = { container: document.createElement('div') }
 
 const render = (props: EmojiProps): HTMLElement => {
   mounted.instance = mount(Emoji, { target: mounted.container, props })

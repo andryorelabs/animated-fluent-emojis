@@ -48,7 +48,7 @@ export interface CodeBlockProps {
   leading?: ReactNode
   activeId?: string
   onActiveChange?: (id: string) => void
-  slotValues?: Partial<Record<SnippetSlot, string>>
+  slotValues?: Partial<Record<SnippetSlot, string>> | undefined
   onCopied?: () => void
   copyEffect?: ReactNode
   pill?: boolean

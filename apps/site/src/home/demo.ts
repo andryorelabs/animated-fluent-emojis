@@ -122,16 +122,17 @@ export function demoEmojiProps(
   state: DemoState,
 ): {
   size: number
-  skinTone: LibrarySkinTone | undefined
+  skinTone?: LibrarySkinTone
   playOnHover: boolean
   autoPlay: boolean
   animationIterations?: 'infinite'
 } {
+  const skinTone = demoTone(emoji, state)
   return {
     size: state.size,
-    skinTone: demoTone(emoji, state),
     playOnHover: state.play === 'hover',
     autoPlay: state.play !== 'hover',
+    ...(skinTone && { skinTone }),
     ...(state.play === 'loop' && { animationIterations: 'infinite' as const }),
   }
 }

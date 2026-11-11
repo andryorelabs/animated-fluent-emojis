@@ -10,7 +10,10 @@ const render = async (
   slots?: Record<string, string>,
 ): Promise<string> => {
   const container = await AstroContainer.create()
-  return container.renderToString(Emoji, { props, slots })
+  return container.renderToString(
+    Emoji,
+    slots === undefined ? { props } : { props, slots },
+  )
 }
 
 beforeEach(() => {

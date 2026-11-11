@@ -19,7 +19,7 @@ body:
       value: |
         Thanks for helping improve the project! Enhancements are improvements to something that already exists. If you have a brand-new idea, use the **Feature Request** template instead.
 
-        > Before submitting, please search [existing issues](https://github.com/AndryOre/animated-fluent-emojis/issues) to avoid duplicates.
+        > Before submitting, please search [existing issues](https://github.com/andryorelabs/animated-fluent-emojis/issues) to avoid duplicates.
 
   - type: textarea
     id: current

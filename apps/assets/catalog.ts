@@ -41,12 +41,12 @@ export interface SpriteTask {
   readonly category: string
   readonly toneSuffix: string
   readonly etag: string
-  readonly sourceUrl?: string
-  readonly mitPath?: string
+  readonly sourceUrl?: string | undefined
+  readonly mitPath?: string | undefined
   readonly outputPath: string
-  readonly hdOutputPath?: string
-  readonly hdMitPath?: string
-  readonly hdBlobSha?: string
+  readonly hdOutputPath?: string | undefined
+  readonly hdMitPath?: string | undefined
+  readonly hdBlobSha?: string | undefined
 }
 
 /**

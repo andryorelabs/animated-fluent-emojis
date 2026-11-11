@@ -22,9 +22,9 @@ export const PLAY_MODES = ['load', 'hover', 'loop'] as const
 export type PlayMode = (typeof PLAY_MODES)[number]
 
 export interface SnippetOptions {
-  size?: number
-  tone?: SkinTone
-  play?: PlayMode
+  size?: number | undefined
+  tone?: SkinTone | undefined
+  play?: PlayMode | undefined
 }
 
 type AttributeStyle = 'jsx' | 'vue' | 'element'

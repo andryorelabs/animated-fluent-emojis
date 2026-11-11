@@ -15,6 +15,9 @@ and this project adheres to
   Astro component and `<fluent-emoji>`. On touch devices a tap no longer leaves
   a sticky `:hover` that loops the animation until the user taps elsewhere;
   keyboard focus (`:focus-visible`) playback is unchanged.
+- Every optional `EmojiOptions` property accepts an explicit `undefined`, so
+  `controller.update({ fallback: undefined })` type-checks for consumers that
+  compile with `exactOptionalPropertyTypes`. Runtime behavior is unchanged.
 
 ## [0.8.0] - 2026-10-06
 
@@ -402,25 +405,28 @@ plus the release workflow fix below.
 - Initial release of the animated Fluent emoji React components.
 
 [Unreleased]:
-  https://github.com/AndryOre/animated-fluent-emojis/compare/v0.8.0...HEAD
+  https://github.com/andryorelabs/animated-fluent-emojis/compare/v0.8.0...HEAD
 [0.8.0]:
-  https://github.com/AndryOre/animated-fluent-emojis/compare/v0.7.0...v0.8.0
+  https://github.com/andryorelabs/animated-fluent-emojis/compare/v0.7.0...v0.8.0
 [0.7.0]:
-  https://github.com/AndryOre/animated-fluent-emojis/compare/v0.6.0...v0.7.0
+  https://github.com/andryorelabs/animated-fluent-emojis/compare/v0.6.0...v0.7.0
 [0.6.0]:
-  https://github.com/AndryOre/animated-fluent-emojis/compare/v0.5.3...v0.6.0
+  https://github.com/andryorelabs/animated-fluent-emojis/compare/v0.5.3...v0.6.0
 [0.5.3]:
-  https://github.com/AndryOre/animated-fluent-emojis/compare/v0.5.2...v0.5.3
+  https://github.com/andryorelabs/animated-fluent-emojis/compare/v0.5.2...v0.5.3
 [0.5.2]:
-  https://github.com/AndryOre/animated-fluent-emojis/compare/v0.5.1...v0.5.2
+  https://github.com/andryorelabs/animated-fluent-emojis/compare/v0.5.1...v0.5.2
 [0.5.1]:
-  https://github.com/AndryOre/animated-fluent-emojis/compare/v0.4.0...v0.5.1
+  https://github.com/andryorelabs/animated-fluent-emojis/compare/v0.4.0...v0.5.1
 [0.4.0]:
-  https://github.com/AndryOre/animated-fluent-emojis/compare/v0.3.0...v0.4.0
+  https://github.com/andryorelabs/animated-fluent-emojis/compare/v0.3.0...v0.4.0
 [0.3.0]:
-  https://github.com/AndryOre/animated-fluent-emojis/compare/v0.2.0...v0.3.0
+  https://github.com/andryorelabs/animated-fluent-emojis/compare/v0.2.0...v0.3.0
 [0.2.0]:
-  https://github.com/AndryOre/animated-fluent-emojis/compare/v0.1.2...v0.2.0
-[0.1.2]: https://github.com/AndryOre/animated-fluent-emojis/releases/tag/v0.1.2
-[0.1.1]: https://github.com/AndryOre/animated-fluent-emojis/releases/tag/v0.1.1
-[0.1.0]: https://github.com/AndryOre/animated-fluent-emojis/releases/tag/v0.1.0
+  https://github.com/andryorelabs/animated-fluent-emojis/compare/v0.1.2...v0.2.0
+[0.1.2]:
+  https://github.com/andryorelabs/animated-fluent-emojis/releases/tag/v0.1.2
+[0.1.1]:
+  https://github.com/andryorelabs/animated-fluent-emojis/releases/tag/v0.1.1
+[0.1.0]:
+  https://github.com/andryorelabs/animated-fluent-emojis/releases/tag/v0.1.0

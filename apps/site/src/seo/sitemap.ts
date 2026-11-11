@@ -13,7 +13,7 @@ import { lastCommitDate } from './last-modified'
 export interface SitemapRoute {
   path: string
   localized: boolean
-  lastmod?: string
+  lastmod?: string | undefined
 }
 
 /**

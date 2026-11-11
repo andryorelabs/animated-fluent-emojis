@@ -24,9 +24,9 @@ Useful scripts (see `package.json` for the full list):
 ## Where to start
 
 Browse issues labeled
-[`good first issue`](https://github.com/AndryOre/animated-fluent-emojis/labels/good%20first%20issue)
+[`good first issue`](https://github.com/andryorelabs/animated-fluent-emojis/labels/good%20first%20issue)
 for small, well-scoped tasks, or
-[`help wanted`](https://github.com/AndryOre/animated-fluent-emojis/labels/help%20wanted)
+[`help wanted`](https://github.com/andryorelabs/animated-fluent-emojis/labels/help%20wanted)
 for work where a contribution is especially welcome. [`ROADMAP.md`](ROADMAP.md)
 describes where the project is heading.
 
@@ -37,9 +37,9 @@ green, it is squash merged as described in [Merging](#merging).
 
 ## Questions
 
-Ask questions, share ideas, or get help in
-[GitHub Discussions](https://github.com/AndryOre/animated-fluent-emojis/discussions).
-Use Discussions rather than issues for open-ended questions.
+See [SUPPORT](.github/SUPPORT.md) for where to ask questions and find the docs.
+Open an issue only for a bug, a feature, an enhancement or a documentation
+problem.
 
 ## Branch naming and commit format
 

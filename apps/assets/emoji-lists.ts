@@ -164,10 +164,10 @@ async function loadFormatConfig(): Promise<FormatConfig> {
   const formatConfig = Object.fromEntries(
     Object.entries(config).filter(([key]) => !CLI_ONLY_CONFIG_KEYS.has(key)),
   ) as FormatConfig
-  return {
-    ...formatConfig,
-    sortTailwindcss: anchorTailwindStylesheet(config.sortTailwindcss),
-  }
+  const sortTailwindcss = anchorTailwindStylesheet(config.sortTailwindcss)
+  return sortTailwindcss === undefined
+    ? formatConfig
+    : { ...formatConfig, sortTailwindcss }
 }
 
 /**

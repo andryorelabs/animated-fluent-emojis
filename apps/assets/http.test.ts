@@ -19,7 +19,10 @@ function sequence(...outcomes: (Response | Error)[]): {
 }
 
 function status(code: number, headers?: Record<string, string>): Response {
-  return new Response('x', { status: code, headers })
+  return new Response(
+    'x',
+    headers === undefined ? { status: code } : { status: code, headers },
+  )
 }
 
 async function settle(

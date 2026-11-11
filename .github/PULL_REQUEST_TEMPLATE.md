@@ -37,8 +37,7 @@ Refs: AO-<!-- Linear ticket number, delete this line if not applicable -->
 - [ ] Docs updated (`README.md` or `docs/usage.md` and `docs/guide/`) if the
       public API changed
 - [ ] Passes `bun run check`
-- [ ] PR title follows
-      [Conventional Commits](https://www.conventionalcommits.org/)
-      (`type(scope): description`)
+- [ ] PR title follows the format `type: <gitmoji> lowercase subject`, for
+      example `feat: ✨ add confetti emoji`
 - [ ] Commits are signed off (`git commit -s`)
 - [ ] No secrets or sensitive data included
