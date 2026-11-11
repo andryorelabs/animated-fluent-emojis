@@ -133,6 +133,30 @@ describe('pre-push hook', () => {
     expect(result.stdout).toContain('Invalid branch name')
   })
 
+  test.each([
+    'feat/add-export',
+    'ao-3011-claude-settings',
+    'renovate/vitest-5.x',
+    'worktree-agent-a830facda4b7ca6c0',
+  ])('accepts the branch name %s', (branch) => {
+    const result = runHook(
+      `refs/heads/${branch} ${someSha} refs/heads/${branch} ${zero}`,
+    )
+    expect(result.status).toBe(0)
+    expect(result.stdout).not.toContain('Invalid branch name')
+  })
+
+  test.each(['ao-3011', 'ao-x-slug', 'worktree-', 'feature/add-export'])(
+    'rejects the branch name %s',
+    (branch) => {
+      const result = runHook(
+        `refs/heads/${branch} ${someSha} refs/heads/${branch} ${zero}`,
+      )
+      expect(result.status).toBe(1)
+      expect(result.stdout).toContain('Invalid branch name')
+    },
+  )
+
   test('skips the affected checks when origin/main is missing', () => {
     const result = runHook(
       `refs/heads/ci/valid-name ${someSha} refs/heads/ci/valid-name ${zero}`,
