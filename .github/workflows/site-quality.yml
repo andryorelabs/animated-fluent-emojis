@@ -155,7 +155,6 @@ jobs:
           exit 1
 
       - name: Install Playwright browser
-        timeout-minutes: 5
         working-directory: apps/site
         run: bunx playwright install --with-deps chromium
 
@@ -268,7 +267,6 @@ jobs:
           exit 1
 
       - name: Install Playwright browser
-        timeout-minutes: 5
         working-directory: apps/site
         run: bunx playwright install --with-deps chromium
 

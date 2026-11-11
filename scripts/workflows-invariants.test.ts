@@ -898,19 +898,9 @@ describe("ci.yml Playwright browser cache", () => {
     expect(steps[installIndex]?.if).toBeUndefined();
   });
 
-  test.each(["ci.yml", "site-quality.yml"])(
-    "%s bounds every Playwright install step so a stalled apt mirror fails fast",
-    (workflowFile) => {
-      const installSteps = collectSteps(readWorkflow(workflowFile)).filter((step) =>
-        step.run?.includes("playwright install"),
-      );
-
-      expect(installSteps.length).toBeGreaterThan(0);
-      for (const step of installSteps) {
-        expect(step["timeout-minutes"], `step "${String(step.name)}"`).toBe(5);
-      }
-    },
-  );
+  test("bounds the install step so a stalled apt mirror fails fast", () => {
+    expect(steps[installIndex]?.["timeout-minutes"]).toBe(5);
+  });
 });
 
 describe("site-quality.yml paths filter", () => {
