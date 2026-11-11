@@ -4,8 +4,8 @@ Repo-specific config the emet plugin reads before `/emet:run` starts its
 pipeline. Machine-checkable values (trunk and remote, ticket id shape,
 concurrency, preflight's required files, handoff and usage thresholds) live in
 [`emet.config.json`](../../emet.config.json) at the repo root, validated against
-`~/.claude/emet/schema/emet.config.schema.json`. This file holds the "why" prose
-and everything a JSON value can't express.
+`https://emet.andryore.dev/schema/emet.config.schema.json`. This file holds the
+"why" prose and everything a JSON value can't express.
 
 Check the setup with `emet doctor`. `emet preflight` runs before dispatch and
 refuses to start a run when a required file or command is missing.
