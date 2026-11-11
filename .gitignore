@@ -23,7 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 
-# Forge
+# emet
 .emet
 .claude/worktrees
 .eslintcache

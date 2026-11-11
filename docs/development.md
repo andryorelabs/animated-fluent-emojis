@@ -491,11 +491,17 @@ knip.
 ## Repository settings
 
 Settings are applied by hand through the GitHub API, not by code in the repo,
-and are recorded in [ADR 0001](adr/0001-public-repo-security-posture.md):
+and are recorded in [ADR 0001](adr/0001-public-repo-security-posture.md), for
+the org-owned repository `github.com/andryorelabs/animated-fluent-emojis`:
 rulesets on `main` and `v*` tags, squash-only merges, linear history, signed
 commits, a single `CI passed` required check, private vulnerability reporting,
-immutable releases, `sha_pinning_required` and CodeQL (a workflow, with the
-default setup disabled). Change the ADR together with any setting.
+secret scanning with push protection, Dependabot security updates, immutable
+releases, `sha_pinning_required` and CodeQL (a workflow, with the default setup
+disabled). Change the ADR together with any setting.
+
+The cross-repo rules these settings follow live in
+[aokit `docs/standards`](https://github.com/andryorelabs/aokit/tree/main/docs/standards),
+adopted here by [ADR 0029](adr/0029-andryorelabs-cross-repo-standard.md).
 
 Two more settings are part of the same posture:
 
@@ -518,5 +524,5 @@ moves the pins, so review the diff the same way.
 The skills installed today all come from `emilkowalski/skills` and cover design
 and motion work on the website: `animate`, `animation-vocabulary`, `break-ui`,
 `emil-design-eng`, `find-animation-opportunities`, `improve-animations`,
-`mobile-native`, `pick-ui-library` and `review-animations`. The `/forge`
-workflow is configured in [`agents/emet.md`](agents/emet.md).
+`mobile-native`, `pick-ui-library` and `review-animations`. The emet workflow is
+configured in [`agents/emet.md`](agents/emet.md).

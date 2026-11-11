@@ -97,7 +97,7 @@ An index of every document in this repository.
 - [`agents/domain.md`](agents/domain.md): domain docs layout.
 - [`agents/issue-tracker.md`](agents/issue-tracker.md): the Linear tracker.
 - [`agents/triage-labels.md`](agents/triage-labels.md): triage label vocabulary.
-- [`agents/emet.md`](agents/emet.md): `/forge` operational specifics.
+- [`agents/emet.md`](agents/emet.md): emet operational specifics.
 
 ## Emoji reference
 
