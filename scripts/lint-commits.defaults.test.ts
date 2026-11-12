@@ -43,18 +43,18 @@ describe("default dependencies", () => {
   });
 
   test("runs the real git runner and trims its output", () => {
-    stubGit({ "merge-base origin/main HEAD": "abc123" });
+    stubGit({ "merge-base origin/develop HEAD": "abc123" });
     expect(resolveCommitlintBase()).toBe("abc123");
     expect(childProcess.spawnSync).toHaveBeenCalledWith(
       "git",
-      ["merge-base", "origin/main", "HEAD"],
+      ["merge-base", "origin/develop", "HEAD"],
       { encoding: "utf8" },
     );
   });
 
   test("propagates the commitlint exit code from the spawned process", async () => {
     stubGit({
-      "merge-base origin/main HEAD": "base",
+      "merge-base origin/develop HEAD": "base",
       "rev-parse HEAD": "head",
     });
     stubChild(5);
@@ -68,7 +68,7 @@ describe("default dependencies", () => {
 
   test("maps a signal exit to code 1", async () => {
     stubGit({
-      "merge-base origin/main HEAD": "base",
+      "merge-base origin/develop HEAD": "base",
       "rev-parse HEAD": "head",
     });
     stubChild(null);
@@ -77,7 +77,7 @@ describe("default dependencies", () => {
 
   test("rejects when the process fails to spawn", async () => {
     stubGit({
-      "merge-base origin/main HEAD": "base",
+      "merge-base origin/develop HEAD": "base",
       "rev-parse HEAD": "head",
     });
     childProcess.spawn.mockImplementation(() => {
