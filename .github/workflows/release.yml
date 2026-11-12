@@ -189,7 +189,7 @@ jobs:
           package-manager-cache: false
 
       - name: Pin npm for trusted publishing
-        run: npm install -g npm@11.5.1 # zizmor: ignore[adhoc-packages]
+        run: npm install -g npm@11.21.2 # zizmor: ignore[adhoc-packages]
 
       - name: Publish to npm
         run: |
