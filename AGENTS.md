@@ -44,6 +44,11 @@ replaced decision gets a new ADR.
 
 ## Branch and commit conventions
 
+`develop` is the trunk: pull requests are squash-merged into `develop`, and
+`main` changes only by a promotion pull request merged with a merge commit, with
+no sync step. Detail:
+[`docs/development.md#branching-and-promotion`](docs/development.md#branching-and-promotion).
+
 Branches are `<type>/<slug>`. Commits and PR titles are
 `type: emoji lowercase subject`, for example `feat: ✨ add confetti emoji`.
 Detail:

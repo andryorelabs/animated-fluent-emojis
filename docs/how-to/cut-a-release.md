@@ -12,10 +12,19 @@ package to npm and creates the GitHub Release.
 
 3. Run `bun run check` and `bun run test` to confirm everything passes.
 
-4. Open a PR titled `chore: 🔖 release x.y.z` and merge it.
+4. Open a PR titled `chore: 🔖 release x.y.z` against `develop` and merge it.
+   The bump lands on `develop`, not on `main`.
 
-5. Tag the merge commit with a **signed** tag and push it:
-   `git tag -s vX.Y.Z <merge-sha> && git push origin vX.Y.Z`. An unsigned tag is
+5. Promote `develop` to `main`, as described in
+   [Branching and promotion](../development.md#branching-and-promotion):
+
+   ```sh
+   gh pr create --base main --head develop --title "chore: 🔀 promote develop to main"
+   gh pr merge --merge
+   ```
+
+6. Tag the promotion merge commit on `main` with a **signed** tag and push it:
+   `git tag -s vX.Y.Z <promotion-merge-sha> && git push origin vX.Y.Z`. An unsigned tag is
    not acceptable. Verify a signature at any time with `git tag -v vX.Y.Z`.
 
 ## What the workflow does
