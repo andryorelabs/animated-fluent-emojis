@@ -6,6 +6,10 @@ Accepted
 
 Date: 2026-10-06
 
+Revised: 2026-11-12, the emoji-lists pull request now targets `develop`, whose
+ruleset carries the rules this record cites for `main`
+([ADR 0030](0030-develop-is-the-trunk.md)).
+
 ## Context
 
 The Sync Assets `emoji-lists` job regenerates `docs/EMOJI_LIST_*.md` and opens a

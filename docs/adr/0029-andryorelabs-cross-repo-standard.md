@@ -6,6 +6,10 @@ Accepted.
 
 Date: 2026-11-11
 
+Revised: 2026-11-12, rule A1 of the standard (`develop` promoted to `main` by
+merge commit) was not met when this record was accepted;
+[ADR 0030](0030-develop-is-the-trunk.md) adopts it.
+
 ## Context
 
 Six andryorelabs repositories (andryore-web, animated-fluent-emojis, snug, emet,
