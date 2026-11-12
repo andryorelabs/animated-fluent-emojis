@@ -8,6 +8,9 @@ Date: 2026-10-06
 
 Revised: 2026-10-21, recorded the amendment relations in Status.
 
+Revised: 2026-11-12, a change reaches `main`, and so the website, through a
+promotion of `develop` ([ADR 0030](0030-develop-is-the-trunk.md)).
+
 ## Context
 
 The project has no website. [ADR 0015](0015-public-files-site.md) reserved

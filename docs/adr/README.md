@@ -13,7 +13,7 @@ for editing and replacing ADRs are in
 
 | Number | Title                                                                                                                                                        | Status   | Superseded or amended by |
 | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------------------------ |
-| 0001   | [Public repo security posture](0001-public-repo-security-posture.md)                                                                                         | Accepted | -                        |
+| 0001   | [Public repo security posture](0001-public-repo-security-posture.md)                                                                                         | Accepted | 0030                     |
 | 0002   | [TSDoc-only code comments](0002-tsdoc-only-code-comments.md)                                                                                                 | Accepted | 0027 (partly)            |
 | 0003   | [ESM-only and Vite 8](0003-esm-only-and-vite-8.md)                                                                                                           | Accepted | -                        |
 | 0004   | [Vitest Browser Mode](0004-vitest-browser-mode.md)                                                                                                           | Accepted | 0008                     |
@@ -42,3 +42,4 @@ for editing and replacing ADRs are in
 | 0027   | [Oxc toolchain replaces Prettier and most of ESLint](0027-oxc-toolchain-replaces-prettier-and-most-of-eslint.md)                                             | Accepted | -                        |
 | 0028   | [CI runner standard and a parallel Site Quality workflow](0028-ci-runner-standard-and-a-parallel-site-quality-workflow.md)                                   | Accepted | -                        |
 | 0029   | [Adopt the andryorelabs cross-repo standard v1](0029-andryorelabs-cross-repo-standard.md)                                                                    | Accepted | -                        |
+| 0030   | [develop is the trunk, promoted to main by merge commit](0030-develop-is-the-trunk.md)                                                                       | Accepted | -                        |

@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted. Amended by [0030](0030-develop-is-the-trunk.md).
 
 Date: 2026-10-04
 
@@ -25,6 +25,11 @@ Revised: 2026-11-11, the `main` ruleset now requires three strict status checks
 (`CI passed`, `Validate PR title`, `Check markdown links`) instead of the single
 `CI passed`, and the rulesets live in `.github/rulesets` with a test that fails
 when a required check is not a workflow job name (AO-3009).
+
+Revised: 2026-11-12, `develop` is the trunk: the squash-only, linear-history
+and strict-check rules below now describe the `develop` ruleset, and `main`
+accepts only promotion merge commits
+([ADR 0030](0030-develop-is-the-trunk.md)).
 
 ## Context
 

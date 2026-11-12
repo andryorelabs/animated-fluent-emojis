@@ -93,6 +93,7 @@ An index of every document in this repository.
 - [`adr/0027-oxc-toolchain-replaces-prettier-and-most-of-eslint.md`](adr/0027-oxc-toolchain-replaces-prettier-and-most-of-eslint.md)
 - [`adr/0028-ci-runner-standard-and-a-parallel-site-quality-workflow.md`](adr/0028-ci-runner-standard-and-a-parallel-site-quality-workflow.md)
 - [`adr/0029-andryorelabs-cross-repo-standard.md`](adr/0029-andryorelabs-cross-repo-standard.md)
+- [`adr/0030-develop-is-the-trunk.md`](adr/0030-develop-is-the-trunk.md)
 
 ## Brand
 
