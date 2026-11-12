@@ -6,7 +6,7 @@ import { readWorkflow, type Workflow, type WorkflowStep } from "./workflow-files
 const PROMOTION_TITLE = "chore: 🔀 promote develop to main";
 const TRUNK_BRANCHES = ["main", "develop"];
 const COMMITLINT_CONDITION =
-  "github.event_name == 'pull_request' && !(github.base_ref == 'main' && github.head_ref == 'develop')";
+  "github.event_name == 'pull_request' && !(github.base_ref == 'main' && github.head_ref == 'develop' && !github.event.pull_request.head.repo.fork)";
 const NEVER_CANCEL_ON_TRUNK =
   "${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}";
 const JOB_RESULTS = ["success", "failure", "cancelled", "skipped"] as const;
@@ -110,6 +110,12 @@ describe("S4: CI and CodeQL run on the trunk branches", () => {
 describe("S5: a promotion pull request skips commitlint and still passes", () => {
   test("commitlint is skipped on a pull request from develop to main", () => {
     expect(readWorkflow("ci.yml").jobs?.commitlint?.if).toBe(COMMITLINT_CONDITION);
+  });
+
+  test("a fork pull request from a branch named develop is still linted", () => {
+    expect(readWorkflow("ci.yml").jobs?.commitlint?.if).toContain(
+      "!github.event.pull_request.head.repo.fork",
+    );
   });
 
   test("CI passed needs commitlint", () => {
