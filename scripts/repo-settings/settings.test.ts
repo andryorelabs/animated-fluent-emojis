@@ -12,7 +12,8 @@ import {
   type RepositorySettings,
 } from "./settings.ts";
 
-const REPOSITORY_ENDPOINT = "repos/andryorelabs/animated-fluent-emojis";
+const REPOSITORY_PATH = "andryorelabs/animated-fluent-emojis";
+const REPOSITORY_ENDPOINT = `repos/${REPOSITORY_PATH}`;
 
 const EXPECTED_RULES: readonly JsonObject[] = [
   { type: "deletion" },
@@ -49,10 +50,12 @@ const EXPECTED: RepositorySettings = {
 const LIVE_REPOSITORY_RESPONSE = {
   id: 1,
   allow_squash_merge: true,
-  allow_merge_commit: false,
+  allow_merge_commit: true,
   allow_rebase_merge: false,
   squash_merge_commit_title: "PR_TITLE",
   squash_merge_commit_message: "PR_BODY",
+  merge_commit_title: "PR_TITLE",
+  merge_commit_message: "PR_BODY",
   delete_branch_on_merge: true,
   allow_auto_merge: true,
   allow_update_branch: true,
@@ -270,10 +273,12 @@ describe("readLiveSettings", () => {
 
     expect(live.settings).toEqual({
       allow_squash_merge: true,
-      allow_merge_commit: false,
+      allow_merge_commit: true,
       allow_rebase_merge: false,
       squash_merge_commit_title: "PR_TITLE",
       squash_merge_commit_message: "PR_BODY",
+      merge_commit_title: "PR_TITLE",
+      merge_commit_message: "PR_BODY",
       delete_branch_on_merge: true,
       allow_auto_merge: true,
       allow_update_branch: true,
@@ -356,11 +361,25 @@ describe("readExpectedSettings", () => {
     return directory;
   }
 
+  test("allows squash and merge commits, never rebase", () => {
+    expect(EXPECTED_REPOSITORY_SETTINGS).toMatchObject({
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: false,
+      merge_commit_title: "PR_TITLE",
+      merge_commit_message: "PR_BODY",
+    });
+  });
+
   test("reads the settings list and the ruleset files of this repository", () => {
     const expected = readExpectedSettings();
 
     expect(expected.settings).toBe(EXPECTED_REPOSITORY_SETTINGS);
-    expect(Object.keys(expected.rulesets)).toEqual(["main", "tags"]);
+    expect(Object.keys(expected.rulesets)).toEqual(["develop", "main", "tags"]);
+    expect(expected.rulesets.develop).toMatchObject({
+      target: "branch",
+      conditions: { ref_name: { include: ["refs/heads/develop"] } },
+    });
     expect(expected.rulesets.tags).toMatchObject({
       target: "tag",
       conditions: { ref_name: { include: ["refs/tags/v*"] } },
@@ -382,6 +401,27 @@ describe("docs/brand/apply-spec.md", () => {
     path.resolve(import.meta.dirname, "../../docs/brand/apply-spec.md"),
     "utf8",
   );
+
+  test.each(Object.keys(readExpectedSettings().rulesets))(
+    "lists the %s ruleset with its file and the commands that apply it",
+    (name) => {
+      const file = `.github/rulesets/${name}.json`;
+
+      const row = applySpec.split("\n").find((line) => line.startsWith(`| Ruleset \`${name}\` `));
+
+      expect(row).toContain(`[\`${name}.json\`](../../${file})`);
+      expect(applySpec).toContain(`rulesets/<${name} id> --input ${file}`);
+      expect(applySpec).toContain(
+        `--method POST repos/${REPOSITORY_PATH}/rulesets --input ${file}`,
+      );
+    },
+  );
+
+  test("describes the main ruleset as merge commit only", () => {
+    const row = applySpec.split("\n").find((line) => line.startsWith("| Ruleset `main` "));
+
+    expect(row).toMatch(/merge commit only/i);
+  });
 
   test.each(Object.entries(EXPECTED_REPOSITORY_SETTINGS))(
     "lists %s with its expected value",

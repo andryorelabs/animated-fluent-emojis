@@ -39,10 +39,12 @@ export const REPOSITORY = "andryorelabs/animated-fluent-emojis";
  */
 export const EXPECTED_REPOSITORY_SETTINGS: JsonObject = {
   allow_squash_merge: true,
-  allow_merge_commit: false,
+  allow_merge_commit: true,
   allow_rebase_merge: false,
   squash_merge_commit_title: "PR_TITLE",
   squash_merge_commit_message: "PR_BODY",
+  merge_commit_title: "PR_TITLE",
+  merge_commit_message: "PR_BODY",
   delete_branch_on_merge: true,
   allow_auto_merge: true,
   allow_update_branch: true,
