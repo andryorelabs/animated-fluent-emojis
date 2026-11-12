@@ -103,9 +103,12 @@ adapter.
 - **SHA-pinned actions.** `sha_pinning_required` makes every `uses:` reference a
   full commit SHA, and Renovate keeps the pins current. Workflows are linted
   ([development](development.md#ci)).
-- **Protected `main`.** A ruleset blocks force-pushes and deletion and requires
-  a pull request, linear history, signed commits and the `CI passed` check
-  ([ADR 0001](adr/0001-public-repo-security-posture.md)).
+- **Protected `develop` and `main`.** Rulesets block force-pushes and deletion
+  and require a pull request, signed commits and the `CI passed` check.
+  `develop` takes squash merges with linear history; `main` takes promotion
+  merge commits only ([ADR 0001](adr/0001-public-repo-security-posture.md),
+  [ADR 0030](adr/0030-develop-is-the-trunk.md),
+  [branching](development.md#branching-and-promotion)).
 - **OpenSSF Scorecard** runs on a schedule and on push to `main`, published with
   a README badge. CodeQL runs as a workflow (`.github/workflows/codeql.yml`).
 - **Renovate** is the source of routine version updates. Dependabot opens fix

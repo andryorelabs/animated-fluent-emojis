@@ -25,6 +25,14 @@ calls `/emet:run` makes to create, read, and transition tickets here, and
   body (see `commit.trailer` and `commit.trailerPosition` in `emet.config.json`
   if this repo wants something other than the built-in default).
 
+## Trunk and promotion
+
+`repo.trunk` in `emet.config.json` is `develop`. Workers branch from `develop`
+and their pull requests are squash-merged into it. The coordinator never pushes
+to `main` or `develop`. A promotion is a pull request from `develop` to `main`
+merged with a merge commit, and there is no sync step; see
+[Branching and promotion](../development.md#branching-and-promotion).
+
 ## Worktree setup
 
 A worker's first action in a fresh worktree is always `git worktree lock` with

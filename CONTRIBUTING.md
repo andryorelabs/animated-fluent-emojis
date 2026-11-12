@@ -43,15 +43,16 @@ problem.
 
 ## Branch naming and commit format
 
-Use a short, descriptive feature branch (never work directly on `main`). Commits
+Use a short, descriptive feature branch (branch from `develop`, never work directly on `develop` or `main`). Commits
 and pull request titles follow
 [Conventional Commits](https://www.conventionalcommits.org/) with an optional
 gitmoji, for example `feat: ✨ add confetti emoji`.
 
 ## Merging
 
-This repository merges pull requests via **squash merge only**, keeping a linear
-history on `main`. Your commits within a PR don't need to follow the format
+Pull requests target `develop` and are squash-merged into it, keeping a linear
+history. The maintainer promotes `develop` to `main` with a merge commit; see
+[Branching and promotion](docs/development.md#branching-and-promotion). Your commits within a PR don't need to follow the format
 above individually, but the final PR title does, since it becomes the squashed
 commit message.
 
