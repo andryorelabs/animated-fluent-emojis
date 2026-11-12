@@ -10,6 +10,9 @@ Revised: 2026-11-12, rule A1 of the standard (`develop` promoted to `main` by
 merge commit) was not met when this record was accepted;
 [ADR 0030](0030-develop-is-the-trunk.md) adopts it.
 
+Revised: 2026-11-12, emet reviews and escalations run on `opus` instead of
+`fable`, matching `emet.config.json` since #191.
+
 ## Context
 
 Six andryorelabs repositories (andryore-web, animated-fluent-emojis, snug, emet,
@@ -40,7 +43,7 @@ This repository conforms to standard v1.
 - Repository rulesets are kept as JSON under `.github/rulesets`, and
   `bun run repo-settings:check` compares the live GitHub settings with those
   files.
-- emet reviews and escalations in this repository run on the `fable` model alias
+- emet reviews and escalations in this repository run on the `opus` model alias
   (`models` in `emet.config.json`).
 
 Not applicable here:
