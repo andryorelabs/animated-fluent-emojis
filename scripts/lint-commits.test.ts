@@ -40,21 +40,21 @@ function createGitRunner(responses: Record<string, GitResult>): {
 }
 
 describe("resolveCommitlintBase", () => {
-  test("prefers origin/main", () => {
+  test("prefers origin/develop", () => {
     const { git, calls } = createGitRunner({
-      "merge-base origin/main HEAD": { ok: true, output: "aaa" },
-      "merge-base main HEAD": { ok: true, output: "bbb" },
+      "merge-base origin/develop HEAD": { ok: true, output: "aaa" },
+      "merge-base develop HEAD": { ok: true, output: "bbb" },
     });
     expect(resolveCommitlintBase(git)).toBe("aaa");
-    expect(calls).toEqual([["merge-base", "origin/main", "HEAD"]]);
+    expect(calls).toEqual([["merge-base", "origin/develop", "HEAD"]]);
   });
 
-  test("falls back to main when origin/main is missing", () => {
+  test("falls back to develop when origin/develop is missing", () => {
     const { git, calls } = createGitRunner({
-      "merge-base main HEAD": { ok: true, output: "bbb" },
+      "merge-base develop HEAD": { ok: true, output: "bbb" },
     });
     expect(resolveCommitlintBase(git)).toBe("bbb");
-    expect(calls.map((call) => call[1])).toEqual(["origin/main", "main"]);
+    expect(calls.map((call) => call[1])).toEqual(["origin/develop", "develop"]);
   });
 
   test("throws when neither ref resolves", () => {
@@ -66,7 +66,7 @@ describe("resolveCommitlintBase", () => {
 describe("runLintCommits", () => {
   test("spawns commitlint between the merge-base and HEAD", async () => {
     const { git } = createGitRunner({
-      "merge-base origin/main HEAD": { ok: true, output: "base" },
+      "merge-base origin/develop HEAD": { ok: true, output: "base" },
       "rev-parse HEAD": { ok: true, output: "head" },
     });
     const spawnCommand = vi.fn().mockResolvedValue(3);
@@ -83,7 +83,7 @@ describe("runLintCommits", () => {
 
   test("skips linting when HEAD is the merge-base", async () => {
     const { git } = createGitRunner({
-      "merge-base origin/main HEAD": { ok: true, output: "same" },
+      "merge-base origin/develop HEAD": { ok: true, output: "same" },
       "rev-parse HEAD": { ok: true, output: "same" },
     });
     const spawnCommand = vi.fn();
@@ -96,7 +96,7 @@ describe("runLintCommits", () => {
 
   test("throws when HEAD cannot be resolved", async () => {
     const { git } = createGitRunner({
-      "merge-base origin/main HEAD": { ok: true, output: "base" },
+      "merge-base origin/develop HEAD": { ok: true, output: "base" },
     });
     await expect(runLintCommits({ git, spawnCommand: vi.fn() })).rejects.toThrow(
       /could not resolve HEAD/,

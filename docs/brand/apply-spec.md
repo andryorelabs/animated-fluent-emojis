@@ -36,33 +36,37 @@ Drift is fixed by re-applying from these files, never by editing the live
 settings. To change a setting, change it here (or in the ruleset file, and in
 `scripts/repo-settings/settings.ts` for the table), merge, then apply.
 
-| Setting                                                        | Value                                           | Meaning                                     |
-| -------------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------- |
-| `allow_squash_merge`                                           | `true`                                          | Squash is the only merge method             |
-| `allow_merge_commit`                                           | `false`                                         | No merge commits                            |
-| `allow_rebase_merge`                                           | `false`                                         | No rebase merges                            |
-| `squash_merge_commit_title`                                    | `PR_TITLE`                                      | The squash commit subject is the PR title   |
-| `squash_merge_commit_message`                                  | `PR_BODY`                                       | The squash commit body is the PR body       |
-| `delete_branch_on_merge`                                       | `true`                                          | Head branches are deleted on merge          |
-| `allow_auto_merge`                                             | `true`                                          | Auto-merge is available                     |
-| `allow_update_branch`                                          | `true`                                          | "Update branch" is offered on pull requests |
-| `has_wiki`                                                     | `false`                                         | Wiki off                                    |
-| `has_projects`                                                 | `false`                                         | Projects off                                |
-| `has_discussions`                                              | `false`                                         | Discussions off                             |
-| `homepage`                                                     | `https://animated-fluent-emojis.andryore.dev`   | Repository, About, website                  |
-| `security_and_analysis.secret_scanning.status`                 | `enabled`                                       | Secret scanning on                          |
-| `security_and_analysis.secret_scanning_push_protection.status` | `enabled`                                       | Push protection on                          |
-| `security_and_analysis.dependabot_security_updates.status`     | `enabled`                                       | Dependabot security updates on              |
-| `private_vulnerability_reporting.enabled`                      | `true`                                          | Private vulnerability reporting on          |
-| Ruleset `main`                                                 | [`main.json`](../../.github/rulesets/main.json) | Rules for the default branch                |
-| Ruleset `tags`                                                 | [`tags.json`](../../.github/rulesets/tags.json) | Rules for `refs/tags/v*`                    |
+| Setting                                                        | Value                                                 | Meaning                                         |
+| -------------------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------- |
+| `allow_squash_merge`                                           | `true`                                                | Squash merges pull requests into `develop`      |
+| `allow_merge_commit`                                           | `true`                                                | Merge commits promote `develop` to `main`       |
+| `allow_rebase_merge`                                           | `false`                                               | No rebase merges                                |
+| `squash_merge_commit_title`                                    | `PR_TITLE`                                            | The squash commit subject is the PR title       |
+| `squash_merge_commit_message`                                  | `PR_BODY`                                             | The squash commit body is the PR body           |
+| `merge_commit_title`                                           | `PR_TITLE`                                            | The merge commit subject is the PR title        |
+| `merge_commit_message`                                         | `PR_BODY`                                             | The merge commit body is the PR body            |
+| `delete_branch_on_merge`                                       | `true`                                                | Head branches are deleted on merge              |
+| `allow_auto_merge`                                             | `true`                                                | Auto-merge is available                         |
+| `allow_update_branch`                                          | `true`                                                | "Update branch" is offered on pull requests     |
+| `has_wiki`                                                     | `false`                                               | Wiki off                                        |
+| `has_projects`                                                 | `false`                                               | Projects off                                    |
+| `has_discussions`                                              | `false`                                               | Discussions off                                 |
+| `homepage`                                                     | `https://animated-fluent-emojis.andryore.dev`         | Repository, About, website                      |
+| `security_and_analysis.secret_scanning.status`                 | `enabled`                                             | Secret scanning on                              |
+| `security_and_analysis.secret_scanning_push_protection.status` | `enabled`                                             | Push protection on                              |
+| `security_and_analysis.dependabot_security_updates.status`     | `enabled`                                             | Dependabot security updates on                  |
+| `private_vulnerability_reporting.enabled`                      | `true`                                                | Private vulnerability reporting on              |
+| Ruleset `develop`                                              | [`develop.json`](../../.github/rulesets/develop.json) | Rules for the trunk: squash only, strict checks |
+| Ruleset `main`                                                 | [`main.json`](../../.github/rulesets/main.json)       | Rules for the default branch: merge commit only |
+| Ruleset `tags`                                                 | [`tags.json`](../../.github/rulesets/tags.json)       | Rules for `refs/tags/v*`                        |
 
 Apply the settings:
 
 ```sh
 gh api --method PATCH repos/andryorelabs/animated-fluent-emojis \
-  -F allow_squash_merge=true -F allow_merge_commit=false -F allow_rebase_merge=false \
+  -F allow_squash_merge=true -F allow_merge_commit=true -F allow_rebase_merge=false \
   -f squash_merge_commit_title=PR_TITLE -f squash_merge_commit_message=PR_BODY \
+  -f merge_commit_title=PR_TITLE -f merge_commit_message=PR_BODY \
   -F delete_branch_on_merge=true -F allow_auto_merge=true -F allow_update_branch=true \
   -F has_wiki=false -F has_projects=false -F has_discussions=false \
   -f homepage=https://animated-fluent-emojis.andryore.dev \
@@ -81,21 +85,28 @@ ids, then replace each ruleset with its file:
 
 ```sh
 gh api repos/andryorelabs/animated-fluent-emojis/rulesets --jq '.[] | "\(.id) \(.name)"'
+gh api --method PUT repos/andryorelabs/animated-fluent-emojis/rulesets/<develop id> --input .github/rulesets/develop.json
 gh api --method PUT repos/andryorelabs/animated-fluent-emojis/rulesets/<main id> --input .github/rulesets/main.json
 gh api --method PUT repos/andryorelabs/animated-fluent-emojis/rulesets/<tags id> --input .github/rulesets/tags.json
 ```
 
-When a ruleset does not exist yet, create it instead:
+When a ruleset does not exist yet, create it from its file instead. The
+`develop` ruleset needs the `develop` branch to exist first:
 
 ```sh
+gh api --method POST repos/andryorelabs/animated-fluent-emojis/rulesets --input .github/rulesets/develop.json
 gh api --method POST repos/andryorelabs/animated-fluent-emojis/rulesets --input .github/rulesets/main.json
+gh api --method POST repos/andryorelabs/animated-fluent-emojis/rulesets --input .github/rulesets/tags.json
 ```
 
-Then run `bun run repo-settings:check`; it must exit 0.
+Then run `bun run repo-settings:check`; it must exit 0. It compares every file
+in `.github/rulesets/` with the live rulesets by name, so a live ruleset with no
+file and a file with no live ruleset are both drift.
 
-`scripts/rulesets.test.ts` fails when a required check in `main.json` is not a
-job name in `.github/workflows`, so a job is renamed in the workflow and in the
-ruleset file together, and the ruleset is applied again after the merge.
+`scripts/rulesets.test.ts` fails when a required check in `develop.json` or
+`main.json` is not a job name in `.github/workflows`, so a job is renamed in the
+workflows and in both ruleset files together, and the rulesets are applied again
+after the merge.
 
 ## Manual (GitHub and npm)
 

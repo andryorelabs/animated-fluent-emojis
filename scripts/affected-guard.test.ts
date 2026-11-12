@@ -135,10 +135,32 @@ describe("pre-push hook", () => {
     },
   );
 
-  test("skips the affected checks when origin/main is missing", () => {
+  test("skips the affected checks when origin/develop is missing", () => {
     const result = runHook(`refs/heads/ci/valid-name ${someSha} refs/heads/ci/valid-name ${zero}`);
     expect(result.status).toBe(0);
-    expect(result.stdout).toContain("origin/main not found");
+    expect(result.stdout).toContain("origin/develop not found");
+  });
+
+  test.each(["main", "develop"])("refuses a push to %s before any check runs", (branch) => {
+    const result = runHook(`refs/heads/ci/valid-name ${someSha} refs/heads/${branch} ${someSha}`);
+    expect(result.status).toBe(1);
+    expect(result.stdout).toContain(`refusing to push to ${branch}`);
+    expect(result.stdout).toContain("pull request");
+    expect(result.stdout).not.toContain("affected");
+  });
+
+  test("refuses a push that updates a feature branch and develop in one command", () => {
+    const input = [
+      `refs/heads/ci/valid-name ${someSha} refs/heads/ci/valid-name ${zero}`,
+      `refs/heads/ci/valid-name ${someSha} refs/heads/develop ${someSha}`,
+    ].join("\n");
+    const result = spawnSync("sh", [hookPath], {
+      cwd: repository,
+      encoding: "utf8",
+      input: `${input}\n`,
+    });
+    expect(result.status).toBe(1);
+    expect(result.stdout).toContain("refusing to push to develop");
   });
 
   test("skips the affected checks for a branch deletion", () => {

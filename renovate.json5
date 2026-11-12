@@ -19,8 +19,10 @@
   branchConcurrentLimit: 5,
 
   rangeStrategy: "bump",
-  // Main requires the PR branch to be up to date before merging
-  // (strict_required_status_checks_policy in .github/rulesets/main.json),
+  baseBranchPatterns: ["develop"],
+
+  // Develop requires the PR branch to be up to date before merging
+  // (strict_required_status_checks_policy in .github/rulesets/develop.json),
   // so automerge branches must be kept current, not just conflict-free
   rebaseWhen: "behind-base-branch",
 

@@ -68,7 +68,7 @@ any path passed through must be absolute.
 | `bun run test:watch`         | Runs Vitest in watch mode in the library workspace.                                                                                                                       |
 | `bun run test:coverage`      | Runs Vitest with v8 coverage in every workspace and enforces the thresholds.                                                                                              |
 | `bun run lint:docs`          | Runs lychee over the docs with the same arguments as `lint-docs.yml`.                                                                                                     |
-| `bun run lint:commits`       | Runs commitlint over the commits since `origin/main`, like the CI job.                                                                                                    |
+| `bun run lint:commits`       | Runs commitlint over the commits since `origin/develop`, like the CI job.                                                                                                 |
 | `bun run assets:detect`      | Reports whether the published asset site is out of date (Teams manifest or Microsoft's repository).                                                                       |
 | `bun run assets:build`       | Builds the manifest and sprites into `apps/assets/dist-assets/`; needs `ffmpeg`. Add `-- --limit 20` for a sample.                                                        |
 | `bun run assets:verify-live` | Checks that the live asset site serves the current v1 layout and pipeline version.                                                                                        |
@@ -260,11 +260,12 @@ Hooks live in `.husky/`:
 - **`commit-msg`** runs `commitlint` with `@commitlint/config-conventional`. It
   enforces the Conventional Commits shape and type list, not the emoji.
 - **`pre-push`** rejects a push whose branch name does not match `<type>/<slug>`
-  (or `main`, `renovate/*`, the agent names `ao-<n>-<slug>` and `worktree-*`).
+  (or `renovate/*`, the agent names `ao-<n>-<slug>` and `worktree-*`).
   It then runs `turbo run typecheck --affected` and Oxlint (type-aware,
-  `--deny-warnings`) on the code files changed relative to `origin/main`, so
-  failures surface before CI. When `origin/main` is not fetched, it skips those
-  checks with a message instead of blocking the push.
+  `--deny-warnings`) on the code files changed relative to `origin/develop`, so
+  failures surface before CI. It refuses a push to `main` or `develop`. When
+  `origin/develop` is not fetched, it skips those checks with a message to fetch
+  it instead of blocking the push.
   `scripts/affected-guard.test.ts` guards the `--affected` selection the hook
   and CI share: it fails when a change inside a workspace does not select that
   workspace's `test` task.
@@ -274,7 +275,7 @@ Hooks live in `.husky/`:
 Every PR runs the full `ci.yml` pipeline, docs-only changes included. Jobs check
 out with `fetch-depth: 0` and restore the `.turbo` cache. On pull requests the
 Turborepo tasks run with `--affected`, so only the workspaces touched by the
-change (and their dependents) are checked; on `main` they run in full. The root
+change (and their dependents) are checked; on `main` and `develop` they run in full. The root
 tasks (`check:root`, `test:coverage:root`) are never filtered. Job names are
 unchanged:
 
@@ -283,8 +284,8 @@ unchanged:
   fails.
 - **Package**: build, `publint`, `attw`, size limit and a size report.
 - **Commitlint**: validates the PR's commit messages.
-- **CI passed**: aggregates the jobs above; it is the single required status
-  check.
+- **CI passed**: aggregates the jobs above. It is one of the three required
+  status checks, with `Validate PR title` and `Check markdown links`.
 
 **CI runners.** The light jobs (`ci.yml` `quality`, `commitlint` and
 `ci-passed`; `lint-pr.yml` `validate-title`; `lint-docs.yml` `check-links`;
@@ -338,6 +339,34 @@ for the `CI passed` check of the tagged commit to succeed before publishing; see
 [ADR 0005](adr/0005-npm-trusted-publishing.md)). All third-party actions are
 pinned to a commit SHA.
 
+## Branching and promotion
+
+`develop` is the trunk ([ADR 0030](adr/0030-develop-is-the-trunk.md)). `main`
+stays the default branch and the only branch that deploys the website and
+carries `v*` tags.
+
+- **Feature work.** Branch from `develop` and open a pull request against it.
+  Pull requests are squash-merged into `develop`, which keeps `develop` linear.
+- **Promotion.** `main` changes only by promotion, a pull request from `develop`
+  to `main`:
+
+  ```sh
+  gh pr create --base main --head develop --title "chore: 🔀 promote develop to main"
+  gh pr merge --merge
+  ```
+
+  The merge uses a merge commit, so `main` and `develop` never diverge. The
+  `commitlint` job is skipped on a promotion, because each commit it carries was
+  already linted on its own pull request.
+
+- **No sync step.** Nothing merges `main` back into `develop`, and no workflow
+  automates a promotion.
+- **Releases.** The release bump lands on `develop`, a promotion follows, and the
+  tag is cut on the promotion merge commit
+  ([cut a release](how-to/cut-a-release.md)).
+- **Automation.** Renovate and the weekly emoji-lists pull request target
+  `develop`. CI and CodeQL run on a push to `main` and to `develop`.
+
 ## Branch naming
 
 `<type>/<slug>`, where type is one of `feat`, `fix`, `docs`, `style`,
@@ -347,8 +376,9 @@ lowercase kebab-case, for example `feat/add-confetti-emoji`.
 ## Commit format
 
 `type: emoji lowercase subject`, for example `feat: ✨ add confetti emoji`, with
-a bulleted body when it helps. PRs are squash-merged, so the PR title follows
-the same format. The hook does not enforce the emoji; it is a convention.
+a bulleted body when it helps. PRs are squash-merged into `develop`, so the PR title follows
+the same format. A promotion uses the fixed title
+`chore: 🔀 promote develop to main`. The hook does not enforce the emoji; it is a convention.
 
 ## Accessibility
 
@@ -493,15 +523,17 @@ knip.
 
 Settings for the org-owned repository
 `github.com/andryorelabs/animated-fluent-emojis` live in the repo and are
-applied by hand through the GitHub API. The rulesets for `main` and `v*` tags
-are `.github/rulesets/main.json` and `.github/rulesets/tags.json`; the other
+applied by hand through the GitHub API. The rulesets for `develop`, `main` and `v*` tags
+are `.github/rulesets/develop.json`, `.github/rulesets/main.json` and
+`.github/rulesets/tags.json`; the other
 settings and the `gh api` commands that apply them are listed in
 [`docs/brand/apply-spec.md`](brand/apply-spec.md). `bun run repo-settings:check`
 compares the live settings with those files and exits non-zero on any
 difference. Fix drift by re-applying from the files, never by editing live.
 
 The posture is recorded in [ADR 0001](adr/0001-public-repo-security-posture.md):
-squash-only merges, linear history, signed commits, the strict required checks
+squash-only merges into `develop` with linear history, merge commits only into
+`main`, signed commits, the strict required checks
 `CI passed`, `Validate PR title` and `Check markdown links`, private
 vulnerability reporting, secret scanning with push protection, Dependabot
 security updates, immutable releases, `sha_pinning_required` and CodeQL (a

@@ -9,10 +9,12 @@ const EXPECTED = readExpectedSettings();
 
 const MATCHING_REPOSITORY: JsonObject = {
   allow_squash_merge: true,
-  allow_merge_commit: false,
+  allow_merge_commit: true,
   allow_rebase_merge: false,
   squash_merge_commit_title: "PR_TITLE",
   squash_merge_commit_message: "PR_BODY",
+  merge_commit_title: "PR_TITLE",
+  merge_commit_message: "PR_BODY",
   delete_branch_on_merge: true,
   allow_auto_merge: true,
   allow_update_branch: true,
@@ -93,6 +95,51 @@ describe("runRepositorySettingsCheck", () => {
         'repo-settings: settings.homepage: expected "https://animated-fluent-emojis.andryore.dev", live ""',
         'repo-settings: rulesets.main.enforcement: expected "active", live "disabled"',
         "repo-settings: 3 difference(s). Re-apply from the files, see docs/brand/apply-spec.md.",
+      ],
+    });
+  });
+
+  test("exits 1 and names the setting when merge commits are off", async () => {
+    const result = await runWith(
+      createResponses({ ...MATCHING_REPOSITORY, allow_merge_commit: false }, EXPECTED.rulesets),
+    );
+
+    expect(result).toEqual({
+      exitCode: 1,
+      lines: [
+        "repo-settings: settings.allow_merge_commit: expected true, live false",
+        "repo-settings: 1 difference(s). Re-apply from the files, see docs/brand/apply-spec.md.",
+      ],
+    });
+  });
+
+  test("exits 1 and names a ruleset file that has no live ruleset", async () => {
+    const { develop, ...withoutDevelop } = EXPECTED.rulesets;
+    const result = await runWith(createResponses(MATCHING_REPOSITORY, withoutDevelop));
+
+    expect(develop).toBeDefined();
+    expect(result.exitCode).toBe(1);
+    expect(result.lines).toHaveLength(2);
+    expect(result.lines[0]).toMatch(
+      /^repo-settings: rulesets\.develop: expected \{.*\}, live absent$/,
+    );
+  });
+
+  test("exits 1 and names a live ruleset that has no file", async () => {
+    const legacy: JsonObject = {
+      name: "legacy",
+      target: "branch",
+      enforcement: "active",
+    };
+    const result = await runWith(
+      createResponses(MATCHING_REPOSITORY, { ...EXPECTED.rulesets, legacy }),
+    );
+
+    expect(result).toEqual({
+      exitCode: 1,
+      lines: [
+        'repo-settings: rulesets.legacy: expected absent, live {"name":"legacy","target":"branch","enforcement":"active"}',
+        "repo-settings: 1 difference(s). Re-apply from the files, see docs/brand/apply-spec.md.",
       ],
     });
   });

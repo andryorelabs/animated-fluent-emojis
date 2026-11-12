@@ -1,5 +1,5 @@
 zero='0000000000000000000000000000000000000000'
-valid='^(main|renovate/.+|worktree-.+|ao-[0-9]+-[a-z0-9._-]+|(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)/[a-z0-9._-]+)$'
+valid='^(renovate/.+|worktree-.+|ao-[0-9]+-[a-z0-9._-]+|(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)/[a-z0-9._-]+)$'
 
 pushes_branch=0
 
@@ -8,6 +8,17 @@ while read -r _local_ref local_sha remote_ref _remote_sha; do
   case "$remote_ref" in refs/heads/*) ;; *) continue ;; esac   # tags/notes: skip
   branch="${remote_ref#refs/heads/}"
   pushes_branch=1
+
+  case "$branch" in
+    main|develop)
+      echo ""
+      echo "pre-push: refusing to push to $branch"
+      echo "Open a pull request instead: work on a feature branch, squash-merge into develop,"
+      echo "and promote develop to main with a pull request merged by merge commit."
+      echo ""
+      exit 1
+      ;;
+  esac
 
   if ! echo "$branch" | grep -qE "$valid"; then
     echo ""
@@ -25,14 +36,14 @@ if [ "$pushes_branch" -eq 0 ]; then
   exit 0
 fi
 
-if ! git rev-parse --verify --quiet origin/main > /dev/null; then
-  echo "pre-push: origin/main not found, skipping affected checks (run: git fetch origin main)"
+if ! git rev-parse --verify --quiet origin/develop > /dev/null; then
+  echo "pre-push: origin/develop not found, skipping affected checks (run: git fetch origin develop)"
   exit 0
 fi
 
-echo "pre-push: typecheck of workspaces affected relative to origin/main"
-TURBO_SCM_BASE=origin/main bun run turbo run typecheck --affected || exit 1
+echo "pre-push: typecheck of workspaces affected relative to origin/develop"
+TURBO_SCM_BASE=origin/develop bun run turbo run typecheck --affected || exit 1
 
-echo "pre-push: lint of files changed relative to origin/main"
-git diff -z --name-only --diff-filter=d origin/main...HEAD -- '*.ts' '*.tsx' '*.mts' '*.js' '*.mjs' |
+echo "pre-push: lint of files changed relative to origin/develop"
+git diff -z --name-only --diff-filter=d origin/develop...HEAD -- '*.ts' '*.tsx' '*.mts' '*.js' '*.mjs' |
   xargs -0 -r bun run oxlint --type-aware --deny-warnings || exit 1

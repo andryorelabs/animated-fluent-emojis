@@ -2,7 +2,7 @@
   "$schema": "https://emet.andryore.dev/schema/emet.config.schema.json",
   "version": 1,
   "repo": {
-    "trunk": "main",
+    "trunk": "develop",
     "remote": "origin"
   },
   "ticket": {
