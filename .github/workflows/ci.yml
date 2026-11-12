@@ -3,12 +3,12 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, develop]
   workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
 
 permissions:
   contents: read
@@ -214,7 +214,7 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: read
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && !(github.base_ref == 'main' && github.head_ref == 'develop')
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -256,10 +256,26 @@ jobs:
     steps:
       - name: Check job results
         env:
-          FAILED: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result,
-            'cancelled') }}
+          QUALITY_RESULT: ${{ needs.quality.result }}
+          TEST_RESULT: ${{ needs.test.result }}
+          PACKAGE_RESULT: ${{ needs.package.result }}
+          COMMITLINT_RESULT: ${{ needs.commitlint.result }}
         run: |
-          if [[ "${FAILED}" == "true" ]]; then
-            echo "One or more required jobs failed or were cancelled."
+          failed=0
+          report_unless() {
+            local job="$1" result="$2"
+            shift 2
+            for accepted in "$@"; do
+              [[ "${result}" == "${accepted}" ]] && return 0
+            done
+            echo "The ${job} job ended with ${result}."
+            failed=1
+          }
+          report_unless quality "${QUALITY_RESULT}" success
+          report_unless test "${TEST_RESULT}" success
+          report_unless package "${PACKAGE_RESULT}" success
+          report_unless commitlint "${COMMITLINT_RESULT}" success skipped
+          if [[ "${failed}" == "1" ]]; then
+            echo "One or more required jobs did not succeed."
             exit 1
           fi
