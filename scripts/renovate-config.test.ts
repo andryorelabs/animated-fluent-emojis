@@ -20,6 +20,7 @@ interface PackageRule {
 interface RenovateConfig {
   readonly extends: readonly string[];
   readonly packageRules: readonly PackageRule[];
+  readonly baseBranchPatterns?: readonly string[];
   readonly rebaseWhen?: string;
   readonly lockFileMaintenance?: { automerge?: boolean };
   readonly customManagers: readonly CustomManager[];
@@ -66,6 +67,10 @@ describe("renovate.json5 presets", () => {
 
   test("turns the dependency dashboard on", () => {
     expect(config.extends).toContain(":dependencyDashboard");
+  });
+
+  test("targets the develop branch", () => {
+    expect(config.baseBranchPatterns).toEqual(["develop"]);
   });
 
   test("rebases branches that fall behind the base branch", () => {
