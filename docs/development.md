@@ -526,9 +526,10 @@ Settings for the org-owned repository
 applied by hand through the GitHub API. The rulesets for `develop`, `main` and `v*` tags
 are `.github/rulesets/develop.json`, `.github/rulesets/main.json` and
 `.github/rulesets/tags.json`; the other
-settings and the `gh api` commands that apply them are listed in
+settings are in `.github/repo-settings.json`, and the `gh api` commands that apply them are listed in
 [`docs/brand/apply-spec.md`](brand/apply-spec.md). `bun run repo-settings:check`
-compares the live settings with those files and exits non-zero on any
+compares the live settings with those files (including both Dependabot alerts
+and Dependabot security updates, which must be on) and exits non-zero on any
 difference. Fix drift by re-applying from the files, never by editing live.
 
 The posture is recorded in [ADR 0001](adr/0001-public-repo-security-posture.md):

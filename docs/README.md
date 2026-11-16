@@ -67,6 +67,7 @@ An index of every document in this repository.
 ## Architecture decision records
 
 - [`adr/README.md`](adr/README.md): ADR index and status table.
+- [`adr/0000-template.md`](adr/0000-template.md)
 - [`adr/0001-public-repo-security-posture.md`](adr/0001-public-repo-security-posture.md)
 - [`adr/0002-tsdoc-only-code-comments.md`](adr/0002-tsdoc-only-code-comments.md)
 - [`adr/0003-esm-only-and-vite-8.md`](adr/0003-esm-only-and-vite-8.md)
