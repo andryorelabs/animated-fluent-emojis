@@ -25,7 +25,7 @@
     "sync": "astro sync",
     "check": "astro check",
     "i18n:status": "bun src/docs/i18n-status.ts",
-    "test": "vitest run",
+    "test": "vitest run --coverage",
     "test:coverage": "vitest run --coverage",
     "test:dist": "SITE_DIST_REQUIRED=1 vitest run src/seo/distribution-output.test.ts",
     "test:e2e": "playwright test",

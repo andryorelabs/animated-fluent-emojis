@@ -93,9 +93,10 @@
     "lint:package": "bun run build && publint --strict && attw --pack . --profile esm-only",
     "check": "bun run typecheck && bun run lint:package",
     "size": "size-limit",
-    "test": "vitest run",
+    "test": "vitest run --coverage",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:browsers": "vitest run",
     "test:cross-browser": "vitest run --project 'browser (firefox)' --project 'browser (webkit)'"
   },
   "peerDependencies": {

@@ -22,7 +22,7 @@
     "sync:files": "bun sync.ts files",
     "typecheck": "../../node_modules/typescript7/bin/tsc --noEmit",
     "check": "bun run typecheck",
-    "test": "vitest run",
+    "test": "vitest run --coverage",
     "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
