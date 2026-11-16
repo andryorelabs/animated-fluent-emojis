@@ -4,10 +4,10 @@
  * resolved through the workspace catalog, so its pin is the catalog entry.
  */
 export const DEV_DEPENDENCY_PINS: Readonly<Record<string, string>> = {
-  oxlint: "1.92.0",
-  "@oxlint/plugins": "1.92.0",
-  oxfmt: "0.75.0",
-  "oxlint-tsgolint": "7.0.2005",
+  oxlint: "1.93.0",
+  "@oxlint/plugins": "1.93.0",
+  oxfmt: "0.78.0",
+  "oxlint-tsgolint": "7.0.2006",
   typescript7: "npm:typescript@7.1.0-beta",
   typescript: "npm:@typescript/typescript6@6.0.2",
   "@types/bun": "1.4.4",
