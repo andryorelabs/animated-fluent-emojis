@@ -48,6 +48,22 @@ and pull request titles follow
 [Conventional Commits](https://www.conventionalcommits.org/) with an optional
 gitmoji, for example `feat: ✨ add confetti emoji`.
 
+| Type       | Gitmoji | Use for                        |
+| ---------- | ------- | ------------------------------ |
+| `feat`     | ✨      | a new feature                  |
+| `fix`      | 🐛      | a bug fix                      |
+| `docs`     | 📝      | documentation only             |
+| `style`    | 💄      | formatting or visual polish    |
+| `refactor` | ♻️      | a change that adds no behavior |
+| `perf`     | ⚡️      | a performance improvement      |
+| `test`     | ✅      | tests only                     |
+| `build`    | 📦      | build system or packaging      |
+| `ci`       | 👷      | CI configuration               |
+| `chore`    | 🔧      | tooling and maintenance        |
+| `deps`     | ⬆️      | dependency updates             |
+| `release`  | 🔖      | a version release              |
+| `revert`   | ⏪️      | reverting an earlier commit    |
+
 ## Merging
 
 Pull requests target `develop` and are squash-merged into it, keeping a linear

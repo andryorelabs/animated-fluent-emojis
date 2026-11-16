@@ -27,7 +27,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # Must match @commitlint/config-conventional exactly
+          # Must match the type-enum in commitlint.config.ts exactly
           types: |
             feat
             fix
@@ -39,6 +39,8 @@ jobs:
             build
             ci
             chore
+            deps
+            release
             revert
           requireScope: false
           # Subject must start with a lowercase letter

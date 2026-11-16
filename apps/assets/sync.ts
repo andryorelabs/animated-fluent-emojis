@@ -581,7 +581,7 @@ export async function runCommand(
       "bypass-guards": { type: "boolean", default: false },
     },
   });
-  const [command] = positionals;
+  const [command = ""] = positionals;
   switch (command) {
     case "detect": {
       await runDetect(

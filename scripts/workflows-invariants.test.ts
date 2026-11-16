@@ -476,7 +476,7 @@ describe("sync-assets.yml failure resolution job", () => {
   const job = readWorkflow("sync-assets.yml").jobs?.["resolve-failure"];
 
   test("runs after a sync that did not fail, with only issues: write", () => {
-    expect(job?.if).toBe("${{ !failure() && !cancelled() }}");
+    expect(job?.if).toBe("${{ github.ref == 'refs/heads/main' && !failure() && !cancelled() }}");
     expect(job?.needs).toEqual(["sync", "emoji-lists"]);
     expect(job?.permissions).toEqual({ issues: "write" });
   });
@@ -700,8 +700,20 @@ const ROUTED_RUNNER_EXPRESSION =
 
 const ROUTED_JOBS: ReadonlySet<string> = new Set([
   "ci.yml:quality",
+  "ci.yml:test",
+  "ci.yml:package",
+  "ci.yml:bun-canary",
   "ci.yml:commitlint",
   "ci.yml:ci-passed",
+  "codeql.yml:analyze",
+  "scorecard.yml:analysis",
+  "release.yml:verify",
+  "release.yml:publish",
+  "sync-assets.yml:sync",
+  "sync-assets.yml:emoji-lists",
+  "sync-assets.yml:report-failure",
+  "sync-assets.yml:resolve-failure",
+  "deploy-site.yml:deploy",
   "lint-pr.yml:validate-title",
   "lint-docs.yml:check-links",
   "lint-workflows.yml:lint",

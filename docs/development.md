@@ -287,13 +287,13 @@ unchanged:
 - **CI passed**: aggregates the jobs above. It is one of the three required
   status checks, with `Validate PR title` and `Check markdown links`.
 
-**CI runners.** The light jobs (`ci.yml` `quality`, `commitlint` and
-`ci-passed`; `lint-pr.yml` `validate-title`; `lint-docs.yml` `check-links`;
-`lint-workflows.yml` `lint`; `labels.yml` `sync`) use
+**CI runners.** Every job in `ci.yml`, `codeql.yml`, `scorecard.yml`,
+`release.yml`, `sync-assets.yml`, `deploy-site.yml`, `lint-pr.yml`,
+`lint-docs.yml`, `lint-workflows.yml` and `labels.yml` uses
 `runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}`.
 Pull requests from forks always fall back to GitHub's `ubuntu-latest`. The
 `BLACKSMITH_RUNNER` repository variable is unset by default, so every job runs
-on `ubuntu-latest`; every other job keeps a literal `ubuntu-latest`. Why it
+on `ubuntu-latest`; `site-quality.yml` still keeps a literal `ubuntu-latest`. Why it
 stays unset on this public repository, and how to turn it on or roll it back:
 [ADR 0028](adr/0028-ci-runner-standard-and-a-parallel-site-quality-workflow.md).
 

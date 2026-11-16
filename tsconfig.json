@@ -11,6 +11,7 @@
   },
   "include": [
     "vitest.config.ts",
+    "commitlint.config.ts",
     "eslint-rules",
     "oxlint.config.ts",
     "oxlint-plugins",
