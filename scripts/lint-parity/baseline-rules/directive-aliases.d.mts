@@ -1,7 +1,7 @@
-import type { ESLint } from 'eslint'
+import type { ESLint } from "eslint";
 
-export declare function renameDirectiveAliases(text: string): string
+export declare function renameDirectiveAliases(text: string): string;
 
-declare const directiveAliasesPlugin: ESLint.Plugin
+declare const directiveAliasesPlugin: ESLint.Plugin;
 
-export default directiveAliasesPlugin
+export default directiveAliasesPlugin;

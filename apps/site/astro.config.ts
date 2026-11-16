@@ -1,7 +1,7 @@
+import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
 import starlight from "@astrojs/starlight";
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "astro/config";
 import starlightLlmsTxt from "starlight-llms-txt";
 
 import { CHANGELOG_SLUG } from "./src/docs/changelog-pages";

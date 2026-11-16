@@ -1,4 +1,4 @@
-import type { Rule } from 'eslint'
+import type { Rule } from "eslint";
 
 /**
  * Type declaration for `./index.mjs`, needed because this module is imported
@@ -6,7 +6,7 @@ import type { Rule } from 'eslint'
  * `.ts` -> `.mjs` import without one.
  */
 declare const localPlugin: {
-  rules: Record<string, Rule.RuleModule>
-}
+  rules: Record<string, Rule.RuleModule>;
+};
 
-export default localPlugin
+export default localPlugin;

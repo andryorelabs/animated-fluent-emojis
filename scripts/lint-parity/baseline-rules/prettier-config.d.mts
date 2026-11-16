@@ -1,5 +1,5 @@
-import type { Linter } from 'eslint'
+import type { Linter } from "eslint";
 
-declare const prettierConfig: { rules: Linter.RulesRecord }
+declare const prettierConfig: { rules: Linter.RulesRecord };
 
-export default prettierConfig
+export default prettierConfig;

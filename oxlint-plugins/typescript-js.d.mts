@@ -10,8 +10,7 @@ type OxlintRule = Parameters<RuleTester["run"]>[1];
  */
 declare const typescriptJsPlugin: {
   meta: { name: string };
-  rules: Record<"prefer-optional-chain", OxlintRule> &
-    Record<string, OxlintRule>;
+  rules: Record<"prefer-optional-chain", OxlintRule> & Record<string, OxlintRule>;
 };
 
 export default typescriptJsPlugin;

@@ -10,8 +10,7 @@ type OxlintRule = Parameters<RuleTester["run"]>[1];
  */
 declare const unicornJsPlugin: {
   meta: { name: string };
-  rules: Record<"prefer-combined-guards", OxlintRule> &
-    Record<string, OxlintRule>;
+  rules: Record<"prefer-combined-guards", OxlintRule> & Record<string, OxlintRule>;
 };
 
 export default unicornJsPlugin;
