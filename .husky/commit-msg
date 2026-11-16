@@ -1,1 +1,1 @@
-bun "$(dirname "$0")/../tools/hooks/commit-msg.ts" "$1"
+bun "$(dirname "$0")/../tools/hooks/commit-message.ts" "$1"

@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, test } from "vitest";
 
+import { NODE_VERSION } from "../tools/toolchain/toolchain";
 import {
   listWorkflowFiles,
   readWorkflow,
@@ -82,7 +83,7 @@ test(".node-version pins the Node major the workflows install", () => {
     fileURLToPath(new URL(`../${NODE_VERSION_FILE}`, import.meta.url)),
     "utf8",
   );
-  expect(nodeVersion.trim()).toBe("26");
+  expect(nodeVersion.trim()).toBe(NODE_VERSION);
 });
 
 describe("job permissions check", () => {

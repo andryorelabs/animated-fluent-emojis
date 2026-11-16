@@ -24,9 +24,16 @@ describe("spawnInherited", () => {
 
   test("passes extra environment variables", () => {
     expect(
-      spawnInherited(["node", "-e", "process.exit(process.env.HOOK_TEST === 'x' ? 0 : 9)"], {
-        HOOK_TEST: "x",
-      }),
+      spawnInherited(
+        [
+          "node",
+          "-e",
+          "process.exit(Object.entries(process.env).some(([k, v]) => k === 'HOOK_TEST' && v === 'x') ? 0 : 9)",
+        ],
+        {
+          HOOK_TEST: "x",
+        },
+      ),
     ).toBe(0);
   });
 

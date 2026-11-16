@@ -1,8 +1,7 @@
-// oxlint-disable-next-line unicorn-js/name-replacements -- git fixes the hook name commit-msg
 import path from "node:path";
 import { afterEach, describe, expect, test, vi } from "vitest";
 
-import { buildCommitMessageCommand, runCommitMessage } from "./commit-msg.ts";
+import { buildCommitMessageCommand, runCommitMessage } from "./commit-message.ts";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -46,10 +45,10 @@ describe("entry point", () => {
     const spawnSync = vi.fn(() => ({ status: 0 }));
     vi.doMock("node:child_process", () => ({ spawnSync }));
     const previousArguments = process.argv.slice(1, 3);
-    process.argv[1] = path.join(import.meta.dirname, "commit-msg.ts");
+    process.argv[1] = path.join(import.meta.dirname, "commit-message.ts");
     process.argv[2] = "msg-file";
     try {
-      await import("./commit-msg.ts");
+      await import("./commit-message.ts");
       expect(spawnSync).toHaveBeenCalledWith(
         "bunx",
         ["commitlint", "--edit", "msg-file"],

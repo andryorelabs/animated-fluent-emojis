@@ -1,4 +1,3 @@
-// oxlint-disable-next-line unicorn-js/name-replacements -- git fixes the hook name commit-msg
 import { fileURLToPath } from "node:url";
 
 import { spawnInherited } from "./pre-commit.ts";
