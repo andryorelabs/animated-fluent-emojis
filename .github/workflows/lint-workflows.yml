@@ -1,13 +1,15 @@
 name: Lint Workflows
 
 on:
+  push:
+    branches: [main, develop]
   pull_request:
     paths:
       - ".github/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
