@@ -334,8 +334,6 @@ if (import.meta.main) {
   process.exitCode = runPrep(
     process.argv.slice(2),
     path.resolve(import.meta.dirname, "../.."),
-    (message) => {
-      console.error(message);
-    },
+    console.error,
   );
 }

@@ -47,9 +47,15 @@ const PACKAGE_JSON = `{
 const fixture = { root: "" };
 
 function writeFixture(changelog: string, packageJson = PACKAGE_JSON): void {
-  mkdirSync(path.dirname(path.join(fixture.root, PACKAGE_PATH)), { recursive: true });
+  mkdirSync(path.dirname(path.join(fixture.root, PACKAGE_PATH)), {
+    recursive: true,
+  });
   writeFileSync(path.join(fixture.root, PACKAGE_PATH), packageJson);
   writeFileSync(path.join(fixture.root, "CHANGELOG.md"), changelog);
+}
+
+function packageAt(version: string): string {
+  return `{\n  "name": "pkg",\n  "version": "${version}"\n}\n`;
 }
 
 function readRoot(relativePath: string): string {
@@ -156,7 +162,53 @@ describe("prepareRelease", () => {
   });
 });
 
+describe("prepareRelease version ordering", () => {
+  it.each(["1.3.0-beta.10", "1.3.0-beta.2.1", "1.3.0-rc.1", "1.3.0", "1.3.0-beta.3"])(
+    "accepts %s above 1.3.0-beta.2",
+    (version) => {
+      writeFixture(CHANGELOG, packageAt("1.3.0-beta.2"));
+      prepareRelease(fixture.root, version, "2026-02-03");
+      expect(readRoot(PACKAGE_PATH)).toContain(`"version": "${version}"`);
+    },
+  );
+
+  it.each(["1.3.0-beta.2", "1.3.0-beta.1", "1.3.0-beta", "1.3.0-alpha.9", "1.3.0-1", "1.2.9"])(
+    "rejects %s at or below 1.3.0-beta.2",
+    (version) => {
+      writeFixture(CHANGELOG, packageAt("1.3.0-beta.2"));
+      expect(() => prepareRelease(fixture.root, version, "2026-02-03")).toThrow(
+        "is not higher than",
+      );
+    },
+  );
+
+  it("ranks a text prerelease identifier above a numeric one", () => {
+    writeFixture(CHANGELOG, packageAt("1.3.0-1"));
+    prepareRelease(fixture.root, "1.3.0-beta", "2026-02-03");
+    expect(readRoot(PACKAGE_PATH)).toContain('"version": "1.3.0-beta"');
+  });
+
+  it("fails when the package carries an invalid version", () => {
+    writeFixture(CHANGELOG, packageAt("latest"));
+    expect(() => prepareRelease(fixture.root, "1.3.0", "2026-02-03")).toThrow(
+      'carries the version "latest"',
+    );
+  });
+
+  it("fails when the version field to rewrite cannot be found", () => {
+    writeFixture(
+      CHANGELOG,
+      '{\n  "engines": {\n    "version": "9.9.9"\n  },\n  "version": "1.2.3"\n}\n',
+    );
+    expect(() => prepareRelease(fixture.root, "1.3.0", "2026-02-03")).toThrow("Could not find the");
+  });
+});
+
 describe("runPrep", () => {
+  it("rethrows an unexpected failure", () => {
+    expect(() => runPrep(["1.3.0"], fixture.root, () => {})).toThrow();
+  });
+
   it("prints usage without a version", () => {
     const lines: string[] = [];
     expect(
