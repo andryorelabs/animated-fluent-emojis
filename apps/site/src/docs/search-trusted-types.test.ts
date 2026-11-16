@@ -41,6 +41,19 @@ describe("installSearchTrustedTypesPolicy", () => {
     ]);
   });
 
+  it("wires the callbacks to the markup and worker restrictions", () => {
+    const createPolicy = vi.fn<TrustedTypesFactory["createPolicy"]>();
+    installSearchTrustedTypesPolicy({ createPolicy }, ORIGIN);
+    const rules = createPolicy.mock.calls[0]?.[1];
+    expect(rules?.createHTML("a <mark>b</mark> <script>x</script>")).toBe(
+      "a <mark>b</mark> &lt;script>x&lt;/script>",
+    );
+    expect(rules?.createScriptURL("/pagefind/pagefind-worker.js")).toBe(
+      "/pagefind/pagefind-worker.js",
+    );
+    expect(() => rules?.createScriptURL("/evil.js")).toThrow(TypeError);
+  });
+
   it("does nothing without Trusted Types", () => {
     expect(() => {
       installSearchTrustedTypesPolicy(undefined, ORIGIN);
