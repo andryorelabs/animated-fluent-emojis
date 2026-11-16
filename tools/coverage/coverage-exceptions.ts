@@ -24,7 +24,7 @@ export const COVERAGE_EXCEPTIONS: readonly CoverageException[] = [
   {
     file: "eslint-rules/no-non-doc-comments.mjs",
     reason:
-      "the ESLint `create` entry is only called when ESLint loads the rule, and the tests drive the rule through the Oxlint rule tester",
+      "its own test calls `create` directly and reaches 100% when run alone, but `scripts/lint-config.test.ts` also loads the rule through `oxlint.config`, and the merged root report then drops the `create` hits",
     lines: 16 / 18,
     functions: 3 / 4,
   },
