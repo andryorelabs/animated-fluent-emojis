@@ -11,6 +11,10 @@
     "exactOptionalPropertyTypes": true,
     "noImplicitReturns": true,
     "verbatimModuleSyntax": true,
-    "erasableSyntaxOnly": true
+    "erasableSyntaxOnly": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleDetection": "force",
+    "resolveJsonModule": true
   }
 }

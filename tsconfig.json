@@ -10,10 +10,9 @@
     "noEmit": true
   },
   "include": [
-    "vitest.config.ts",
-    "commitlint.config.ts",
+    "*.ts",
+    "*.mts",
     "eslint-rules",
-    "oxlint.config.ts",
     "oxlint-plugins",
     "docs/adr",
     "docs/brand/tools",

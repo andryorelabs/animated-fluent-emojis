@@ -42,6 +42,7 @@
     enabled: true,
     schedule: ["before 12pm on monday"],
     automerge: true,
+    minimumReleaseAge: "7 days",
   },
 
   customManagers: [
@@ -77,6 +78,34 @@
       ],
       datasourceTemplate: "github-releases",
       depNameTemplate: "zizmorcore/zizmor",
+    },
+    // LYCHEE_VERSION must stay the default lycheeVersion of the pinned
+    // lychee-action, so both pins move together in the lychee group
+    // Renovate does not read Bun catalogs yet, so the exact typescript 6
+    // alias in the root catalog is managed here and kept below 7
+    {
+      customType: "regex",
+      managerFilePatterns: ["/^package\\.json$/"],
+      matchStrings: [
+        '"typescript": "npm:@typescript/typescript6@(?<currentValue>\\d+\\.\\d+\\.\\d+)"',
+      ],
+      datasourceTemplate: "npm",
+      depNameTemplate: "@typescript/typescript6",
+    },
+    {
+      customType: "regex",
+      managerFilePatterns: ["/^scripts/lint-docs\\.ts$/"],
+      matchStrings: ['LYCHEE_VERSION = "(?<currentValue>v\\d+\\.\\d+\\.\\d+)"'],
+      datasourceTemplate: "github-releases",
+      depNameTemplate: "lycheeverse/lychee",
+      extractVersionTemplate: "^lychee-(?<version>v\\d+\\.\\d+\\.\\d+)$",
+    },
+    {
+      customType: "regex",
+      managerFilePatterns: ["/^scripts/lint-docs\\.ts$/"],
+      matchStrings: ['EXPECTED_LYCHEE_ACTION_VERSION = "(?<currentValue>v\\d+\\.\\d+\\.\\d+)"'],
+      datasourceTemplate: "github-releases",
+      depNameTemplate: "lycheeverse/lychee-action",
     },
   ],
 
@@ -142,13 +171,43 @@
       minimumReleaseAge: "7 days",
     },
 
-    // Keep this rule last: a later matching rule wins, so a rule placed after
-    // it could turn automerge back on for the oxc tools.
+    {
+      matchDepNames: ["@typescript/typescript6"],
+      allowedVersions: "<7",
+      automerge: false,
+    },
+
+    // lychee-action and the lychee binary it defaults to are bumped together
+    // and re-checked by hand
+    {
+      groupName: "lychee",
+      matchDepNames: ["lycheeverse/lychee", "lycheeverse/lychee-action"],
+      automerge: false,
+    },
+
+    // Bun moves as one: packageManager, engines.bun and @types/bun
+    {
+      groupName: "bun",
+      matchDepNames: ["bun", "@types/bun"],
+      rangeStrategy: "pin",
+      automerge: false,
+    },
+
+    // Keep the pin groups last: a later matching rule wins, so a rule
+    // placed after them could turn automerge back on for the toolchain.
     // Oxc tools are pre-1.0 or move fast, and a bump can change lint or
     // format output repo-wide, so they stay exact and are reviewed by hand
     {
       groupName: "oxc",
-      matchPackageNames: ["oxlint", "oxlint-tsgolint", "oxfmt", "typescript7"],
+      matchDepNames: ["oxlint", "oxlint-tsgolint", "oxfmt", "@oxlint/plugins"],
+      rangeStrategy: "pin",
+      automerge: false,
+    },
+    // A typescript7 bump can change which types are accepted, so it moves
+    // alone and is reviewed by hand
+    {
+      groupName: "typescript7",
+      matchDepNames: ["typescript7"],
       rangeStrategy: "pin",
       automerge: false,
     },
