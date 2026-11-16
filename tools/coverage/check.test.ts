@@ -1,10 +1,10 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
-
+import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
 import {
+  checkAgainstBase,
   checkCoverage,
   checkFiles,
   checkWorkspaceFloor,
@@ -15,12 +15,37 @@ import {
 } from "./check";
 import type { CoverageException } from "./coverage-exceptions";
 
-function file(path: string, linesHit: number, functionsHit: number): FileCoverage {
-  return { path, linesFound: 100, linesHit, functionsFound: 50, functionsHit };
+function file(linesHit: number, functionsHit: number): FileCoverage {
+  return { path: "x.ts", linesFound: 100, linesHit, functionsFound: 50, functionsHit };
 }
 
 const FLOOR = { lines: 90, functions: 90, branches: 80, statements: 90 };
 const FLAT = { lines: 80, functions: 80, branches: 80, statements: 80 };
+const WORKSPACE = "w";
+
+const exception = (overrides: Partial<CoverageException> = {}): CoverageException => ({
+  file: "x.ts",
+  reason: "cannot be reached",
+  lines: 0.5,
+  functions: 0.5,
+  ...overrides,
+});
+
+function writeReport(root: string, linesHit: number, pct: number): void {
+  const directory = path.join(root, WORKSPACE, "coverage");
+  mkdirSync(directory, { recursive: true });
+  writeFileSync(
+    path.join(directory, "lcov.info"),
+    `SF:a.ts\nFNF:1\nFNH:1\nLF:100\nLH:${String(linesHit)}\nend_of_record\n`,
+  );
+  const metric = { pct };
+  writeFileSync(
+    path.join(directory, "coverage-summary.json"),
+    JSON.stringify({
+      total: { lines: metric, functions: metric, branches: metric, statements: metric },
+    }),
+  );
+}
 
 describe("parseLcov", () => {
   const lcov = [
@@ -75,16 +100,8 @@ describe("parseSummaryTotals", () => {
 });
 
 describe("checkFiles", () => {
-  const exception = (overrides: Partial<CoverageException> = {}): CoverageException => ({
-    file: "x.ts",
-    reason: "cannot be reached",
-    lines: 0.5,
-    functions: 0.5,
-    ...overrides,
-  });
-
   it("passes files at the floor", () => {
-    expect(checkFiles([file("x.ts", 97, 49)], [])).toEqual([]);
+    expect(checkFiles([file(97, 49)], [])).toEqual([]);
   });
 
   it("treats a file with nothing to measure as covered", () => {
@@ -93,21 +110,25 @@ describe("checkFiles", () => {
   });
 
   it("fails a low file without an exception, on lines or on functions", () => {
-    expect(checkFiles([file("x.ts", 96, 50)], [])[0]).toMatch(/x\.ts has .* no coverage exception/);
-    expect(checkFiles([file("x.ts", 100, 48)], [])[0]).toMatch(/no coverage exception/);
+    expect(checkFiles([file(96, 50)], [])[0]).toMatch(/x\.ts has .* no coverage exception/);
+    expect(checkFiles([file(100, 48)], [])[0]).toMatch(/no coverage exception/);
   });
 
   it("accepts an excepted file at or above its own floor", () => {
-    expect(checkFiles([file("x.ts", 60, 30)], [exception()])).toEqual([]);
+    expect(checkFiles([file(50, 25)], [exception()])).toEqual([]);
   });
 
   it("fails an excepted file under its own floor", () => {
-    expect(checkFiles([file("x.ts", 40, 30)], [exception()])[0]).toMatch(/below its exception floor/);
-    expect(checkFiles([file("x.ts", 60, 20)], [exception()])[0]).toMatch(/below its exception floor/);
+    expect(checkFiles([file(40, 30)], [exception()])[0]).toMatch(/below its exception floor/);
+    expect(checkFiles([file(60, 20)], [exception()])[0]).toMatch(/below its exception floor/);
+  });
+
+  it("fails an exception floor that sits well below the measured figure", () => {
+    expect(checkFiles([file(90, 45)], [exception()])[0]).toMatch(/raise the exception floor/);
   });
 
   it("fails a stale exception", () => {
-    expect(checkFiles([file("x.ts", 100, 50)], [exception()])[0]).toMatch(/is stale/);
+    expect(checkFiles([file(100, 50)], [exception()])[0]).toMatch(/is stale/);
   });
 
   it("fails an exception for a file missing from the report", () => {
@@ -115,7 +136,7 @@ describe("checkFiles", () => {
   });
 
   it("fails an exception with an empty reason", () => {
-    const failures = checkFiles([file("x.ts", 60, 30)], [exception({ reason: "  " })]);
+    const failures = checkFiles([file(50, 25)], [exception({ reason: "  " })]);
     expect(failures).toEqual(["Coverage exception for x.ts has an empty reason."]);
   });
 });
@@ -147,30 +168,14 @@ describe("checkCoverage and runGate", () => {
   });
 
   function makeRoot(): string {
-    const root = mkdtempSync(join(tmpdir(), "coverage-gate-"));
+    const root = mkdtempSync(path.join(tmpdir(), "coverage-gate-"));
     roots.push(root);
     return root;
   }
 
-  function writeReport(root: string, workspace: string, linesHit: number, pct: number): void {
-    const directory = join(root, workspace, "coverage");
-    mkdirSync(directory, { recursive: true });
-    writeFileSync(
-      join(directory, "lcov.info"),
-      `SF:a.ts\nFNF:1\nFNH:1\nLF:100\nLH:${linesHit}\nend_of_record\n`,
-    );
-    const metric = { pct };
-    writeFileSync(
-      join(directory, "coverage-summary.json"),
-      JSON.stringify({
-        total: { lines: metric, functions: metric, branches: metric, statements: metric },
-      }),
-    );
-  }
-
   it("passes a clean workspace", () => {
     const root = makeRoot();
-    writeReport(root, "w", 100, 80);
+    writeReport(root, 100, 80);
     expect(checkCoverage(root, [], { w: FLAT }, ["w"])).toEqual([]);
   });
 
@@ -181,7 +186,7 @@ describe("checkCoverage and runGate", () => {
 
   it("reports a workspace without a floor", () => {
     const root = makeRoot();
-    writeReport(root, "w", 100, 80);
+    writeReport(root, 100, 80);
     expect(checkCoverage(root, [], {}, ["w"])).toEqual([
       "coverage-floors.json has no entry for w.",
     ]);
@@ -189,13 +194,32 @@ describe("checkCoverage and runGate", () => {
 
   it("collects file and floor failures together", () => {
     const root = makeRoot();
-    writeReport(root, "w", 50, 70);
+    writeReport(root, 50, 70);
     const failures = checkCoverage(root, [], { w: FLAT }, ["w"]);
     expect(failures.some((failure) => failure.includes("below its 80% floor"))).toBe(true);
     expect(failures.some((failure) => failure.includes("w/a.ts has"))).toBe(true);
   });
 
-  it("returns a failing exit code when reports are missing", () => {
-    expect(runGate(makeRoot())).toBe(1);
+  it("returns a failing exit code when reports are missing", async () => {
+    expect(await runGate(makeRoot(), [])).toBe(1);
+  });
+
+  it("fails a run whose explicit base ref does not resolve", async () => {
+    const root = makeRoot();
+    const failures = await checkAgainstBase(root, "no-such-ref", true, {
+      floors: {},
+      exceptions: [],
+    });
+    expect(failures).toEqual([
+      "Cannot read the coverage baseline: no-such-ref does not resolve to a commit.",
+    ]);
+  });
+
+  it("skips a default base ref that does not resolve", async () => {
+    const failures = await checkAgainstBase(makeRoot(), "no-such-ref", false, {
+      floors: {},
+      exceptions: [],
+    });
+    expect(failures).toEqual([]);
   });
 });

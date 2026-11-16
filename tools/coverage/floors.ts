@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import path from "node:path";
 
 /**
  * Minimum coverage percentages (0 to 100) one workspace must keep.
@@ -14,7 +14,12 @@ export interface CoverageFloor {
 /**
  * Absolute path of `coverage-floors.json`, the single file that holds every workspace floor.
  */
-export const COVERAGE_FLOORS_PATH = join(import.meta.dirname, "..", "..", "coverage-floors.json");
+export const COVERAGE_FLOORS_PATH = path.join(
+  import.meta.dirname,
+  "..",
+  "..",
+  "coverage-floors.json",
+);
 
 function isPercentage(value: unknown): value is number {
   return typeof value === "number" && value >= 0 && value <= 100;
@@ -40,6 +45,8 @@ function parseFloor(value: unknown, workspace: string): CoverageFloor {
 
 /**
  * Parses the text of a coverage floors file into one floor per workspace and throws on a malformed entry.
+ * @param text - The raw JSON text of the floors file.
+ * @returns One floor per workspace, keyed by repo-relative path.
  */
 export function parseCoverageFloors(text: string): Readonly<Record<string, CoverageFloor>> {
   const parsed: unknown = JSON.parse(text);
@@ -55,15 +62,19 @@ export function parseCoverageFloors(text: string): Readonly<Record<string, Cover
 
 /**
  * Reads and parses `coverage-floors.json`.
+ * @param floorsPath - Absolute path of the floors file.
+ * @returns One floor per workspace, keyed by repo-relative path.
  */
 export function loadCoverageFloors(
-  path: string = COVERAGE_FLOORS_PATH,
+  floorsPath: string = COVERAGE_FLOORS_PATH,
 ): Readonly<Record<string, CoverageFloor>> {
-  return parseCoverageFloors(readFileSync(path, "utf8"));
+  return parseCoverageFloors(readFileSync(floorsPath, "utf8"));
 }
 
 /**
  * The floor of one workspace, keyed by its repo-relative path (`.` for the root). Throws when it has no entry.
+ * @param workspace - Repo-relative path of the workspace.
+ * @returns The floor of that workspace.
  */
 export function floorFor(workspace: string): CoverageFloor {
   const floor = loadCoverageFloors()[workspace];

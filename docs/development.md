@@ -535,7 +535,8 @@ difference. Fix drift by re-applying from the files, never by editing live.
 The posture is recorded in [ADR 0001](adr/0001-public-repo-security-posture.md):
 squash-only merges into `develop` with linear history, merge commits only into
 `main`, signed commits, the strict required checks
-`CI passed`, `Validate PR title` and `Check markdown links`, private
+`CI passed`, `Validate PR title`, `Check markdown links`, `Analyze (javascript-typescript)`
+and `Analyze (actions)`, private
 vulnerability reporting, secret scanning with push protection, Dependabot
 security updates, immutable releases, `sha_pinning_required` and CodeQL (a
 workflow, with the default setup disabled). Change the ADR and the files

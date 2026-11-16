@@ -9,7 +9,7 @@ Decisions are recorded in
 
 To add one, copy the next number, write the file, and add a row below. The rules
 for editing and replacing ADRs are in
-[`AGENTS.md`](../../AGENTS.md#architecture-decision-records).
+[`AGENTS.md`](../../AGENTS.md#adrs).
 
 | Number | Title                                                                                                                                                        | Status   | Superseded or amended by |
 | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------------------------ |

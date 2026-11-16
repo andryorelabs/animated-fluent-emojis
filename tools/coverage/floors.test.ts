@@ -26,7 +26,7 @@ describe("parseCoverageFloors", () => {
 describe("committed coverage-floors.json", () => {
   it("has a floor for each coverage workspace", () => {
     const floors = loadCoverageFloors();
-    expect(Object.keys(floors).toSorted()).toEqual([
+    expect(Object.keys(floors).toSorted((left, right) => left.localeCompare(right))).toEqual([
       ".",
       "apps/assets",
       "apps/site",

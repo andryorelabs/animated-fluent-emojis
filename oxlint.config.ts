@@ -53,7 +53,9 @@ export default defineConfig({
   ignorePatterns: [
     "**/.astro/**",
     "**/dist/**",
-    "**/coverage/**",
+    "coverage/**",
+    "apps/*/coverage/**",
+    "packages/*/coverage/**",
     ".claude/worktrees/**",
     ...(isCorpusRun ? [] : ["**/.cache/**"]),
     "**/*.astro",

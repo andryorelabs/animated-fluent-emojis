@@ -134,6 +134,26 @@ describe("README top", () => {
   });
 });
 
+describe("AGENTS.md", () => {
+  const STANDARD_SECTIONS = [
+    "Layout",
+    "Running scripts",
+    "Rules",
+    "ADRs",
+    "Branch and commit conventions",
+    "Code comments",
+    "Quirks",
+  ];
+
+  test("keeps the standard sections in order", () => {
+    const headings = readRepositoryFile("AGENTS.md")
+      .split("\n")
+      .filter((line) => line.startsWith("## "))
+      .map((line) => line.slice(3).trim());
+    expect(headings).toEqual(STANDARD_SECTIONS);
+  });
+});
+
 describe("root documents", () => {
   test.each(["ACCESSIBILITY.md", "DESIGN.md"])("%s exists", (file) => {
     expect(existsSync(path.join(ROOT, file))).toBe(true);

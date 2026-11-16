@@ -1,9 +1,9 @@
 {
   ".": {
-    "lines": 84.94,
-    "functions": 89.27,
+    "lines": 85.7,
+    "functions": 89.9,
     "branches": 83.28,
-    "statements": 84.84
+    "statements": 85.53
   },
   "packages/animated-fluent-emojis": {
     "lines": 99.56,

@@ -109,7 +109,7 @@
     "fix": "bun run format:write && bun run lint:fix && bun run typecheck",
     "size": "turbo run size",
     "prepare": "husky",
-    "test": "turbo run test test:root && bun tools/coverage/check.ts",
+    "test": "bun tools/coverage/run-tests.ts",
     "test:root": "vitest run --coverage",
     "test:watch": "bun run --cwd packages/animated-fluent-emojis test:watch",
     "test:coverage": "bun run test",
