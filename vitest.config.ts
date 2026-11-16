@@ -1,12 +1,12 @@
 import { defineConfig } from "vitest/config";
 
-import { floorFor } from "./tools/coverage/floors.ts";
+import { coverageTimeout, floorFor } from "./tools/coverage/floors.ts";
 
 export default defineConfig({
   test: {
     environment: "node",
-    testTimeout: 30_000,
-    hookTimeout: 30_000,
+    testTimeout: coverageTimeout(5000),
+    hookTimeout: coverageTimeout(10_000),
     include: [
       "scripts/**/*.test.ts",
       "tools/**/*.test.ts",

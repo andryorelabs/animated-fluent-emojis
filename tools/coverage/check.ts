@@ -318,7 +318,7 @@ export async function runGate(
   repositoryRoot: string = path.resolve(import.meta.dirname, "../.."),
   argv: readonly string[] = process.argv.slice(2),
 ): Promise<number> {
-  const failures = checkCoverage(repositoryRoot);
+  const failures = argv.includes("--base-only") ? [] : checkCoverage(repositoryRoot);
   const { ref, explicit } = baseRefFrom(argv, process.env);
   failures.push(
     ...(await checkAgainstBase(repositoryRoot, ref, explicit, {

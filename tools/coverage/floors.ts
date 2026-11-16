@@ -83,3 +83,12 @@ export function floorFor(workspace: string): CoverageFloor {
   }
   return floor;
 }
+
+/**
+ * Returns a test or hook timeout that grows to 30 seconds when the run collects coverage, which slows every test.
+ * @param defaultMilliseconds - Timeout to use without coverage.
+ * @returns The timeout in milliseconds.
+ */
+export function coverageTimeout(defaultMilliseconds: number): number {
+  return process.argv.includes("--coverage") ? 30_000 : defaultMilliseconds;
+}

@@ -5,7 +5,7 @@ import { getViteConfig } from "astro/config";
 import { msw } from "msw/vite";
 import { defineConfig } from "vitest/config";
 
-import { floorFor } from "../../tools/coverage/floors.ts";
+import { coverageTimeout, floorFor } from "../../tools/coverage/floors.ts";
 
 const isCoverageRun = process.argv.includes("--coverage");
 
@@ -19,8 +19,8 @@ const astroProject = await getViteConfig({
 
 export default defineConfig({
   test: {
-    testTimeout: 30_000,
-    hookTimeout: 30_000,
+    testTimeout: coverageTimeout(5000),
+    hookTimeout: coverageTimeout(10_000),
     coverage: {
       provider: "v8",
       include: ["src/**/*.{ts,tsx,svelte}"],

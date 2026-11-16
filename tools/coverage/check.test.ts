@@ -204,6 +204,10 @@ describe("checkCoverage and runGate", () => {
     expect(await runGate(makeRoot(), [])).toBe(1);
   });
 
+  it("skips the report checks with --base-only", async () => {
+    expect(await runGate(makeRoot(), ["--base-only"])).toBe(0);
+  });
+
   it("fails a run whose explicit base ref does not resolve", async () => {
     const root = makeRoot();
     const failures = await checkAgainstBase(root, "no-such-ref", true, {
