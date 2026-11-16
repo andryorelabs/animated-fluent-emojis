@@ -1,6 +1,6 @@
 {
   "name": "animated-fluent-emojis",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Microsoft's animated Fluent emojis as one component. They play on load or hover, rest under reduced motion and hold their space while they load.",
   "author": "Andry Orellana <hello@andryore.dev>",
   "license": "MIT",

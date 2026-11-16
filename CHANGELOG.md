@@ -8,6 +8,12 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-16
+
+### Added
+
+- The published package now ships an `llms.txt` describing its API for LLM-based tools.
+
 ### Changed
 
 - `playOnHover` now only replays on hover for hover-capable, fine pointers
@@ -398,7 +404,8 @@ plus the release workflow fix below.
 
 - Initial release of the animated Fluent emoji React components.
 
-[Unreleased]: https://github.com/andryorelabs/animated-fluent-emojis/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/andryorelabs/animated-fluent-emojis/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/andryorelabs/animated-fluent-emojis/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/andryorelabs/animated-fluent-emojis/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/andryorelabs/animated-fluent-emojis/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/andryorelabs/animated-fluent-emojis/compare/v0.5.3...v0.6.0
