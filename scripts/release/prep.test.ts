@@ -206,7 +206,13 @@ describe("prepareRelease version ordering", () => {
 
 describe("runPrep", () => {
   it("rethrows an unexpected failure", () => {
-    expect(() => runPrep(["1.3.0"], fixture.root, () => {})).toThrow();
+    const lines: string[] = [];
+    expect(() =>
+      runPrep(["1.3.0"], fixture.root, (line) => {
+        lines.push(line);
+      }),
+    ).toThrow();
+    expect(lines).toEqual([]);
   });
 
   it("prints usage without a version", () => {
