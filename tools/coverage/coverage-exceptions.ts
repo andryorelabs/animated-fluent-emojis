@@ -45,7 +45,7 @@ export const COVERAGE_EXCEPTIONS: readonly CoverageException[] = [
   {
     file: "apps/site/src/content.config.ts",
     reason:
-      "build-time or browser-entry module that the Astro build, a CLI or the page script runs; no unit test imports it",
+      "Astro build-time module evaluated only through astro.config.ts and content.config.ts during the site build, so no Vitest process imports it",
     lines: 0,
     functions: 1,
   },
@@ -171,7 +171,7 @@ export const COVERAGE_EXCEPTIONS: readonly CoverageException[] = [
   {
     file: "apps/site/src/docs/i18n-status.ts",
     reason:
-      "build-time or browser-entry module that the Astro build, a CLI or the page script runs; no unit test imports it",
+      "Astro build-time module evaluated only through astro.config.ts and content.config.ts during the site build, so no Vitest process imports it",
     lines: 0,
     functions: 1,
   },
@@ -185,14 +185,14 @@ export const COVERAGE_EXCEPTIONS: readonly CoverageException[] = [
   {
     file: "apps/site/src/docs/loader.ts",
     reason:
-      "build-time or browser-entry module that the Astro build, a CLI or the page script runs; no unit test imports it",
+      "Astro build-time module evaluated only through astro.config.ts and content.config.ts during the site build, so no Vitest process imports it",
     lines: 0,
     functions: 0,
   },
   {
     file: "apps/site/src/docs/route-metadata.ts",
     reason:
-      "build-time or browser-entry module that the Astro build, a CLI or the page script runs; no unit test imports it",
+      "Astro build-time module evaluated only through astro.config.ts and content.config.ts during the site build, so no Vitest process imports it",
     lines: 0,
     functions: 0,
   },
@@ -265,12 +265,5 @@ export const COVERAGE_EXCEPTIONS: readonly CoverageException[] = [
       "Astro endpoint module that only the Astro build evaluates; the build-output and SEO tests run that build in a child process, so v8 never sees these lines",
     lines: 0,
     functions: 0,
-  },
-  {
-    file: "apps/assets/sync.ts",
-    reason:
-      "the `import.meta.url` entry guard runs only when the module is executed as a CLI entry",
-    lines: 128 / 132,
-    functions: 21 / 21,
   },
 ];
