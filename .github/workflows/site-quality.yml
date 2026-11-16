@@ -23,7 +23,8 @@ permissions:
 jobs:
   build:
     name: Build the site image
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 20
     permissions:
       contents: read
@@ -57,7 +58,8 @@ jobs:
   smoke:
     name: Smoke and build output audit
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 15
     permissions:
       contents: read
@@ -117,7 +119,8 @@ jobs:
   e2e:
     name: Accessibility and interaction specs
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 20
     permissions:
       contents: read
@@ -160,7 +163,17 @@ jobs:
 
       - name: Run the accessibility and interaction specs
         working-directory: apps/site
-        run: bun run test:e2e
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_FILE: ${{ runner.temp }}/site-e2e-report.json
+        run: bun run test:e2e --reporter=html,json
+
+      - name: Summarize tests that passed only on a retry
+        if: always()
+        continue-on-error: true
+        working-directory: apps/site
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_FILE: ${{ runner.temp }}/site-e2e-report.json
+        run: bun scripts/flaky-summary.ts "${PLAYWRIGHT_JSON_OUTPUT_FILE}"
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
@@ -175,7 +188,8 @@ jobs:
   visual:
     name: Visual regression snapshots
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 20
     permissions:
       contents: read
@@ -225,7 +239,8 @@ jobs:
   lighthouse:
     name: Lighthouse budget (shard ${{ matrix.shard }})
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 20
     permissions:
       contents: read
@@ -293,7 +308,8 @@ jobs:
     name: Smoke, accessibility and Lighthouse budget
     needs: [build, smoke, e2e, visual, lighthouse]
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 5
     permissions: {}
     steps:

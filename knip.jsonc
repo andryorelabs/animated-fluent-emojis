@@ -5,6 +5,7 @@
     ".": {
       "entry": ["scripts/**/*.ts", "tools/**/*.ts"],
       "ignore": ["lint-policy.d.mts"],
+      "ignoreDependencies": ["@oxlint/plugins", "lint-staged"],
     },
     "apps/assets": {
       "entry": ["*.test.ts"],

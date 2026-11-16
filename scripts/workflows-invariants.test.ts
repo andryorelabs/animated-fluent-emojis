@@ -3,14 +3,30 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, test } from "vitest";
 
+import { NODE_VERSION } from "../tools/toolchain/toolchain";
 import {
   listWorkflowFiles,
   readWorkflow,
   type Workflow,
   type WorkflowStep,
 } from "./workflow-files";
+import {
+  checksChangelogBeforeBuild,
+  codeqlInitsWithoutBuildModeNone,
+  concurrencyGroup,
+  deployJobsRunningOnRef,
+  jobsOffRunnerExpression,
+  jobsRunningOnPrivateRepositories,
+  pushBranches,
+  ROUTED_RUNS_ON,
+  type RuleWorkflow,
+  triggerNames,
+  uploadsSarif,
+} from "./workflow-rules";
 
 const FULL_SHA_PATTERN = /^[\da-f]{40}$/;
+const MAIN_REF = "refs/heads/main";
+const FEATURE_REF = "refs/heads/feat/some-change";
 
 function collectSteps(workflow: Workflow): WorkflowStep[] {
   return Object.values(workflow.jobs ?? {}).flatMap((job) => job.steps ?? []);
@@ -20,13 +36,6 @@ function collectUses(workflow: Workflow): string[] {
   const jobUses = Object.values(workflow.jobs ?? {}).flatMap((job) => job.uses ?? []);
   const stepUses = collectSteps(workflow).flatMap((step) => step.uses ?? []);
   return [...jobUses, ...stepUses];
-}
-
-function triggerNames(workflow: Workflow): string[] {
-  const trigger = workflow.on;
-  if (typeof trigger === "string") return [trigger];
-  if (Array.isArray(trigger)) return trigger.map(String);
-  return trigger !== null && typeof trigger === "object" ? Object.keys(trigger) : [];
 }
 
 const NODE_VERSION_FILE = ".node-version";
@@ -39,20 +48,6 @@ function jobsWithoutOwnPermissions(workflow: Workflow): string[] {
   return Object.entries(workflow.jobs ?? {})
     .filter(([, job]) => !isPermissionsMap(job.permissions))
     .map(([jobName]) => jobName);
-}
-
-type WorkflowWithConcurrency = Workflow & { readonly concurrency?: unknown };
-
-function concurrencyGroup({ concurrency }: WorkflowWithConcurrency): unknown {
-  if (typeof concurrency === "string") return concurrency;
-  return concurrency !== null && typeof concurrency === "object"
-    ? (concurrency as { readonly group?: unknown }).group
-    : undefined;
-}
-
-function isMissingConcurrencyGroup(workflow: WorkflowWithConcurrency): boolean {
-  const group = concurrencyGroup(workflow);
-  return typeof group !== "string" || group.trim() === "";
 }
 
 function describeNodeSource(step: WorkflowStep): string {
@@ -88,7 +83,7 @@ test(".node-version pins the Node major the workflows install", () => {
     fileURLToPath(new URL(`../${NODE_VERSION_FILE}`, import.meta.url)),
     "utf8",
   );
-  expect(nodeVersion.trim()).toBe("24");
+  expect(nodeVersion.trim()).toBe(NODE_VERSION);
 });
 
 describe("job permissions check", () => {
@@ -149,15 +144,15 @@ describe("Node version source check", () => {
   });
 });
 
-describe("concurrency check", () => {
-  test.each([
-    ["no concurrency", {}, true],
-    ["an empty group", { concurrency: { group: " " } }, true],
-    ["only cancel-in-progress", { concurrency: {} }, true],
-    ["a group", { concurrency: { group: "ci-${{ github.ref }}" } }, false],
-    ["the string shorthand", { concurrency: "ci" }, false],
-  ])("%s", (_label, workflow, missing) => {
-    expect(isMissingConcurrencyGroup(workflow)).toBe(missing);
+describe("runner expression check (standard v2 F3)", () => {
+  test("flags a job on a literal ubuntu-latest runner", () => {
+    const workflow: RuleWorkflow = {
+      jobs: {
+        literal: { "runs-on": "ubuntu-latest" },
+        routed: { "runs-on": ROUTED_RUNS_ON },
+      },
+    };
+    expect(jobsOffRunnerExpression(workflow)).toEqual(["literal"]);
   });
 });
 
@@ -172,12 +167,17 @@ describe.each(listWorkflowFiles())("%s", (fileName) => {
     expect(nodeSourceViolations(workflow)).toEqual([]);
   });
 
-  test.runIf(triggerNames(workflow).includes("pull_request"))(
-    "declares a concurrency group because pull requests trigger it",
-    () => {
-      expect(isMissingConcurrencyGroup(workflow)).toBe(false);
-    },
-  );
+  test("declares a concurrency group", () => {
+    expect(concurrencyGroup(workflow)).toBeTypeOf("string");
+  });
+
+  test("every job uses the standard runner expression", () => {
+    expect(jobsOffRunnerExpression(workflow)).toEqual([]);
+  });
+
+  test("no job deploys when started from a branch other than main", () => {
+    expect(deployJobsRunningOnRef(workflow, FEATURE_REF)).toEqual([]);
+  });
 
   test("does not use the pull_request_target trigger", () => {
     expect(triggerNames(workflow)).not.toContain("pull_request_target");
@@ -695,93 +695,63 @@ describe("ci.yml turbo wiring", () => {
   });
 });
 
-const ROUTED_RUNNER_EXPRESSION =
-  "${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}";
-
-const ROUTED_JOBS: ReadonlySet<string> = new Set([
-  "ci.yml:quality",
-  "ci.yml:test",
-  "ci.yml:package",
-  "ci.yml:bun-canary",
-  "ci.yml:commitlint",
-  "ci.yml:ci-passed",
-  "codeql.yml:analyze",
-  "scorecard.yml:analysis",
-  "release.yml:verify",
-  "release.yml:publish",
-  "sync-assets.yml:sync",
-  "sync-assets.yml:emoji-lists",
-  "sync-assets.yml:report-failure",
-  "sync-assets.yml:resolve-failure",
-  "deploy-site.yml:deploy",
-  "lint-pr.yml:validate-title",
-  "lint-docs.yml:check-links",
-  "lint-workflows.yml:lint",
-  "labels.yml:sync",
-]);
-
-const MATRIX_OS_PATTERN = /^\$\{\{\s*matrix\.os\s*\}\}$/;
-const FORBIDDEN_RUNNER_PATTERN = /\bvps-|self-hosted/;
-
-interface JobRunner {
-  readonly key: string;
-  readonly runsOn: unknown;
-  readonly source: string;
-}
-
-function normalizeWhitespace(value: string): string {
-  return value.replaceAll(/\s+/g, " ").trim();
-}
-
-function describeRunner(runsOn: unknown): string {
-  if (typeof runsOn === "string") return normalizeWhitespace(runsOn);
-  return runsOn === undefined ? "nothing" : JSON.stringify(runsOn);
-}
-
-function collectJobRunners(): JobRunner[] {
-  return listWorkflowFiles().flatMap((fileName) =>
-    Object.entries(readWorkflow(fileName).jobs ?? {}).map(([jobName, job]) => ({
-      key: `${fileName}:${jobName}`,
-      runsOn: (job as { readonly "runs-on"?: unknown })["runs-on"],
-      source: JSON.stringify(job),
-    })),
-  );
-}
-
-function findRunnerViolation({ key, runsOn, source }: JobRunner): string | undefined {
-  const runner = describeRunner(runsOn);
-  if (FORBIDDEN_RUNNER_PATTERN.test(runner)) {
-    return `job "${key}" uses a forbidden runner label: ${runner}`;
-  }
-  if (ROUTED_JOBS.has(key)) {
-    return runner === ROUTED_RUNNER_EXPRESSION
-      ? undefined
-      : `routed job "${key}" must use the standard runner expression, got ${runner}`;
-  }
-  if (source.includes("BLACKSMITH_RUNNER")) {
-    return `job "${key}" is not routed and must not read vars.BLACKSMITH_RUNNER`;
-  }
-  return runsOn === "ubuntu-latest" || MATRIX_OS_PATTERN.test(runner)
-    ? undefined
-    : `job "${key}" must run on a literal ubuntu-latest or matrix.os, got ${runner}`;
-}
-
-describe("runner routing (standard v1 R9)", () => {
-  const runners = collectJobRunners();
-
-  test("every routed job exists", () => {
-    const keys = runners.map((runner) => runner.key);
-    for (const routedJob of ROUTED_JOBS) {
-      expect(keys, routedJob).toContain(routedJob);
-    }
+describe("standard v2 S11 triggers and guards", () => {
+  test("codeql.yml can be started by hand, needs no build and skips private repositories", () => {
+    const workflow = readWorkflow("codeql.yml");
+    expect(triggerNames(workflow)).toContain("workflow_dispatch");
+    expect(codeqlInitsWithoutBuildModeNone(workflow)).toEqual([]);
+    expect(jobsRunningOnPrivateRepositories(workflow)).toEqual([]);
   });
 
-  test.each(runners.map((runner) => [runner.key, runner] as const))(
-    "%s runs on its expected runner",
-    (_key, runner) => {
-      expect(findRunnerViolation(runner)).toBeUndefined();
-    },
-  );
+  test("scorecard.yml runs on main pushes and branch protection changes, uploads SARIF and skips private repositories", () => {
+    const workflow = readWorkflow("scorecard.yml");
+    expect(pushBranches(workflow)).toEqual(["main"]);
+    expect(triggerNames(workflow)).toContain("branch_protection_rule");
+    expect(uploadsSarif(workflow)).toBe(true);
+    expect(jobsRunningOnPrivateRepositories(workflow)).toEqual([]);
+  });
+
+  test("release.yml declares a concurrency group and checks the CHANGELOG before the build", () => {
+    const workflow = readWorkflow("release.yml");
+    expect(concurrencyGroup(workflow)).toBeTypeOf("string");
+    expect(checksChangelogBeforeBuild(workflow.jobs?.verify ?? {})).toBe(true);
+  });
+
+  test.each([
+    ["sync-assets.yml", ["sync"]],
+    ["deploy-site.yml", ["deploy"]],
+  ])("%s deploys only from main", (fileName, deployJobs) => {
+    const workflow = readWorkflow(fileName);
+    expect(deployJobsRunningOnRef(workflow, MAIN_REF)).toEqual(deployJobs);
+    expect(deployJobsRunningOnRef(workflow, FEATURE_REF)).toEqual([]);
+  });
+
+  test("lint-workflows.yml runs on pull requests and on pushes to the trunk branches", () => {
+    const workflow = readWorkflow("lint-workflows.yml");
+    expect(pushBranches(workflow)).toEqual(["main", "develop"]);
+    expect(triggerNames(workflow)).toContain("pull_request");
+  });
+});
+
+describe("site-quality.yml flaky-on-retry summary", () => {
+  const steps = readWorkflow("site-quality.yml").jobs?.e2e?.steps ?? [];
+  const specsIndex = steps.findIndex((step) => step.run?.includes("bun run test:e2e"));
+  const summaryIndex = steps.findIndex((step) => step.run?.includes("scripts/flaky-summary.ts"));
+  const specs = steps[specsIndex];
+  const summary = steps[summaryIndex];
+
+  test("the e2e specs also write a Playwright JSON report", () => {
+    expect(specs?.run).toContain("--reporter=html,json");
+    expect(specs?.env?.PLAYWRIGHT_JSON_OUTPUT_FILE).toBeTypeOf("string");
+  });
+
+  test("summarizes the same report after the specs, even when they fail", () => {
+    expect(summaryIndex).toBeGreaterThan(specsIndex);
+    expect(summary?.if).toBe("always()");
+    expect(summary?.["continue-on-error"]).toBe(true);
+    expect(summary?.env?.PLAYWRIGHT_JSON_OUTPUT_FILE).toBe(specs?.env?.PLAYWRIGHT_JSON_OUTPUT_FILE);
+    expect(summary?.run).not.toContain("${{");
+  });
 });
 
 describe("site-quality.yml aggregate job", () => {

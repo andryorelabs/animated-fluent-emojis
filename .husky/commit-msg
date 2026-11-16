@@ -1,1 +1,1 @@
-bunx commitlint --edit $1
+bun "$(dirname "$0")/../tools/hooks/commit-message.ts" "$1"
