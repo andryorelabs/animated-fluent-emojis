@@ -3,7 +3,7 @@
 Releases are manual and tag-driven. Pushing a signed `v*` tag publishes the
 package to npm and creates the GitHub Release.
 
-1. Run `bun scripts/release/prep.ts x.y.z`. It bumps the `version` field in
+1. Run `bun run release:prep x.y.z`. It bumps the `version` field in
    `packages/animated-fluent-emojis/package.json`, moves `[Unreleased]` in
    `CHANGELOG.md` into a new `## [x.y.z] - YYYY-MM-DD` section, leaves an empty
    `## [Unreleased]` above it and updates the compare links at the bottom of the

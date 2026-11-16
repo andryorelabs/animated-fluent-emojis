@@ -310,7 +310,7 @@ export function runPrep(
 ): number {
   const [version, ...extra] = commandArguments;
   if (!version || extra.length > 0) {
-    log("Usage: bun scripts/release/prep.ts <version>, for example 0.9.0");
+    log("Usage: bun run release:prep <version>, for example 0.9.0");
     return 1;
   }
   try {

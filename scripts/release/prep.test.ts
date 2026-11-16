@@ -222,7 +222,7 @@ describe("runPrep", () => {
         lines.push(line);
       }),
     ).toBe(1);
-    expect(lines.join("\n")).toContain("Usage: bun scripts/release/prep.ts <version>");
+    expect(lines.join("\n")).toContain("Usage: bun run release:prep <version>");
   });
 
   it("prints usage with extra arguments", () => {
