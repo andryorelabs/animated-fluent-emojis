@@ -146,7 +146,7 @@
     "axe-core": "4.14.0",
     "msw": "3.0.4",
     "playwright": "1.64.1",
-    "preact": "11.1.1",
+    "preact": "11.2.0",
     "publint": "0.3.25",
     "react": "catalog:",
     "react-dom": "catalog:",
