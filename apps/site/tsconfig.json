@@ -12,6 +12,7 @@
     "playwright.visual.config.ts",
     "e2e/**/*",
     "e2e-visual/**/*",
+    "scripts/**/*.ts",
     "src/**/*",
     "src/pages/.well-known/*"
   ],
