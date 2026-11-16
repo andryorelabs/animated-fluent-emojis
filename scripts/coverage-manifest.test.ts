@@ -87,18 +87,8 @@ const EXEMPTIONS: Readonly<Record<string, string>> = {
     "Styled wrapper over the Base UI tabs, covered by EmojiDetail.test.tsx and the gallery e2e spec.",
   "apps/site/src/docs/components/DocumentationPagination.astro":
     "Presentational Astro override with no logic of its own, exercised in a real browser by the accessibility e2e spec.",
-  "apps/site/src/docs/code-focus.ts":
-    "Browser-only DOM tweak that adds a tab stop to code frames, exercised in a real browser by the accessibility e2e spec.",
-  "apps/site/src/docs/install-block-client.ts":
-    "Browser-only tab switcher over the package manager store, which is tested in apps/site/src/highlight.",
   "apps/site/src/components/NotFoundPage.astro": ASTRO_PRESENTATION_REASON,
   "apps/site/src/layouts/Layout.astro": ASTRO_PRESENTATION_REASON,
-  "apps/site/src/pages/robots.txt.ts":
-    "Thin endpoint that feeds contributions to buildRobotsTxt, tested in seo/robots.test.ts.",
-  "apps/site/src/pages/.well-known/security.txt.ts":
-    "Thin endpoint that feeds buildSecurityTxt, tested in seo/security-txt.test.ts.",
-  "apps/site/src/pages/sitemap.xml.ts":
-    "Thin endpoint that feeds route sources to buildSitemapXml, tested in seo/sitemap.test.ts.",
   "apps/site/src/scripts/theme-keys.ts":
     "Constants-only module shared by the init script and the toggle, exercised by theme-init.test.ts.",
   "apps/site/src/gallery/index.ts":
@@ -115,19 +105,12 @@ const EXEMPTIONS: Readonly<Record<string, string>> = {
   "apps/site/src/docs/status.ts": "Report formatter, exercised by catalog.test.ts.",
   "apps/site/src/docs/sitemap.ts":
     "Docs sitemap source, exercised through the registered sources in seo/sources.test.ts.",
-  "apps/site/src/pages/[...slug].md.ts": ASTRO_PAGE_REASON,
   "apps/site/src/pages/emojis/index.astro": ASTRO_PAGE_REASON,
   "apps/site/src/pages/[locale]/emojis/index.astro": ASTRO_PAGE_REASON,
-  "apps/site/src/pages/search-index/[locale].json.ts":
-    "Thin endpoint that feeds buildSearchIndex, tested in gallery/search.test.ts.",
   "apps/site/src/components/GalleryPage.astro": ASTRO_PRESENTATION_REASON,
   "apps/site/src/components/EmojiPage.astro": ASTRO_PRESENTATION_REASON,
   "apps/site/src/pages/emojis/[slug].astro": ASTRO_PAGE_REASON,
   "apps/site/src/pages/[locale]/emojis/[slug].astro": ASTRO_PAGE_REASON,
-  "apps/site/src/pages/og/[slug].png.ts":
-    "Thin endpoint that feeds composeOgImage, tested in emoji-pages/og-image.test.ts and the emoji-pages build-output test.",
-  "apps/site/src/pages/og-site.png.ts":
-    "Thin endpoint that feeds composeOgImage the site name, tested in emoji-pages/og-image.test.ts and the distribution audit.",
   "apps/site/src/docs/route-metadata.ts":
     "Starlight route middleware that feeds buildSocialMeta and buildStructuredData, tested in seo/ and covered by the distribution audit.",
   "apps/site/src/docs/components/DocumentationHeader.astro": ASTRO_PRESENTATION_REASON,
@@ -187,11 +170,29 @@ const allFiles = SOURCE_ROOTS.flatMap((root) =>
 const modules = allFiles.filter((file) => isSourceModule(file));
 const testFiles = new Set(allFiles.filter((file) => isTestFile(file)));
 
+/**
+ * Endpoint modules under `apps/site/src/pages` and their tests. Astro would route a bare `<name>.test.ts`
+ * there, so each test is prefixed with `_` and cannot be derived from the module name.
+ */
+const PAGE_ENDPOINT_TESTS: Readonly<Record<string, string>> = {
+  "apps/site/src/pages/robots.txt.ts": "apps/site/src/pages/_robots.test.ts",
+  "apps/site/src/pages/sitemap.xml.ts": "apps/site/src/pages/_sitemap.test.ts",
+  "apps/site/src/pages/.well-known/security.txt.ts":
+    "apps/site/src/pages/.well-known/_security.test.ts",
+  "apps/site/src/pages/[...slug].md.ts": "apps/site/src/pages/_slug-md.test.ts",
+  "apps/site/src/pages/search-index/[locale].json.ts":
+    "apps/site/src/pages/search-index/_locale.test.ts",
+  "apps/site/src/pages/og/[slug].png.ts": "apps/site/src/pages/og/_slug.test.ts",
+  "apps/site/src/pages/og-site.png.ts": "apps/site/src/pages/_og-site.test.ts",
+};
+
 const hasColocatedTest = (file: string) => {
   const base = file.replace(/\.(tsx?|mjs|svelte|astro)$/, "");
+  const endpointTest = PAGE_ENDPOINT_TESTS[file];
   return [
     ...["ts", "tsx"].map((extension) => `${base}.test.${extension}`),
-    `${base}.dom.test.tsx`,
+    ...["ts", "tsx"].map((extension) => `${base}.dom.test.${extension}`),
+    ...(endpointTest === undefined ? [] : [endpointTest]),
   ].some((candidate) => testFiles.has(candidate));
 };
 
