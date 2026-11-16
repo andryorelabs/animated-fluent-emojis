@@ -43,7 +43,7 @@ and this project adheres to
 
 ## [0.7.0] - 2026-10-06
 
-### Removed
+### Changed
 
 - **Breaking:** the root `Emoji` export, deprecated in 0.6. Change the import
   path to `animated-fluent-emojis/react`, nothing else; props and behavior are
@@ -57,8 +57,6 @@ and this project adheres to
 - **Breaking:** the `EmojiProps` type at the root. Import it from
   `animated-fluent-emojis/react`. `configureEmojis`, `preloadEmojis`,
   `createEmoji`, `EmojiId`, `DiverseEmojiId` and `SkinTone` stay at the root.
-
-### Changed
 
 - `react` and `react-dom` are now optional peer dependencies, so Vue, Svelte and
   Astro installs no longer get a React peer warning.
@@ -96,8 +94,6 @@ and this project adheres to
 - The playback logic moved to a framework-free core shared by every adapter, and
   one conformance suite checks that they behave alike.
 
-### Deprecated
-
 - The root `Emoji` export, removed in 0.7. Migrate by changing the import path
   to `animated-fluent-emojis/react`, nothing else. `configureEmojis` and
   `preloadEmojis` stay at the root. In 0.7 `react` also becomes an optional peer
@@ -115,6 +111,13 @@ and this project adheres to
   generates its rasters.
 
 ## [0.5.2] - 2026-10-05
+
+### Changed
+
+- Renovate manages dependency updates; `@types/node` is held below 25 and the
+  `npm` pin in the workflows is tracked.
+- The shared manifest chunk has a stable name, `chunks/manifest-[hash].js`.
+- Bumped `eslint-plugin-unicorn` to 77 and `@types/node` to 24.
 
 ### Fixed
 
@@ -166,13 +169,6 @@ and this project adheres to
 - Prereleases are published as GitHub prereleases, never "Latest", and numeric
   prereleases publish under the `next` dist tag.
 - `engines.bun` is removed from the published package.
-
-### Changed
-
-- Renovate manages dependency updates; `@types/node` is held below 25 and the
-  `npm` pin in the workflows is tracked.
-- The shared manifest chunk has a stable name, `chunks/manifest-[hash].js`.
-- Bumped `eslint-plugin-unicorn` to 77 and `@types/node` to 24.
 
 ## [0.5.1] - 2026-10-05
 
@@ -255,6 +251,12 @@ plus the release workflow fix below.
   of converting them again, decodes each official source once, and fetches with
   retries, backoff and a 60 second timeout.
 
+- If you relied on an empty box when a sprite sheet fails, pass
+  `fallback={null}`.
+- An unknown `id` now renders `fallback`; it still renders nothing by default.
+- If you mirror the asset site, publish the `v1` layout with the 0.5 pipeline;
+  see [ADR 0010](docs/adr/0010-versioned-asset-layout-and-live-seeding.md).
+
 ### Fixed
 
 - Changing the `id` of a mounted `Emoji` resets its animation state, so the new
@@ -271,21 +273,11 @@ plus the release workflow fix below.
 - The release workflow passed the tarball to `npm publish` without a leading
   `./`, so npm read it as a GitHub shorthand and the 0.5.0 publish failed.
 
-### Security
-
 - The release workflow gives `id-token: write` only to the job that publishes,
   which installs nothing and runs no repository scripts.
 - Pipeline validation rejects undecodable or oversized sprites, and the removal
   guard stops a sync that would drop more than 5% of the catalog before any
   conversion.
-
-### Migration
-
-- If you relied on an empty box when a sprite sheet fails, pass
-  `fallback={null}`.
-- An unknown `id` now renders `fallback`; it still renders nothing by default.
-- If you mirror the asset site, publish the `v1` layout with the 0.5 pipeline;
-  see [ADR 0010](docs/adr/0010-versioned-asset-layout-and-live-seeding.md).
 
 ## [0.4.0] - 2026-10-05
 
@@ -323,15 +315,6 @@ plus the release workflow fix below.
 - The asset build validates every animation and sprite sheet and fails on any
   problem.
 
-### Fixed
-
-- Emojis animate again: no per-emoji `<style>` with a
-  `transform: ... !important` rule overrides the keyframe anymore.
-- A failed manifest fetch is retried on the next render instead of leaving every
-  emoji blank.
-
-### Migration
-
 - Make sure `animated-fluent-emojis/style.css` is imported: it carries the
   animation keyframes.
 - If you styled or tested around `null` while loading, handle the placeholder
@@ -340,6 +323,13 @@ plus the release workflow fix below.
   the `@2x` sheets, and call `configureEmojis` before the first render.
 - To get type checking against published ids, type your ids as `EmojiId`; plain
   `string` values keep compiling.
+
+### Fixed
+
+- Emojis animate again: no per-emoji `<style>` with a
+  `transform: ... !important` rule overrides the keyframe anymore.
+- A failed manifest fetch is retried on the next render instead of leaving every
+  emoji blank.
 
 ## [0.3.0] - 2026-10-05
 
