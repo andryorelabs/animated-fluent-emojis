@@ -40,7 +40,6 @@ Vue 3.3 이상이 필요합니다. `Emoji`는 아래 props를 camelCase로 받�
 ```vue
 <script setup lang="ts">
 import { Emoji } from "animated-fluent-emojis/vue";
-
 import "animated-fluent-emojis/style.css";
 
 const handlePlaybackEnd = () => {
