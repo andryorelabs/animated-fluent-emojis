@@ -162,6 +162,13 @@ describe("fixture files", () => {
     const root = writeTree(["src/a.ts"]);
     expect(() => materializeFixtures(tree, root)).toThrow(/overwrite/);
   });
+
+  test("materializeFixtures cleans up and rethrows when a copy fails", () => {
+    const tree = writeTree(["a.ts.fixture", "z/b.ts.fixture"]);
+    const root = writeTree(["z"]);
+    expect(() => materializeFixtures(tree, root)).toThrow();
+    expect(existsSync(path.join(root, "a.ts"))).toBe(false);
+  });
 });
 
 describe("toSectionReport and summarizeSection", () => {
@@ -205,6 +212,15 @@ describe("toSectionReport and summarizeSection", () => {
       (rule) => rule.replace("@x/", ""),
     );
     expect(section.exitCode).toBe(0);
+  });
+
+  test("reports harness problems", () => {
+    const section = toSectionReport(
+      { ...raw, problems: ["config failed to load"] },
+      [],
+      typedRules,
+    );
+    expect(summarizeSection(section)).toContain("HARNESS: config failed to load");
   });
 
   test("says so when the candidate is absent", () => {

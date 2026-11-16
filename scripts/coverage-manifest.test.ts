@@ -30,8 +30,6 @@ const EXEMPTIONS: Readonly<Record<string, string>> = {
     "Barrel re-exporting hooks that have their own tests.",
   "packages/animated-fluent-emojis/src/utils/index.ts":
     "Barrel re-exporting utils, covered by emoji-manifest.test.ts.",
-  "packages/animated-fluent-emojis/src/utils/is-development.ts":
-    "Covered through the development warnings in emoji-manifest.store.test.ts and Emoji.correctness.test.tsx.",
   "packages/animated-fluent-emojis/src/element/index.ts":
     "Entry that registers the element and re-exports its types, covered by fluent-emoji.test.ts.",
   "packages/animated-fluent-emojis/src/element/types.ts":
@@ -88,12 +86,6 @@ const EXEMPTIONS: Readonly<Record<string, string>> = {
   "apps/site/src/home/sections/FaqSection.astro": ASTRO_PRESENTATION_REASON,
   "apps/site/src/home/sections/ClosingPanel.astro": ASTRO_PRESENTATION_REASON,
   "apps/site/src/home/sections/Dock.astro": ASTRO_PRESENTATION_REASON,
-  "apps/site/src/home/sections/styles.ts":
-    "Constants-only module with the Tailwind class strings shared by the home sections.",
-  "apps/site/src/components/ui/input.tsx":
-    "Styled wrapper over the Base UI input, exercised in a real browser through the gallery search.",
-  "apps/site/src/components/ui/sheet.tsx":
-    "Styled wrapper over the Base UI dialog, exercised in a real browser through the gallery mobile sheet.",
   "apps/site/src/components/ui/tabs.tsx":
     "Styled wrapper over the Base UI tabs, covered by EmojiDetail.test.tsx and the gallery e2e spec.",
   "apps/site/src/docs/components/DocumentationPagination.astro":
@@ -108,12 +100,6 @@ const EXEMPTIONS: Readonly<Record<string, string>> = {
     "Thin endpoint that feeds contributions to buildRobotsTxt, tested in seo/robots.test.ts.",
   "apps/site/src/pages/.well-known/security.txt.ts":
     "Thin endpoint that feeds buildSecurityTxt, tested in seo/security-txt.test.ts.",
-  "apps/site/src/scripts/interaction-directive.ts":
-    "Thin Astro client directive that delegates to hydrateOnInteraction, covered by hydrate-on-interaction.test.ts.",
-  "apps/site/src/scripts/interaction-integration.ts":
-    "Astro integration that registers the directive at config time, exercised by every site build.",
-  "apps/site/src/scripts/render-security-headers.ts":
-    "Docker build step that reads dist and writes the header snippet; its logic lives in security-headers.ts, tested in security-headers.test.ts.",
   "apps/site/src/pages/sitemap.xml.ts":
     "Thin endpoint that feeds route sources to buildSitemapXml, tested in seo/sitemap.test.ts.",
   "apps/site/src/scripts/theme-keys.ts":
@@ -148,8 +134,6 @@ const EXEMPTIONS: Readonly<Record<string, string>> = {
     "Thin endpoint that feeds composeOgImage the site name, tested in emoji-pages/og-image.test.ts and the distribution audit.",
   "apps/site/src/docs/route-metadata.ts":
     "Starlight route middleware that feeds buildSocialMeta and buildStructuredData, tested in seo/ and covered by the distribution audit.",
-  "apps/site/src/emoji-pages/data.ts":
-    "Memoized join of the public index and annotations, both tested in gallery/, and exercised by the emoji-pages build-output test.",
   "apps/site/src/components/gallery/ChipGroup.tsx": GALLERY_ISLAND_REASON,
   "apps/site/src/components/gallery/GallerySidebar.tsx": GALLERY_ISLAND_REASON,
   "apps/site/src/components/gallery/SegmentedControl.tsx": GALLERY_ISLAND_REASON,
@@ -213,7 +197,10 @@ const testFiles = new Set(allFiles.filter((file) => isTestFile(file)));
 
 const hasColocatedTest = (file: string) => {
   const base = file.replace(/\.(tsx?|mjs|svelte|astro)$/, "");
-  return ["ts", "tsx"].some((extension) => testFiles.has(`${base}.test.${extension}`));
+  return [
+    ...["ts", "tsx"].map((extension) => `${base}.test.${extension}`),
+    `${base}.dom.test.tsx`,
+  ].some((candidate) => testFiles.has(candidate));
 };
 
 test("every module has a colocated test or a written exemption", () => {

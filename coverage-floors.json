@@ -1,9 +1,9 @@
 {
   ".": {
-    "lines": 88.63,
-    "functions": 91.8,
-    "branches": 86.43,
-    "statements": 88.44
+    "lines": 90.19,
+    "functions": 93.45,
+    "branches": 87.9,
+    "statements": 89.49
   },
   "packages/animated-fluent-emojis": {
     "lines": 99.56,
@@ -12,15 +12,15 @@
     "statements": 97.75
   },
   "apps/site": {
-    "lines": 77.97,
-    "functions": 70.67,
-    "branches": 74.72,
-    "statements": 77.25
+    "lines": 80.68,
+    "functions": 73.9,
+    "branches": 76.66,
+    "statements": 79.7
   },
   "apps/assets": {
-    "lines": 98.58,
+    "lines": 99.37,
     "functions": 99.71,
-    "branches": 90.04,
-    "statements": 97.73
+    "branches": 90.62,
+    "statements": 98.54
   }
 }

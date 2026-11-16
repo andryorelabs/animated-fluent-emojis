@@ -66,6 +66,19 @@ describe("parseAccepted", () => {
     ).toThrow(/reason/);
   });
 
+  test("rejects an entry without a file or rule", () => {
+    expect(() => parseAccepted(JSON.stringify([{ rule: "r", reason: "why" }]))).toThrow(
+      /string "file" and "rule"/,
+    );
+    expect(() => parseAccepted(JSON.stringify([null]))).toThrow(/string "file" and "rule"/);
+  });
+
+  test("rejects a non-numeric line", () => {
+    expect(() =>
+      parseAccepted(JSON.stringify([{ file: "a.ts", line: "1", rule: "r", reason: "why" }])),
+    ).toThrow(/"line" must be a number/);
+  });
+
   test("rejects a non-array document", () => {
     expect(() => parseAccepted("{}")).toThrow(/array/);
   });
