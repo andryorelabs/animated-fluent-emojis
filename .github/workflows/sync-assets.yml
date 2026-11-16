@@ -325,7 +325,7 @@ jobs:
       vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 5
     needs: [sync, emoji-lists]
-    if: ${{ !failure() && !cancelled() }}
+    if: ${{ github.ref == 'refs/heads/main' && !failure() && !cancelled() }}
     permissions:
       issues: write
     steps:
