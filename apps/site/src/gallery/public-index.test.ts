@@ -94,6 +94,36 @@ describe("public index validation", () => {
     ).rejects.toThrow(/cause: ENOTFOUND/);
   });
 
+  it("reports a string cause and a failure without a cause", async () => {
+    await expect(
+      fetchPublicIndex(
+        () => Promise.reject(new TypeError("fetch failed", { cause: "timeout" })),
+        FILES_SITE_ORIGIN,
+        0,
+      ),
+    ).rejects.toThrow(/cause: timeout/);
+    await expect(
+      fetchPublicIndex(() => Promise.reject(new Error("offline")), FILES_SITE_ORIGIN, 0),
+    ).rejects.not.toThrow(/cause:/);
+  });
+
+  it("waits the default growing delay between attempts", async () => {
+    vi.useFakeTimers();
+    try {
+      const flaky = vi
+        .fn<(url: string) => Promise<Response>>()
+        .mockRejectedValueOnce(new Error("offline"))
+        .mockResolvedValue(Response.json(publicIndexFixture));
+      const pending = fetchPublicIndex(flaky);
+      await vi.advanceTimersByTimeAsync(500);
+      const loaded = await pending;
+      expect(flaky).toHaveBeenCalledTimes(2);
+      expect(loaded.length).toBeGreaterThan(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("does not retry an HTTP error", async () => {
     const failing = vi.fn(() => Promise.resolve(new Response("", { status: 503 })));
     await expect(fetchPublicIndex(failing, FILES_SITE_ORIGIN, 0)).rejects.toThrow(/503/);
