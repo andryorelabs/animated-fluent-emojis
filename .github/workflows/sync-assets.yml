@@ -25,7 +25,9 @@ permissions:
 jobs:
   sync:
     name: Detect, build and deploy
-    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 90
     permissions:
       contents: read
@@ -187,7 +189,8 @@ jobs:
 
   emoji-lists:
     name: Refresh emoji lists
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 15
     needs: sync
     permissions:
@@ -292,7 +295,8 @@ jobs:
 
   report-failure:
     name: Report a failed sync
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 5
     needs: [sync, emoji-lists]
     if: failure()
@@ -317,7 +321,8 @@ jobs:
 
   resolve-failure:
     name: Close the failure issue after a successful sync
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 5
     needs: [sync, emoji-lists]
     if: ${{ !failure() && !cancelled() }}
