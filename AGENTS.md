@@ -34,13 +34,39 @@ never use another package manager (this repo uses `bun.lock`). Read
 - `bun run build` — **do not run unless explicitly asked.** It is slow; `check`
   already builds once through `lint:package`.
 
-## Architecture decision records
+## Rules
+
+- Strict TypeScript, ESM-only, bun only: never another package manager.
+- Never lower a coverage threshold or floor, and never add a coverage `exclude`.
+- Never run `npm publish` locally, and never edit generated files by hand.
+
+### Escalating a `@shadcn/lint` finding
+
+When `bun run lint` reports a `shadcn/*` finding (e.g. `shadcn/no-restyle`) on a
+site component you're changing (Oxlint for `ts` and `tsx`, ESLint for `.astro`),
+work up this ladder — never disable the rule file-wide or project-wide:
+
+1. Use an existing variant in `apps/site/src/components/ui` that already covers
+   the styling you need
+   ([ADR 0019](docs/adr/0019-shadcn-on-base-ui-for-the-website.md)).
+2. Add a new variant to the component if no existing one fits.
+3. Add or change a `no-restyle` contract in `shadcnNoRestyleContracts`
+   (`lint-policy.mjs`, shared by `oxlint.config.ts` and `eslint.config.mjs`),
+   encoding one real, bounded design decision. Detail:
+   [`docs/development.md#adding-a-shadcnlint-contract`](docs/development.md#adding-a-shadcnlint-contract).
+4. Last resort: a single-line `oxlint-disable-next-line -- <reason>` (or
+   `eslint-disable-next-line` in `.astro`) on the exact offending line. Never a
+   file-level or project-level disable.
+
+## ADRs
 
 A new ADR must add its row to [`docs/adr/README.md`](docs/adr/README.md);
 `docs/adr/adr-invariants.test.ts` fails when an ADR is missing from the index.
 ADRs are living documents: edit one in place to keep it true and add a
-`Revised: YYYY-MM-DD, what changed` line under its `Date:`. A reversed or
-replaced decision gets a new ADR.
+`Revised: YYYY-MM-DD, what changed` line under its `Date:`. A reversed decision
+is revised in place with a `Revised:` line, never a new ADR. Start from
+[`docs/adr/0000-template.md`](docs/adr/0000-template.md), which the invariant
+test exempts from the index.
 
 ## Branch and commit conventions
 
@@ -62,25 +88,7 @@ non-JSDoc `/* */` comments, except lint or type directives. Detail:
 [`docs/development.md#code-documentation`](docs/development.md#code-documentation),
 [ADR 0002](docs/adr/0002-tsdoc-only-code-comments.md).
 
-## Escalating a `@shadcn/lint` finding
-
-When `bun run lint` reports a `shadcn/*` finding (e.g. `shadcn/no-restyle`) on a
-site component you're changing (Oxlint for `ts` and `tsx`, ESLint for `.astro`),
-work up this ladder — never disable the rule file-wide or project-wide:
-
-1. Use an existing variant in `apps/site/src/components/ui` that already covers
-   the styling you need
-   ([ADR 0019](docs/adr/0019-shadcn-on-base-ui-for-the-website.md)).
-2. Add a new variant to the component if no existing one fits.
-3. Add or change a `no-restyle` contract in `shadcnNoRestyleContracts`
-   (`lint-policy.mjs`, shared by `oxlint.config.ts` and `eslint.config.mjs`),
-   encoding one real, bounded design decision. Detail:
-   [`docs/development.md#adding-a-shadcnlint-contract`](docs/development.md#adding-a-shadcnlint-contract).
-4. Last resort: a single-line `oxlint-disable-next-line -- <reason>` (or
-   `eslint-disable-next-line` in `.astro`) on the exact offending line. Never a
-   file-level or project-level disable.
-
-## Quirks and gotchas
+## Quirks
 
 - Library rules (test projects and Playwright, MSW manifest mocking, ESM-only,
   `style.css`, and the coverage manifest requirement for new modules) live in

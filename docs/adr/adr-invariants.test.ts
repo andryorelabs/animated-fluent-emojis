@@ -3,6 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
+  ADR_TEMPLATE_FILE_NAME,
   findAdrViolations,
   findIndexColumnViolations,
   findRelationViolations,
@@ -50,6 +51,13 @@ describe("ADR invariants", () => {
     const indexContent = readFileSync(path.join(ADR_DIRECTORY, "README.md"), "utf8");
     expect(findAdrViolations(adrs, indexContent)).toEqual([]);
   });
+
+  it("ships the template and keeps it out of the index", () => {
+    const adrs = readAdrs();
+    expect(adrs.map((adr) => adr.fileName)).toContain(ADR_TEMPLATE_FILE_NAME);
+    const indexContent = readFileSync(path.join(ADR_DIRECTORY, "README.md"), "utf8");
+    expect(indexContent).not.toContain(ADR_TEMPLATE_FILE_NAME);
+  });
 });
 
 describe("findAdrViolations", () => {
@@ -57,6 +65,23 @@ describe("findAdrViolations", () => {
 
   it("accepts a valid set", () => {
     expect(findAdrViolations([fixtureAdr("0001"), fixtureAdr("0002")], index)).toEqual([]);
+  });
+
+  it("exempts the template from the index check only", () => {
+    const template = {
+      ...fixtureAdr("0000"),
+      fileName: ADR_TEMPLATE_FILE_NAME,
+    };
+    expect(findAdrViolations([template, fixtureAdr("0001")], "[a](0001-fixture.md)")).toEqual([]);
+    const broken = { ...template, content: "# 0000: Title\n" };
+    expect(findAdrViolations([broken], "")).toEqual([
+      `${ADR_TEMPLATE_FILE_NAME}: missing "## Status" section`,
+      `${ADR_TEMPLATE_FILE_NAME}: missing "## Context" section`,
+      `${ADR_TEMPLATE_FILE_NAME}: missing "## Decision" section`,
+      `${ADR_TEMPLATE_FILE_NAME}: missing "## Consequences" section`,
+      `${ADR_TEMPLATE_FILE_NAME}: unknown status ""`,
+      `${ADR_TEMPLATE_FILE_NAME}: missing Date line in Status`,
+    ]);
   });
 
   it("flags a duplicate number", () => {
