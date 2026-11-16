@@ -1,8 +1,8 @@
 import { afterEach, expect, test } from "vitest";
 
 import { configureEmojis } from "../utils/index.js";
-import { defineFluentEmoji, FLUENT_EMOJI_PRE_UPGRADE_CSS } from "./fluent-emoji.js";
-import "./index.js";
+import { defineFluentEmoji } from "./fluent-emoji.js";
+import { FLUENT_EMOJI_PRE_UPGRADE_CSS } from "./index.js";
 
 const mounted: Element[] = [];
 

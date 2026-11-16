@@ -117,6 +117,7 @@
     "test:coverage:root": "vitest run --coverage",
     "lint:docs": "bun scripts/lint-docs.ts",
     "lint:commits": "bun scripts/lint-commits.ts",
+    "lint:parity": "bun scripts/lint-parity/run.ts",
     "assets:detect": "bun run --cwd apps/assets sync:detect",
     "assets:build": "bun run --cwd apps/assets sync:build",
     "assets:verify-live": "bun run --cwd apps/assets sync:verify-live",

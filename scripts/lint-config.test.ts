@@ -241,3 +241,172 @@ describe("eslint.config.mjs", { timeout: 60_000 }, () => {
     }
   });
 });
+
+const baselineErrorRules = [
+  "typescript/await-thenable",
+  "typescript/ban-ts-comment",
+  "eslint/no-array-constructor",
+  "typescript/no-array-delete",
+  "typescript/no-base-to-string",
+  "typescript/no-confusing-void-expression",
+  "typescript/no-deprecated",
+  "typescript/no-duplicate-enum-values",
+  "typescript/no-duplicate-type-constituents",
+  "typescript/no-dynamic-delete",
+  "typescript/no-empty-object-type",
+  "typescript/no-explicit-any",
+  "typescript/no-extra-non-null-assertion",
+  "typescript/no-extraneous-class",
+  "typescript/no-floating-promises",
+  "typescript/no-for-in-array",
+  "typescript/no-implied-eval",
+  "typescript/no-invalid-void-type",
+  "typescript/no-meaningless-void-operator",
+  "typescript/no-misused-new",
+  "typescript/no-misused-promises",
+  "typescript/no-misused-spread",
+  "typescript/no-mixed-enums",
+  "typescript/no-namespace",
+  "typescript/no-non-null-asserted-nullish-coalescing",
+  "typescript/no-non-null-asserted-optional-chain",
+  "typescript/no-non-null-assertion",
+  "typescript/no-redundant-type-constituents",
+  "typescript/no-require-imports",
+  "typescript/no-this-alias",
+  "typescript/no-unnecessary-boolean-literal-compare",
+  "typescript/no-unnecessary-condition",
+  "typescript/no-unnecessary-template-expression",
+  "typescript/no-unnecessary-type-arguments",
+  "typescript/no-unnecessary-type-assertion",
+  "typescript/no-unnecessary-type-conversion",
+  "typescript/no-useless-default-assignment",
+  "typescript/no-unsafe-enum-assignment",
+  "typescript/no-generated-empty-object-type",
+  "typescript/no-unnecessary-type-constraint",
+  "typescript/no-unnecessary-type-parameters",
+  "typescript/no-unsafe-argument",
+  "typescript/no-unsafe-assignment",
+  "typescript/no-unsafe-call",
+  "typescript/no-unsafe-declaration-merging",
+  "typescript/no-unsafe-enum-comparison",
+  "typescript/no-unsafe-function-type",
+  "typescript/no-unsafe-member-access",
+  "typescript/no-unsafe-return",
+  "typescript/no-unsafe-unary-minus",
+  "eslint/no-unused-expressions",
+  "eslint/no-unused-vars",
+  "eslint/no-useless-constructor",
+  "typescript/no-wrapper-object-types",
+  "typescript/only-throw-error",
+  "typescript/prefer-as-const",
+  "typescript/prefer-literal-enum-member",
+  "typescript/prefer-namespace-keyword",
+  "typescript/prefer-promise-reject-errors",
+  "typescript/prefer-reduce-type-parameter",
+  "typescript/prefer-return-this-type",
+  "typescript/related-getter-setter-pairs",
+  "typescript/require-await",
+  "typescript/restrict-plus-operands",
+  "typescript/restrict-template-expressions",
+  "typescript/return-await",
+  "typescript/triple-slash-reference",
+  "typescript/unbound-method",
+  "typescript/unified-signatures",
+  "typescript/use-unknown-in-catch-callback-variable",
+  "typescript/adjacent-overload-signatures",
+  "typescript/array-type",
+  "typescript/ban-tslint-comment",
+  "typescript/class-literal-property-style",
+  "typescript/consistent-generic-constructors",
+  "typescript/consistent-indexed-object-style",
+  "typescript/consistent-type-assertions",
+  "typescript/consistent-type-definitions",
+  "typescript/dot-notation",
+  "typescript/no-confusing-non-null-assertion",
+  "eslint/no-empty-function",
+  "typescript/no-inferrable-types",
+  "typescript/non-nullable-type-assertion-style",
+  "typescript/prefer-find",
+  "typescript/prefer-for-of",
+  "typescript/prefer-function-type",
+  "typescript/prefer-nullish-coalescing",
+  "typescript/prefer-optional-chain",
+  "typescript/prefer-regexp-exec",
+  "typescript/switch-exhaustiveness-check",
+  "typescript/consistent-type-imports",
+  "jsdoc/check-tag-names",
+  "jsdoc/empty-tags",
+  "jsdoc/implements-on-classes",
+  "jsdoc/no-defaults",
+  "jsdoc/require-param-name",
+  "jsdoc/require-property-name",
+  "jsdoc/require-returns-description",
+  "unicorn/no-abusive-eslint-disable",
+  "local/no-unawaited-async-matcher",
+  "local/no-bun-test-only",
+  "import/no-unassigned-import",
+];
+
+const baselineEquivalents: Readonly<Record<string, string>> = {
+  "jest/no-focused-tests": "vitest-js/no-focused-tests",
+  "jest/no-identical-title": "vitest/no-identical-title",
+  "local/require-description": "@eslint-community/eslint-comments/require-description",
+  "typescript/prefer-includes": "unicorn-js/prefer-includes",
+  "typescript/prefer-string-starts-ends-with": "unicorn/prefer-string-starts-ends-with",
+};
+
+const allConfiguredRules: RuleMap = {
+  ...rootRules,
+  ...Object.fromEntries(overrides.flatMap((override) => Object.entries(override.rules ?? {}))),
+};
+
+function severityOf(entry: unknown): unknown {
+  return Array.isArray(entry) ? entry[0] : entry;
+}
+
+describe("aokit E10 baseline", () => {
+  test.each([...baselineErrorRules, ...Object.keys(baselineEquivalents)])(
+    "enforces %s as an error",
+    (rule) => {
+      const configured = baselineEquivalents[rule] ?? rule;
+      const candidates = [
+        configured,
+        configured.replace(/^eslint\//, ""),
+        configured.replace(/^eslint\//, "typescript-js/"),
+        configured.replace(/^typescript\//, "typescript-js/"),
+      ];
+      const severities = candidates.map((name) => severityOf(allConfiguredRules[name]));
+      expect(severities, configured).toContain("error");
+    },
+  );
+
+  test("keeps the baseline options", () => {
+    expect(allConfiguredRules["typescript/return-await"]).toStrictEqual(["error", "in-try-catch"]);
+    expect(allConfiguredRules["import/no-unassigned-import"]).toStrictEqual([
+      "error",
+      { allow: ["**/*.css", "@fontsource/**", "@fontsource-variable/**"] },
+    ]);
+    expect(allConfiguredRules["typescript/no-misused-promises"]).toBe("error");
+  });
+
+  test("runs type-aware and reports unused disable directives as errors", () => {
+    expect(oxlintConfig.options).toStrictEqual({
+      typeAware: true,
+      reportUnusedDisableDirectives: "error",
+    });
+    expect(oxlintConfig.plugins).toEqual(
+      expect.arrayContaining(["typescript", "jsdoc", "import", "vitest"]),
+    );
+  });
+
+  test("loads the local baseline rules from the oxlint plugin", () => {
+    expect(oxlintConfig.jsPlugins).toContainEqual({
+      name: "local",
+      specifier: "./oxlint-plugins/local.mjs",
+    });
+    const testRules = overrideRules(["**/*.test.{ts,tsx}"]);
+    expect(testRules["local/no-bun-test-only"]).toBe("error");
+    expect(testRules["local/no-unawaited-async-matcher"]).toBe("error");
+    expect(testRules["vitest-js/no-focused-tests"]).toStrictEqual(["error", { fixable: true }]);
+  });
+});

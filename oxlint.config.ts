@@ -22,9 +22,14 @@ const isCorpusRun = process.env.PARITY_CORPUS === "1";
  * `@eslint-react/no-leaked-conditional-rendering` with a TypeScript program.
  * `.astro` files stay ESLint-only, and `.mts`/`.cts` files are not linted,
  * matching ESLint.
+ *
+ * It also carries aokit's E10 baseline, guarded by `scripts/lint-config.test.ts`:
+ * Vitest stands in for the baseline's Jest focus rules, and
+ * `@eslint-community/eslint-comments/require-description` for
+ * `local/require-description`.
  */
 export default defineConfig({
-  plugins: ["eslint", "typescript", "unicorn", "react", "jsx-a11y", "vitest", "jsdoc"],
+  plugins: ["eslint", "typescript", "unicorn", "react", "jsx-a11y", "vitest", "jsdoc", "import"],
   jsPlugins: [
     { name: "unicorn-js", specifier: "./oxlint-plugins/unicorn-js.mjs" },
     { name: "jsdoc-js", specifier: "eslint-plugin-jsdoc" },
@@ -38,7 +43,7 @@ export default defineConfig({
     },
     { name: "shadcn", specifier: "@shadcn/lint" },
     { name: "typescript-js", specifier: "./oxlint-plugins/typescript-js.mjs" },
-    { name: "local", specifier: "./eslint-rules/index.mjs" },
+    { name: "local", specifier: "./oxlint-plugins/local.mjs" },
   ],
   categories: { correctness: "off" },
   options: { typeAware: true, reportUnusedDisableDirectives: "error" },
@@ -63,6 +68,10 @@ export default defineConfig({
     "**/*.{svelte,vue}",
   ],
   rules: {
+    "import/no-unassigned-import": [
+      "error",
+      { allow: ["**/*.css", "@fontsource/**", "@fontsource-variable/**"] },
+    ],
     "jsx-a11y/alt-text": "error",
     "jsx-a11y/anchor-has-content": "error",
     "jsx-a11y/anchor-is-valid": "error",
@@ -651,7 +660,7 @@ export default defineConfig({
         "typescript/no-base-to-string": "error",
         "typescript/no-confusing-non-null-assertion": "error",
         "typescript/no-confusing-void-expression": "error",
-        "typescript/no-deprecated": "warn",
+        "typescript/no-deprecated": "error",
         "typescript/no-duplicate-enum-values": "error",
         "typescript/no-duplicate-type-constituents": "error",
         "typescript/no-dynamic-delete": "error",
@@ -668,7 +677,7 @@ export default defineConfig({
         "typescript/no-invalid-void-type": "error",
         "typescript-js/no-meaningless-void-operator": "error",
         "typescript/no-misused-new": "error",
-        "typescript/no-misused-promises": ["error", { checksVoidReturn: { attributes: false } }],
+        "typescript/no-misused-promises": "error",
         "typescript/no-misused-spread": "error",
         "typescript/no-mixed-enums": "error",
         "typescript/no-namespace": "error",
@@ -747,7 +756,8 @@ export default defineConfig({
             allowRegExp: false,
           },
         ],
-        "typescript/return-await": ["error", "error-handling-correctness-only"],
+        "typescript/return-await": ["error", "in-try-catch"],
+        "typescript/switch-exhaustiveness-check": "error",
         "typescript/triple-slash-reference": "error",
         "typescript/unbound-method": "error",
         "typescript/unified-signatures": "error",
@@ -789,6 +799,8 @@ export default defineConfig({
         "vitest/no-disabled-tests": "warn",
         "vitest-js/no-focused-tests": ["error", { fixable: true }],
         "vitest/no-identical-title": "error",
+        "local/no-bun-test-only": "error",
+        "local/no-unawaited-async-matcher": "error",
         "vitest/no-import-node-test": "error",
         "vitest/no-interpolation-in-snapshots": "error",
         "vitest/no-mocks-import": "error",
