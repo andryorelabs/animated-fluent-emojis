@@ -22,12 +22,29 @@ const MATCHING_REPOSITORY: JsonObject = {
   has_projects: false,
   has_discussions: false,
   homepage: "https://animated-fluent-emojis.andryore.dev",
+  description:
+    "Fluent emojis, but they move: Microsoft's animated emojis as one component. Not affiliated with or endorsed by Microsoft.",
+  topics: [
+    "typescript",
+    "react",
+    "fluent-emojis",
+    "fluent-emoji",
+    "emojis",
+    "emoji",
+    "animation",
+    "animated-emojis",
+  ],
+  default_branch: "main",
   security_and_analysis: {
     secret_scanning: { status: "enabled" },
     secret_scanning_push_protection: { status: "enabled" },
     dependabot_security_updates: { status: "enabled" },
   },
 };
+
+const ALERTS_OFF = new Error(
+  "Command failed: gh api --method GET repos/andryorelabs/animated-fluent-emojis/vulnerability-alerts\ngh: Vulnerability alerts are disabled. (HTTP 404)",
+);
 
 function createResponses(
   repository: JsonObject,
@@ -36,8 +53,19 @@ function createResponses(
   const names = Object.keys(rulesets);
   const responses: Record<string, unknown> = {
     [REPOSITORY_ENDPOINT]: repository,
+    [`${REPOSITORY_ENDPOINT}/vulnerability-alerts`]: "",
     [`${REPOSITORY_ENDPOINT}/private-vulnerability-reporting`]: {
       enabled: true,
+    },
+    [`${REPOSITORY_ENDPOINT}/actions/permissions/workflow`]: {
+      default_workflow_permissions: "read",
+      can_approve_pull_request_reviews: false,
+    },
+    [`${REPOSITORY_ENDPOINT}/actions/permissions/fork-pr-contributor-approval`]: {
+      approval_policy: "all_external_contributors",
+    },
+    [`${REPOSITORY_ENDPOINT}/code-scanning/default-setup`]: {
+      state: "not-configured",
     },
     [`${REPOSITORY_ENDPOINT}/rulesets`]: names.map((name, index) => ({
       id: index + 1,
@@ -63,8 +91,11 @@ async function runWith(
     report: (line) => {
       lines.push(line);
     },
-    run: (commandArguments) =>
-      Promise.resolve(JSON.stringify(responses[commandArguments.at(-1) ?? ""])),
+    run: (commandArguments) => {
+      const response = responses[commandArguments.at(-1) ?? ""];
+      if (response instanceof Error) return Promise.reject(response);
+      return Promise.resolve(response === "" ? "" : JSON.stringify(response));
+    },
   });
   return { exitCode, lines };
 }
@@ -91,8 +122,8 @@ describe("runRepositorySettingsCheck", () => {
     expect(result).toEqual({
       exitCode: 1,
       lines: [
-        "repo-settings: settings.has_wiki: expected false, live true",
-        'repo-settings: settings.homepage: expected "https://animated-fluent-emojis.andryore.dev", live ""',
+        'repo-settings: settings.repository.homepage: expected "https://animated-fluent-emojis.andryore.dev", live ""',
+        "repo-settings: settings.repository.has_wiki: expected false, live true",
         'repo-settings: rulesets.main.enforcement: expected "active", live "disabled"',
         "repo-settings: 3 difference(s). Re-apply from the files, see docs/brand/apply-spec.md.",
       ],
@@ -107,10 +138,82 @@ describe("runRepositorySettingsCheck", () => {
     expect(result).toEqual({
       exitCode: 1,
       lines: [
-        "repo-settings: settings.allow_merge_commit: expected true, live false",
+        "repo-settings: settings.repository.allow_merge_commit: expected true, live false",
         "repo-settings: 1 difference(s). Re-apply from the files, see docs/brand/apply-spec.md.",
       ],
     });
+  });
+
+  test("exits 1 and names Dependabot alerts when they are off", async () => {
+    const result = await runWith({
+      ...createResponses(MATCHING_REPOSITORY, EXPECTED.rulesets),
+      [`${REPOSITORY_ENDPOINT}/vulnerability-alerts`]: ALERTS_OFF,
+    });
+
+    expect(result).toEqual({
+      exitCode: 1,
+      lines: [
+        "repo-settings: settings.security.dependabot_alerts: expected true, live false",
+        "repo-settings: 1 difference(s). Re-apply from the files, see docs/brand/apply-spec.md.",
+      ],
+    });
+  });
+
+  test("exits 1 and names Dependabot security updates when they are off", async () => {
+    const result = await runWith(
+      createResponses(
+        {
+          ...MATCHING_REPOSITORY,
+          security_and_analysis: {
+            secret_scanning: { status: "enabled" },
+            secret_scanning_push_protection: { status: "enabled" },
+            dependabot_security_updates: { status: "disabled" },
+          },
+        },
+        EXPECTED.rulesets,
+      ),
+    );
+
+    expect(result).toEqual({
+      exitCode: 1,
+      lines: [
+        "repo-settings: settings.security.dependabot_security_updates: expected true, live false",
+        "repo-settings: 1 difference(s). Re-apply from the files, see docs/brand/apply-spec.md.",
+      ],
+    });
+  });
+
+  test("exits 1 and names each drifted Actions, CodeQL and metadata setting", async () => {
+    const result = await runWith({
+      ...createResponses(
+        {
+          ...MATCHING_REPOSITORY,
+          default_branch: "develop",
+          topics: ["react"],
+        },
+        EXPECTED.rulesets,
+      ),
+      [`${REPOSITORY_ENDPOINT}/actions/permissions/workflow`]: {
+        default_workflow_permissions: "write",
+        can_approve_pull_request_reviews: false,
+      },
+      [`${REPOSITORY_ENDPOINT}/actions/permissions/fork-pr-contributor-approval`]: {
+        approval_policy: "first_time_contributors",
+      },
+      [`${REPOSITORY_ENDPOINT}/code-scanning/default-setup`]: {
+        state: "configured",
+      },
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.lines.map((line) => line.split(":", 2)[1]?.trim())).toEqual([
+      "settings.repository.topics",
+      "settings.repository.default_branch",
+      "settings.actions.default_workflow_permissions",
+      "settings.actions.fork_pr_contributor_approval",
+      "settings.code_scanning.default_setup",
+      "5 difference(s). Re-apply from the files, see docs/brand/apply-spec.md.",
+    ]);
   });
 
   test("exits 1 and names a ruleset file that has no live ruleset", async () => {
