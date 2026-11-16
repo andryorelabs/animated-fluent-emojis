@@ -40,7 +40,6 @@ Outros atributos, como `class`, `style` e `data-*`, vão para o span raiz.
 ```vue
 <script setup lang="ts">
 import { Emoji } from "animated-fluent-emojis/vue";
-
 import "animated-fluent-emojis/style.css";
 
 const handlePlaybackEnd = () => {

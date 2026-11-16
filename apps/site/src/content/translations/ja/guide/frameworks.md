@@ -41,7 +41,6 @@ Vue 3.3 以降が必要です。`Emoji`
 ```vue
 <script setup lang="ts">
 import { Emoji } from "animated-fluent-emojis/vue";
-
 import "animated-fluent-emojis/style.css";
 
 const handlePlaybackEnd = () => {
