@@ -1,5 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 
+import commitlintConfig, { commitTypes } from "../commitlint.config";
 import {
   buildCommitlintCommand,
   resolveCommitlintBase,
@@ -7,7 +8,7 @@ import {
   type GitResult,
   type GitRunner,
 } from "./lint-commits";
-import { readWorkflow } from "./workflow-files";
+import { readWorkflow, readWorkflowText } from "./workflow-files";
 
 function findCommitlintRunCommand(): string {
   const job = readWorkflow("ci.yml").jobs?.commitlint;
@@ -101,5 +102,26 @@ describe("runLintCommits", () => {
     await expect(runLintCommits({ git, spawnCommand: vi.fn() })).rejects.toThrow(
       /could not resolve HEAD/,
     );
+  });
+});
+
+function byName(first: string, second: string): number {
+  return first.localeCompare(second);
+}
+
+describe("commitlint.config.ts", () => {
+  test("allows deps and release on top of the conventional types", () => {
+    expect(commitTypes).toEqual(expect.arrayContaining(["deps", "release", "feat", "fix"]));
+    expect(commitlintConfig.rules["type-enum"][2]).toBe(commitTypes);
+  });
+
+  test("lists the same types as the lint-pr.yml title check", () => {
+    const text = readWorkflowText("lint-pr.yml");
+    const block = /types: \|\n((?: {12}\S+\n)+)/.exec(text)?.[1] ?? "";
+    const workflowTypes = block
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line !== "");
+    expect(workflowTypes.toSorted(byName)).toEqual(commitTypes.toSorted(byName));
   });
 });
