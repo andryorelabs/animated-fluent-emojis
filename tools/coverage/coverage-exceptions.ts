@@ -29,13 +29,6 @@ export const COVERAGE_EXCEPTIONS: readonly CoverageException[] = [
     functions: 3 / 4,
   },
   {
-    file: "oxlint-plugins/with-types.mjs",
-    reason:
-      "the unreadable tsconfig and missing TypeScript node guards throw only on a corrupt project that no fixture builds",
-    lines: 87 / 89,
-    functions: 22 / 23,
-  },
-  {
     file: "scripts/lint-commits.ts",
     reason:
       "the `import.meta.url` entry guard runs only when the file is executed as a script, never under Vitest",
@@ -50,20 +43,6 @@ export const COVERAGE_EXCEPTIONS: readonly CoverageException[] = [
     functions: 15 / 15,
   },
   {
-    file: "scripts/lint-parity/diff.ts",
-    reason:
-      "the stale-entry and harness-problem report lines need a parity run that fails, which the fixtures never produce",
-    lines: 61 / 63,
-    functions: 27 / 27,
-  },
-  {
-    file: "scripts/lint-parity/harness.ts",
-    reason:
-      "the cleanup-and-rethrow path and one report line need a harness crash that no test provokes",
-    lines: 69 / 72,
-    functions: 39 / 40,
-  },
-  {
     file: "scripts/lint-parity/run.ts",
     reason:
       "process entry that spawns Oxlint and ESLint over the parity fixtures; the harness it drives is unit tested directly",
@@ -71,31 +50,10 @@ export const COVERAGE_EXCEPTIONS: readonly CoverageException[] = [
     functions: 0,
   },
   {
-    file: "scripts/repo-settings/check.ts",
-    reason:
-      "the default `gh` runner and its dependency factory shell out to the GitHub CLI; the tests inject fakes instead",
-    lines: 15 / 23,
-    functions: 3 / 6,
-  },
-  {
-    file: "packages/animated-fluent-emojis/src/hooks/use-prefers-reduced-motion.ts",
-    reason:
-      "the server snapshot callback runs only during server rendering, which the browser tests never do",
-    lines: 4 / 4,
-    functions: 1 / 2,
-  },
-  {
     file: "packages/animated-fluent-emojis/src/svelte/FallbackHost.svelte",
     reason:
       "the snippet host is mounted only on the Svelte fallback path that the current browser tests do not reach",
     lines: 0,
-    functions: 1 / 1,
-  },
-  {
-    file: "packages/animated-fluent-emojis/src/utils/is-development.ts",
-    reason:
-      "the `catch` branch runs only where `process` is undefined, and Node and the browser project both define it",
-    lines: 2 / 3,
     functions: 1 / 1,
   },
   {
@@ -218,27 +176,6 @@ export const COVERAGE_EXCEPTIONS: readonly CoverageException[] = [
     functions: 0,
   },
   {
-    file: "apps/site/src/components/ui/dropdown-menu.tsx",
-    reason:
-      "React island whose interaction paths are driven by the Playwright e2e suite rather than the Vitest unit tests",
-    lines: 14 / 26,
-    functions: 3 / 10,
-  },
-  {
-    file: "apps/site/src/components/ui/input.tsx",
-    reason:
-      "React island whose interaction paths are driven by the Playwright e2e suite rather than the Vitest unit tests",
-    lines: 0,
-    functions: 0,
-  },
-  {
-    file: "apps/site/src/components/ui/sheet.tsx",
-    reason:
-      "React island whose interaction paths are driven by the Playwright e2e suite rather than the Vitest unit tests",
-    lines: 1 / 7,
-    functions: 0,
-  },
-  {
     file: "apps/site/src/docs/code-focus.ts",
     reason:
       "build-time or browser-entry module that the Astro build, a CLI or the page script runs; no unit test imports it",
@@ -274,31 +211,6 @@ export const COVERAGE_EXCEPTIONS: readonly CoverageException[] = [
     functions: 0,
   },
   {
-    file: "apps/site/src/docs/search-trusted-types.ts",
-    reason: "a small error-path or fallback branch that no current unit test triggers",
-    lines: 6 / 7,
-    functions: 2 / 3,
-  },
-  {
-    file: "apps/site/src/emoji-pages/data.ts",
-    reason:
-      "build-time or browser-entry module that the Astro build, a CLI or the page script runs; no unit test imports it",
-    lines: 0,
-    functions: 0,
-  },
-  {
-    file: "apps/site/src/emoji-pages/fetch-png.ts",
-    reason: "a small error-path or fallback branch that no current unit test triggers",
-    lines: 9 / 10,
-    functions: 2 / 2,
-  },
-  {
-    file: "apps/site/src/highlight/snippet-render.ts",
-    reason: "a small error-path or fallback branch that no current unit test triggers",
-    lines: 28 / 29,
-    functions: 11 / 11,
-  },
-  {
     file: "apps/site/src/home/DemoPlayground.tsx",
     reason:
       "React island whose interaction paths are driven by the Playwright e2e suite rather than the Vitest unit tests",
@@ -318,13 +230,6 @@ export const COVERAGE_EXCEPTIONS: readonly CoverageException[] = [
       "React island whose interaction paths are driven by the Playwright e2e suite rather than the Vitest unit tests",
     lines: 7 / 8,
     functions: 2 / 4,
-  },
-  {
-    file: "apps/site/src/home/sections/styles.ts",
-    reason:
-      "build-time or browser-entry module that the Astro build, a CLI or the page script runs; no unit test imports it",
-    lines: 0,
-    functions: 1,
   },
   {
     file: "apps/site/src/pages/[...slug].md.ts",
@@ -376,38 +281,10 @@ export const COVERAGE_EXCEPTIONS: readonly CoverageException[] = [
     functions: 0,
   },
   {
-    file: "apps/site/src/scripts/interaction-directive.ts",
-    reason:
-      "build-time or browser-entry module that the Astro build, a CLI or the page script runs; no unit test imports it",
-    lines: 0,
-    functions: 0,
-  },
-  {
-    file: "apps/site/src/scripts/interaction-integration.ts",
-    reason:
-      "build-time or browser-entry module that the Astro build, a CLI or the page script runs; no unit test imports it",
-    lines: 0,
-    functions: 0,
-  },
-  {
-    file: "apps/site/src/scripts/render-security-headers.ts",
-    reason:
-      "build-time or browser-entry module that the Astro build, a CLI or the page script runs; no unit test imports it",
-    lines: 0,
-    functions: 0,
-  },
-  {
     file: "apps/assets/sync.ts",
     reason:
-      "the default dependency factory and the `import.meta.url` entry guard run only from the CLI, and the AggregateError formatter has no failing-sync test",
-    lines: 125 / 132,
-    functions: 20 / 21,
-  },
-  {
-    file: "apps/assets/teams.ts",
-    reason:
-      "the empty-bundle warning and the manifest probe failure path need a live Teams response that the fixtures do not model",
-    lines: 55 / 57,
-    functions: 13 / 13,
+      "the `import.meta.url` entry guard runs only when the module is executed as a CLI entry",
+    lines: 128 / 132,
+    functions: 21 / 21,
   },
 ];
