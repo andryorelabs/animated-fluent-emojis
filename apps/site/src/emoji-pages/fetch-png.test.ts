@@ -33,4 +33,16 @@ describe("fetchPng", () => {
     expect(new Uint8Array(await result)).toEqual(new Uint8Array([9]));
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
+
+  it("retries a network failure and rethrows the last error", async () => {
+    vi.useFakeTimers();
+    const failure = new TypeError("connection reset");
+    const fetchMock = vi.fn().mockRejectedValue(failure);
+    vi.stubGlobal("fetch", fetchMock);
+    const result = fetchPng("https://x/a.png");
+    const outcome = Promise.allSettled([result]);
+    await vi.runAllTimersAsync();
+    expect(await outcome).toEqual([{ status: "rejected", reason: failure }]);
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
 });
