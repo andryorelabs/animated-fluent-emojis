@@ -139,8 +139,9 @@ jobs:
 
       - name: Check the coverage floors against the base branch
         if: github.event_name == 'pull_request'
-        run: bun tools/coverage/check.ts --base-only --base origin/${{
-          github.base_ref }}
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: bun tools/coverage/check.ts --base-only --base "origin/$BASE_REF"
 
       - name: Check the coverage gate
         if: github.event_name != 'pull_request'
