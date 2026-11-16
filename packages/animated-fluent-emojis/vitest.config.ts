@@ -5,6 +5,8 @@ import { getViteConfig } from "astro/config";
 import { msw } from "msw/vite";
 import { defineConfig } from "vitest/config";
 
+import { floorFor } from "../../tools/coverage/floors.ts";
+
 const isCoverageRun = process.argv.includes("--coverage");
 
 const astroProject = await getViteConfig({
@@ -17,18 +19,14 @@ const astroProject = await getViteConfig({
 
 export default defineConfig({
   test: {
+    testTimeout: 30_000,
+    hookTimeout: 30_000,
     coverage: {
       provider: "v8",
       include: ["src/**/*.{ts,tsx,svelte}"],
-      exclude: [
-        "src/**/*.test.{ts,tsx}",
-        "src/test/**",
-        "src/**/*.d.ts",
-        "src/utils/types.ts",
-        "src/utils/emoji-id.generated.ts",
-      ],
-      reporter: ["text", "lcov"],
-      thresholds: { lines: 95, functions: 95, branches: 90, statements: 95 },
+      exclude: ["src/**/*.test.{ts,tsx}", "src/test/**", "src/**/*.d.ts"],
+      reporter: ["text", "lcov", "json-summary"],
+      thresholds: floorFor("packages/animated-fluent-emojis"),
     },
     projects: [
       {

@@ -41,6 +41,18 @@
         "!dist-files/**",
         "!.cache/**"
       ],
+      "outputs": ["coverage/**"]
+    },
+    "test:browsers": {
+      "dependsOn": ["transit"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!dist/**",
+        "!coverage/**",
+        "!dist-assets/**",
+        "!dist-files/**",
+        "!.cache/**"
+      ],
       "outputs": []
     },
     "test:coverage": {
@@ -151,7 +163,7 @@
         "renovate.json5",
         "vitest.config.ts"
       ],
-      "outputs": []
+      "outputs": ["coverage/**"]
     }
   }
 }
