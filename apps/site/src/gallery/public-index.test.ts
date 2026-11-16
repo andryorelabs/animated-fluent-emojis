@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import publicIndexFixture from "./fixtures/public-index.json";
 import {
+  FILES_SITE_ORIGIN,
   fetchPublicIndex,
   fileUrl,
   loadPublicIndex,
@@ -64,15 +65,69 @@ describe("public index validation", () => {
   });
 
   it("fails loudly when the site is unreachable or answers an error", async () => {
-    await expect(fetchPublicIndex(() => Promise.reject(new Error("offline")))).rejects.toThrow(
-      /unreachable/,
-    );
+    await expect(
+      fetchPublicIndex(() => Promise.reject(new Error("offline")), FILES_SITE_ORIGIN, 0),
+    ).rejects.toThrow(/unreachable after 3 attempts \(Error: offline\)/);
     await expect(
       fetchPublicIndex(() => Promise.resolve(new Response("", { status: 503 }))),
     ).rejects.toThrow(/503/);
     await expect(fetchPublicIndex(() => Promise.resolve(new Response("nope")))).rejects.toThrow(
       /valid JSON/,
     );
+  });
+
+  it("retries a transient network failure and reports the cause when it persists", async () => {
+    const flaky = vi
+      .fn<(url: string) => Promise<Response>>()
+      .mockRejectedValueOnce(new TypeError("fetch failed", { cause: new Error("ENOTFOUND") }))
+      .mockResolvedValue(Response.json(publicIndexFixture));
+    const loaded = await fetchPublicIndex(flaky, FILES_SITE_ORIGIN, 0);
+    expect(flaky).toHaveBeenCalledTimes(2);
+    expect(loaded.map((emoji) => emoji.slug)).toContain("fire");
+
+    await expect(
+      fetchPublicIndex(
+        () => Promise.reject(new TypeError("fetch failed", { cause: new Error("ENOTFOUND") })),
+        FILES_SITE_ORIGIN,
+        0,
+      ),
+    ).rejects.toThrow(/cause: ENOTFOUND/);
+  });
+
+  it("reports a string cause and a failure without a cause", async () => {
+    await expect(
+      fetchPublicIndex(
+        () => Promise.reject(new TypeError("fetch failed", { cause: "timeout" })),
+        FILES_SITE_ORIGIN,
+        0,
+      ),
+    ).rejects.toThrow(/cause: timeout/);
+    await expect(
+      fetchPublicIndex(() => Promise.reject(new Error("offline")), FILES_SITE_ORIGIN, 0),
+    ).rejects.not.toThrow(/cause:/);
+  });
+
+  it("waits the default growing delay between attempts", async () => {
+    vi.useFakeTimers();
+    try {
+      const flaky = vi
+        .fn<(url: string) => Promise<Response>>()
+        .mockRejectedValueOnce(new Error("offline"))
+        .mockResolvedValue(Response.json(publicIndexFixture));
+      const pending = fetchPublicIndex(flaky);
+      await vi.advanceTimersByTimeAsync(500);
+      const loaded = await pending;
+      expect(flaky).toHaveBeenCalledTimes(2);
+      expect(loaded.length).toBeGreaterThan(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("does not retry an HTTP error", async () => {
+    const failing = vi.fn(() => Promise.resolve(new Response("", { status: 503 })));
+    await expect(fetchPublicIndex(failing, FILES_SITE_ORIGIN, 0)).rejects.toThrow(/503/);
+    expect(failing).toHaveBeenCalledTimes(1);
   });
 
   it("loads a valid response", async () => {

@@ -130,23 +130,48 @@ export function parsePublicIndex(raw: unknown): PublicEmoji[] {
   return emojis;
 }
 
+const FETCH_ATTEMPTS = 3;
+const DEFAULT_RETRY_DELAY_MS = 500;
+
+function describeFailure(error: unknown): string {
+  const cause = error instanceof Error ? error.cause : undefined;
+  if (cause instanceof Error) return `${String(error)}, cause: ${cause.message}`;
+  if (typeof cause === "string") return `${String(error)}, cause: ${cause}`;
+  return String(error);
+}
+
 /**
- * Fetches and validates the public index.
+ * Fetches and validates the public index. A network failure is retried up to
+ * three times with a growing delay, so a brief DNS or TLS hiccup does not abort
+ * a build; an HTTP error or an invalid body is not retried.
  * @param fetcher - Defaults to the global `fetch`; tests inject a stub.
  * @param origin - The files site origin.
+ * @param retryDelayMs - The base delay between attempts; tests pass `0`.
  * @returns The validated emojis.
  * @throws {PublicIndexError} When the site is unreachable or the body is invalid.
  */
 export async function fetchPublicIndex(
   fetcher: Fetcher = fetch,
   origin: string = FILES_SITE_ORIGIN,
+  retryDelayMs: number = DEFAULT_RETRY_DELAY_MS,
 ): Promise<PublicEmoji[]> {
   const url = `${origin}/index.json`;
-  let response: Response;
-  try {
-    response = await fetcher(url);
-  } catch (error) {
-    throw new PublicIndexError(`${url} is unreachable (${String(error)})`);
+  let response: Response | undefined;
+  let lastFailure = "";
+  for (let attempt = 1; response === undefined && attempt <= FETCH_ATTEMPTS; attempt += 1) {
+    try {
+      response = await fetcher(url);
+    } catch (error) {
+      lastFailure = describeFailure(error);
+      if (attempt < FETCH_ATTEMPTS) {
+        await new Promise((resolve) => setTimeout(resolve, retryDelayMs * attempt));
+      }
+    }
+  }
+  if (response === undefined) {
+    throw new PublicIndexError(
+      `${url} is unreachable after ${String(FETCH_ATTEMPTS)} attempts (${lastFailure})`,
+    );
   }
   if (!response.ok) {
     throw new PublicIndexError(`${url} answered ${String(response.status)}`);
