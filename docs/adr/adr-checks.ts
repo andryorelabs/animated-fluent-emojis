@@ -1,3 +1,6 @@
+/** The ADR template, checked like an ADR but never listed in the index. */
+export const ADR_TEMPLATE_FILE_NAME = "0000-template.md";
+
 const ALLOWED_STATUSES = /^(?:(?:Accepted|Proposed|Deprecated)\b|Superseded by .+)/;
 const REQUIRED_SECTIONS = ["Status", "Context", "Decision", "Consequences"];
 const DATE_LINE_PATTERN = /^Date: \d{4}-\d{2}-\d{2}$/m;
@@ -216,7 +219,7 @@ export function findAdrViolations(adrs: readonly AdrFile[], indexContent: string
     if (revisedLines.some((line) => !VALID_REVISED_LINE_PATTERN.test(line))) {
       violations.push(`${adr.fileName}: Revised line must be "Revised: YYYY-MM-DD, <text>"`);
     }
-    if (!indexContent.includes(`](${adr.fileName})`)) {
+    if (adr.fileName !== ADR_TEMPLATE_FILE_NAME && !indexContent.includes(`](${adr.fileName})`)) {
       violations.push(`${adr.fileName}: not listed in README`);
     }
   }
