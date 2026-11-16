@@ -52,7 +52,6 @@
     "@eslint-community/eslint-comments/no-unused-enable",
     "@eslint-community/eslint-comments/require-description",
     "unicorn/no-abusive-eslint-disable",
-    "unicorn/no-top-level-side-effects",
     "unused-disable-directive"
   ],
   "scripts/zv-jsdoc.ts": [

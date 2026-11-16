@@ -15,3 +15,4 @@ export const error = e
 export const button = btn
 export const isMissing = typeof text === 'undefined'
 export const nested = (): number => (arr.length > 1 ? (arr.length > 2 ? 1 : 2) : 3)
+export const registered = Object.assign(globalThis, { zvFixture: copy })
