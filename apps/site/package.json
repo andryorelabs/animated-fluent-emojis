@@ -60,10 +60,14 @@
     "@axe-core/playwright": "4.14.0",
     "@playwright/test": "1.65.0",
     "@tailwindcss/vite": "4.3.5",
+    "@testing-library/dom": "10.4.2",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.12",
     "@types/hast": "3.0.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitest/coverage-v8": "catalog:",
+    "happy-dom": "21.0.4",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }
