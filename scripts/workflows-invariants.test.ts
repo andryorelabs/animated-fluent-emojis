@@ -88,7 +88,7 @@ test(".node-version pins the Node major the workflows install", () => {
     fileURLToPath(new URL(`../${NODE_VERSION_FILE}`, import.meta.url)),
     "utf8",
   );
-  expect(nodeVersion.trim()).toBe("24");
+  expect(nodeVersion.trim()).toBe("26");
 });
 
 describe("job permissions check", () => {
