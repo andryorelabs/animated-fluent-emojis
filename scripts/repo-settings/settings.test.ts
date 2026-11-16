@@ -5,15 +5,19 @@ import { afterEach, describe, expect, test } from "vitest";
 
 import {
   diffSettings,
-  EXPECTED_REPOSITORY_SETTINGS,
   readExpectedSettings,
   readLiveSettings,
   type JsonObject,
+  type JsonValue,
   type RepositorySettings,
 } from "./settings.ts";
 
 const REPOSITORY_PATH = "andryorelabs/animated-fluent-emojis";
 const REPOSITORY_ENDPOINT = `repos/${REPOSITORY_PATH}`;
+const ALERTS_ENDPOINT = `${REPOSITORY_ENDPOINT}/vulnerability-alerts`;
+const WORKFLOW_PERMISSIONS_ENDPOINT = `${REPOSITORY_ENDPOINT}/actions/permissions/workflow`;
+const FORK_APPROVAL_ENDPOINT = `${REPOSITORY_ENDPOINT}/actions/permissions/fork-pr-contributor-approval`;
+const CODE_SCANNING_ENDPOINT = `${REPOSITORY_ENDPOINT}/code-scanning/default-setup`;
 
 const EXPECTED_RULES: readonly JsonObject[] = [
   { type: "deletion" },
@@ -42,13 +46,22 @@ const EXPECTED_MAIN: JsonObject = {
   rules: EXPECTED_RULES,
 };
 
+const EXPECTED_REPOSITORY_GROUP: JsonObject = {
+  allow_squash_merge: true,
+  homepage: "https://example.test",
+};
+
 const EXPECTED: RepositorySettings = {
-  settings: { allow_squash_merge: true, homepage: "https://example.test" },
+  settings: { repository: EXPECTED_REPOSITORY_GROUP },
   rulesets: { main: EXPECTED_MAIN },
 };
 
 const LIVE_REPOSITORY_RESPONSE = {
   id: 1,
+  description: "Fluent emojis, but they move.",
+  homepage: "",
+  topics: ["react", "emoji"],
+  default_branch: "main",
   allow_squash_merge: true,
   allow_merge_commit: true,
   allow_rebase_merge: false,
@@ -62,7 +75,6 @@ const LIVE_REPOSITORY_RESPONSE = {
   has_wiki: false,
   has_projects: false,
   has_discussions: false,
-  homepage: "",
   security_and_analysis: {
     secret_scanning: { status: "disabled" },
     secret_scanning_push_protection: { status: "enabled" },
@@ -83,6 +95,15 @@ const LIVE_RULESET_RESPONSE = {
   current_user_can_bypass: "never",
 };
 
+class GhFailure extends Error {
+  readonly stderr: string;
+
+  constructor(stderr: string) {
+    super(`Command failed: gh api\n${stderr}`);
+    this.stderr = stderr;
+  }
+}
+
 function withRuleset(ruleset: JsonObject): RepositorySettings {
   return { settings: EXPECTED.settings, rulesets: { main: ruleset } };
 }
@@ -97,19 +118,37 @@ function createRunner(responses: Readonly<Record<string, unknown>>): {
     run: (commandArguments) => {
       calls.push(commandArguments);
       const endpoint = commandArguments.at(-1) ?? "";
-      return Object.hasOwn(responses, endpoint)
-        ? Promise.resolve(JSON.stringify(responses[endpoint]))
-        : Promise.reject(new Error(`unexpected endpoint ${endpoint}`));
+      if (!Object.hasOwn(responses, endpoint)) {
+        return Promise.reject(new Error(`unexpected endpoint ${endpoint}`));
+      }
+      const response = responses[endpoint];
+      if (response instanceof Error) return Promise.reject(response);
+      return Promise.resolve(response === "" ? "" : JSON.stringify(response));
     },
   };
 }
 
-const LIVE_RESPONSES = {
+const LIVE_RESPONSES: Readonly<Record<string, unknown>> = {
   [REPOSITORY_ENDPOINT]: LIVE_REPOSITORY_RESPONSE,
   [`${REPOSITORY_ENDPOINT}/private-vulnerability-reporting`]: { enabled: true },
+  [ALERTS_ENDPOINT]: "",
+  [WORKFLOW_PERMISSIONS_ENDPOINT]: {
+    default_workflow_permissions: "read",
+    can_approve_pull_request_reviews: false,
+  },
+  [FORK_APPROVAL_ENDPOINT]: { approval_policy: "all_external_contributors" },
+  [CODE_SCANNING_ENDPOINT]: { state: "not-configured", languages: ["actions"] },
   [`${REPOSITORY_ENDPOINT}/rulesets`]: [{ id: 7, name: "tags" }],
   [`${REPOSITORY_ENDPOINT}/rulesets/7`]: LIVE_RULESET_RESPONSE,
 };
+
+function flattenSettings(prefix: string, value: JsonValue): [string, JsonValue][] {
+  return typeof value !== "object" || value === null || Array.isArray(value)
+    ? [[prefix, value]]
+    : Object.entries(value).flatMap(([key, child]) =>
+        flattenSettings(prefix === "" ? key : `${prefix}.${key}`, child),
+      );
+}
 
 describe("diffSettings", () => {
   test("reports nothing when live matches the files", () => {
@@ -118,7 +157,9 @@ describe("diffSettings", () => {
 
   test("ignores the defaults and the ordering GitHub adds to a response", () => {
     const live: RepositorySettings = {
-      settings: { ...EXPECTED.settings, has_issues: true },
+      settings: {
+        repository: { ...EXPECTED_REPOSITORY_GROUP, has_issues: true },
+      },
       rulesets: {
         main: {
           id: 7,
@@ -155,16 +196,52 @@ describe("diffSettings", () => {
 
   test("names a setting whose live value differs or is missing", () => {
     const live: RepositorySettings = {
-      settings: { allow_squash_merge: false },
+      settings: { repository: { allow_squash_merge: false } },
       rulesets: EXPECTED.rulesets,
     };
 
     expect(diffSettings(EXPECTED, live)).toEqual([
-      { path: "settings.allow_squash_merge", expected: true, live: false },
       {
-        path: "settings.homepage",
+        path: "settings.repository.allow_squash_merge",
+        expected: true,
+        live: false,
+      },
+      {
+        path: "settings.repository.homepage",
         expected: "https://example.test",
         live: undefined,
+      },
+    ]);
+  });
+
+  test("compares topics without regard to their order", () => {
+    const expected: RepositorySettings = {
+      settings: { repository: { topics: ["emoji", "react"] } },
+      rulesets: {},
+    };
+    const live: RepositorySettings = {
+      settings: { repository: { topics: ["react", "emoji"] } },
+      rulesets: {},
+    };
+
+    expect(diffSettings(expected, live)).toEqual([]);
+  });
+
+  test("names the topics when one is missing", () => {
+    const expected: RepositorySettings = {
+      settings: { repository: { topics: ["emoji", "react"] } },
+      rulesets: {},
+    };
+    const live: RepositorySettings = {
+      settings: { repository: { topics: ["emoji"] } },
+      rulesets: {},
+    };
+
+    expect(diffSettings(expected, live)).toEqual([
+      {
+        path: "settings.repository.topics",
+        expected: ["emoji", "react"],
+        live: ["emoji"],
       },
     ]);
   });
@@ -266,30 +343,44 @@ describe("diffSettings", () => {
 });
 
 describe("readLiveSettings", () => {
-  test("maps the GitHub responses to the tracked settings and rulesets", async () => {
+  test("maps the GitHub responses to the shape of .github/repo-settings.json", async () => {
     const runner = createRunner(LIVE_RESPONSES);
 
     const live = await readLiveSettings(runner.run);
 
     expect(live.settings).toEqual({
-      allow_squash_merge: true,
-      allow_merge_commit: true,
-      allow_rebase_merge: false,
-      squash_merge_commit_title: "PR_TITLE",
-      squash_merge_commit_message: "PR_BODY",
-      merge_commit_title: "PR_TITLE",
-      merge_commit_message: "PR_BODY",
-      delete_branch_on_merge: true,
-      allow_auto_merge: true,
-      allow_update_branch: true,
-      has_wiki: false,
-      has_projects: false,
-      has_discussions: false,
-      homepage: "",
-      "security_and_analysis.secret_scanning.status": "disabled",
-      "security_and_analysis.secret_scanning_push_protection.status": "enabled",
-      "security_and_analysis.dependabot_security_updates.status": "enabled",
-      "private_vulnerability_reporting.enabled": true,
+      repository: {
+        description: "Fluent emojis, but they move.",
+        homepage: "",
+        topics: ["react", "emoji"],
+        default_branch: "main",
+        has_wiki: false,
+        has_projects: false,
+        has_discussions: false,
+        allow_squash_merge: true,
+        allow_merge_commit: true,
+        allow_rebase_merge: false,
+        allow_auto_merge: true,
+        allow_update_branch: true,
+        delete_branch_on_merge: true,
+        squash_merge_commit_title: "PR_TITLE",
+        squash_merge_commit_message: "PR_BODY",
+        merge_commit_title: "PR_TITLE",
+        merge_commit_message: "PR_BODY",
+      },
+      security: {
+        secret_scanning: false,
+        secret_scanning_push_protection: true,
+        dependabot_alerts: true,
+        dependabot_security_updates: true,
+        private_vulnerability_reporting: true,
+      },
+      actions: {
+        default_workflow_permissions: "read",
+        can_approve_pull_request_reviews: false,
+        fork_pr_contributor_approval: "all_external_contributors",
+      },
+      code_scanning: { default_setup: "not-configured" },
     });
     expect(live.rulesets).toEqual({
       tags: {
@@ -308,17 +399,70 @@ describe("readLiveSettings", () => {
 
     await readLiveSettings(runner.run);
 
-    expect(runner.calls).toHaveLength(4);
+    expect(runner.calls).toHaveLength(8);
     for (const call of runner.calls) {
       expect(call.slice(0, 3)).toEqual(["api", "--method", "GET"]);
       expect(call).toHaveLength(4);
     }
   });
 
+  test("reads Dependabot alerts as off when GitHub answers 404", async () => {
+    const runner = createRunner({
+      ...LIVE_RESPONSES,
+      [ALERTS_ENDPOINT]: new GhFailure("gh: Vulnerability alerts are disabled. (HTTP 404)"),
+    });
+
+    const live = await readLiveSettings(runner.run);
+
+    expect(live.settings.security).toMatchObject({ dependabot_alerts: false });
+  });
+
+  test("reads Dependabot security updates as off when GitHub reports them disabled", async () => {
+    const runner = createRunner({
+      ...LIVE_RESPONSES,
+      [REPOSITORY_ENDPOINT]: {
+        ...LIVE_REPOSITORY_RESPONSE,
+        security_and_analysis: {
+          dependabot_security_updates: { status: "disabled" },
+        },
+      },
+    });
+
+    const live = await readLiveSettings(runner.run);
+
+    expect(live.settings.security).toMatchObject({
+      dependabot_security_updates: false,
+    });
+  });
+
+  test("fails when the Dependabot alerts request fails with another HTTP status", async () => {
+    const failure = new GhFailure("gh: Must have admin rights to Repository. (HTTP 403)");
+    const runner = createRunner({
+      ...LIVE_RESPONSES,
+      [ALERTS_ENDPOINT]: failure,
+    });
+
+    await expect(readLiveSettings(runner.run)).rejects.toBe(failure);
+  });
+
+  test("reads Dependabot alerts as off when only the error message names a 404", async () => {
+    const runner = createRunner({
+      ...LIVE_RESPONSES,
+      [ALERTS_ENDPOINT]: new Error("gh: Not Found (HTTP 404)"),
+    });
+
+    const live = await readLiveSettings(runner.run);
+
+    expect(live.settings.security).toMatchObject({ dependabot_alerts: false });
+  });
+
   test("leaves out a setting the response does not carry", async () => {
     const runner = createRunner({
       ...LIVE_RESPONSES,
       [REPOSITORY_ENDPOINT]: { allow_squash_merge: true },
+      [WORKFLOW_PERMISSIONS_ENDPOINT]: {},
+      [FORK_APPROVAL_ENDPOINT]: {},
+      [CODE_SCANNING_ENDPOINT]: {},
       [`${REPOSITORY_ENDPOINT}/rulesets`]: [],
     });
 
@@ -326,8 +470,13 @@ describe("readLiveSettings", () => {
 
     expect(live).toEqual({
       settings: {
-        allow_squash_merge: true,
-        "private_vulnerability_reporting.enabled": true,
+        repository: { allow_squash_merge: true },
+        security: {
+          dependabot_alerts: true,
+          private_vulnerability_reporting: true,
+        },
+        actions: {},
+        code_scanning: {},
       },
       rulesets: {},
     });
@@ -338,6 +487,7 @@ describe("readLiveSettings", () => {
     ["the rulesets are not a list", { [`${REPOSITORY_ENDPOINT}/rulesets`]: {} }],
     ["a listed ruleset has no id", { [`${REPOSITORY_ENDPOINT}/rulesets`]: [{ name: "tags" }] }],
     ["a ruleset has no name", { [`${REPOSITORY_ENDPOINT}/rulesets/7`]: { id: 7 } }],
+    ["the Actions permissions are not an object", { [WORKFLOW_PERMISSIONS_ENDPOINT]: [] }],
   ])("fails when %s", async (_case, overrides) => {
     const runner = createRunner({ ...LIVE_RESPONSES, ...overrides });
 
@@ -354,15 +504,28 @@ describe("readExpectedSettings", () => {
     }
   });
 
-  function createRulesetsDirectory(content: string): string {
+  function createTemporaryDirectory(): string {
     const directory = mkdtempSync(path.join(tmpdir(), "repo-settings-"));
     temporaryDirectories.push(directory);
+    return directory;
+  }
+
+  function createRulesetsDirectory(content: string): string {
+    const directory = createTemporaryDirectory();
     writeFileSync(path.join(directory, "broken.json"), content);
     return directory;
   }
 
+  function createSettingsFile(content: string): string {
+    const file = path.join(createTemporaryDirectory(), "repo-settings.json");
+    writeFileSync(file, content);
+    return file;
+  }
+
+  const { settings } = readExpectedSettings();
+
   test("allows squash and merge commits, never rebase", () => {
-    expect(EXPECTED_REPOSITORY_SETTINGS).toMatchObject({
+    expect(settings.repository).toMatchObject({
       allow_squash_merge: true,
       allow_merge_commit: true,
       allow_rebase_merge: false,
@@ -371,10 +534,43 @@ describe("readExpectedSettings", () => {
     });
   });
 
-  test("reads the settings list and the ruleset files of this repository", () => {
-    const expected = readExpectedSettings();
+  test("keeps the metadata, the default branch and the features of this repository", () => {
+    expect(settings.repository).toMatchObject({
+      description: expect.stringMatching(/^Fluent emojis, but they move: /) as unknown,
+      homepage: "https://animated-fluent-emojis.andryore.dev",
+      default_branch: "main",
+      has_wiki: false,
+      has_projects: false,
+      has_discussions: false,
+    });
+    expect((settings.repository as JsonObject).topics).toHaveLength(8);
+  });
 
-    expect(expected.settings).toBe(EXPECTED_REPOSITORY_SETTINGS);
+  test("keeps Dependabot alerts and Dependabot security updates on", () => {
+    expect(settings.security).toEqual({
+      secret_scanning: true,
+      secret_scanning_push_protection: true,
+      dependabot_alerts: true,
+      dependabot_security_updates: true,
+      private_vulnerability_reporting: true,
+    });
+  });
+
+  test("keeps the GITHUB_TOKEN read-only, fork pull requests gated and CodeQL advanced", () => {
+    expect(settings.actions).toEqual({
+      default_workflow_permissions: "read",
+      can_approve_pull_request_reviews: false,
+      fork_pr_contributor_approval: "all_external_contributors",
+    });
+    expect(settings.code_scanning).toEqual({ default_setup: "not-configured" });
+  });
+
+  test("reads .github/repo-settings.json and the ruleset files of this repository", () => {
+    const expected = readExpectedSettings();
+    const settingsFile = path.resolve(import.meta.dirname, "../../.github/repo-settings.json");
+    const settingsText = readFileSync(settingsFile, "utf8");
+
+    expect(expected.settings).toEqual(JSON.parse(settingsText));
     expect(Object.keys(expected.rulesets)).toEqual(["develop", "main", "tags"]);
     expect(expected.rulesets.develop).toMatchObject({
       target: "branch",
@@ -393,6 +589,21 @@ describe("readExpectedSettings", () => {
     const directory = createRulesetsDirectory(content);
 
     expect(() => readExpectedSettings(directory)).toThrow(/^repo-settings: broken\.json/);
+  });
+
+  test.each([
+    ["is not an object", "[]"],
+    ["has no security group", '{"repository":{},"actions":{},"code_scanning":{}}'],
+    [
+      "has a group that is not an object",
+      '{"repository":{},"security":true,"actions":{},"code_scanning":{}}',
+    ],
+  ])("fails when the settings file %s", (_case, content) => {
+    const file = createSettingsFile(content);
+
+    expect(() => readExpectedSettings(undefined, file)).toThrow(
+      /^repo-settings: repo-settings\.json/,
+    );
   });
 });
 
@@ -423,7 +634,7 @@ describe("docs/brand/apply-spec.md", () => {
     expect(row).toMatch(/merge commit only/i);
   });
 
-  test.each(Object.entries(EXPECTED_REPOSITORY_SETTINGS))(
+  test.each(flattenSettings("", readExpectedSettings().settings))(
     "lists %s with its expected value",
     (key, value) => {
       const text = typeof value === "string" ? value : JSON.stringify(value);

@@ -33,7 +33,12 @@
         "required_status_checks": [
           { "context": "CI passed", "integration_id": 15368 },
           { "context": "Validate PR title", "integration_id": 15368 },
-          { "context": "Check markdown links", "integration_id": 15368 }
+          { "context": "Check markdown links", "integration_id": 15368 },
+          {
+            "context": "Analyze (javascript-typescript)",
+            "integration_id": 15368
+          },
+          { "context": "Analyze (actions)", "integration_id": 15368 }
         ]
       }
     }
