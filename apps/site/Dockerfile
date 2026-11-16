@@ -10,6 +10,8 @@ COPY packages/animated-fluent-emojis packages/animated-fluent-emojis
 COPY apps/site apps/site
 COPY docs docs
 COPY CHANGELOG.md CHANGELOG.md
+COPY coverage-floors.json coverage-floors.json
+COPY tools/coverage tools/coverage
 ARG LAST_MODIFIED_DATES=""
 ENV LAST_MODIFIED_DATES=${LAST_MODIFIED_DATES}
 RUN bun run --cwd packages/animated-fluent-emojis build

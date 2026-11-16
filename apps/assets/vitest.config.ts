@@ -1,5 +1,7 @@
 import { defineConfig } from "vitest/config";
 
+import { floorFor } from "../../tools/coverage/floors.ts";
+
 export default defineConfig({
   test: {
     environment: "node",
@@ -8,8 +10,8 @@ export default defineConfig({
       provider: "v8",
       include: ["*.ts"],
       exclude: ["*.test.ts", "test-support.ts", "vitest.config.ts"],
-      reporter: ["text", "lcov"],
-      thresholds: { lines: 95, functions: 95, branches: 90, statements: 95 },
+      reporter: ["text", "lcov", "json-summary"],
+      thresholds: floorFor("apps/assets"),
     },
   },
 });

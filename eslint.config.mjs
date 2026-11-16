@@ -206,7 +206,9 @@ export default defineConfig([
   globalIgnores([
     "**/.astro/**",
     "**/dist/**",
-    "**/coverage/**",
+    "coverage/**",
+    "apps/*/coverage/**",
+    "packages/*/coverage/**",
     ".claude/worktrees/**",
     "**/.cache/**",
   ]),

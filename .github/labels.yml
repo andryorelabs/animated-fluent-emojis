@@ -1,102 +1,75 @@
-# Labels are synced automatically by .github/workflows/labels.yml
-# Run the workflow manually after editing this file to preview changes (dry-run on PR, live on push to main)
-
-# ── Type ──────────────────────────────────────────────────────────────────────
-
 - name: "Type: Bug"
-  color: "d73a4a"
-  description: Something isn't working correctly
-
+  color: d73a4a
+  description: Something does not work as documented
 - name: "Type: Feature"
-  color: "0075ca"
-  description: A brand-new feature or capability
-
+  color: a2eeef
+  description: A new capability
 - name: "Type: Enhancement"
-  color: "54aeff"
-  description: Improvement to an existing feature or behavior
-
+  color: 84b6eb
+  description: An improvement to an existing capability
 - name: "Type: Docs"
-  color: "0052cc"
-  description: Documentation additions, corrections, or improvements
-
+  color: 0075ca
+  description: Docs, ADRs or guides
 - name: "Type: Security"
-  color: "b60205"
-  description: Security vulnerability or hardening
-
-# ── Status ────────────────────────────────────────────────────────────────────
-
-- name: "Status: Needs Info"
-  color: "d876e3"
-  description: Waiting for more information from the reporter
-
-- name: "Status: In Progress"
-  color: "fbca04"
-  description: Actively being worked on
-
-- name: "Status: Blocked"
-  color: "e11d48"
-  description: Blocked by another issue or external dependency
-
-# ── Priority ──────────────────────────────────────────────────────────────────
-
+  color: b60205
+  description: A security fix or hardening
 - name: "Priority: Critical"
-  color: "b60205"
-  description: Drop-everything urgency; security or production-breaking
-
-- name: "Priority: Low"
-  color: "c2e0c6"
-  description: Low urgency; address when convenient
-
-- name: "Priority: Medium"
-  color: "ffd33d"
-  description: Normal priority
-
+  color: b60205
+  description: Drop everything
 - name: "Priority: High"
-  color: "ff7b00"
-  description: High urgency; address soon
-
-# ── Resolution ────────────────────────────────────────────────────────────────
-
+  color: d93f0b
+  description: Next in line
+- name: "Priority: Medium"
+  color: fbca04
+  description: Planned, not urgent
+- name: "Priority: Low"
+  color: 0e8a16
+  description: Nice to have
+- name: "Status: Needs Info"
+  color: d876e3
+  description: Waiting on more information before it can proceed
+- name: "Status: Needs Decision"
+  color: e99695
+  description: Waiting on a maintainer decision before it can proceed
+- name: "Status: Blocked"
+  color: "000000"
+  description: Blocked by another change or an outside decision
+- name: "Status: In Progress"
+  color: 1d76db
+  description: Someone is working on it
 - name: "Resolution: Duplicate"
-  color: "cfd3d7"
-  description: This issue or PR already exists
-
+  color: cfd3d7
+  description: Already reported or tracked elsewhere
 - name: "Resolution: Won't Fix"
-  color: "cfd3d7"
-  description: This will not be worked on
-
-# ── Area ──────────────────────────────────────────────────────────────────────
-
+  color: ffffff
+  description: Out of scope or intentionally not changed
+- name: "Resolution: Invalid"
+  color: e4e669
+  description: Not a valid report or not reproducible
 - name: "Area: components"
-  color: "fbca04"
+  color: c5def5
   description: Emoji components and their public API
-
 - name: "Area: build"
-  color: "1d76db"
-  description: Bundling, package exports, and type declarations
-
+  color: c5def5
+  description: Bundling, package exports and type declarations
 - name: "Area: ci"
-  color: "2088ff"
-  description: CI/CD workflows and automation
-
-# ── Misc ──────────────────────────────────────────────────────────────────────
-
-- name: "breaking-change"
-  color: "b60205"
-  description: Introduces a breaking change
-
+  color: c5def5
+  description: Workflows, releases and repository settings
 - name: "dependencies"
-  color: "0366d6"
-  description: Dependency updates (used by Renovate)
-
+  color: 0366d6
+  description: Dependency updates
 - name: "github-actions"
-  color: "2088ff"
-  description: GitHub Actions workflow changes
-
+  color: "000000"
+  description: GitHub Actions updates
+- name: "security"
+  color: b60205
+  description: A security fix or hardening
+- name: "breaking-change"
+  color: e11d21
+  description: Changes the public component API or the package output incompatibly
 - name: "good first issue"
-  color: "7057ff"
-  description: Good for newcomers
-
+  color: 7057ff
+  description: A small, well-scoped change for a first contribution
 - name: "help wanted"
   color: "008672"
-  description: Extra attention is needed
+  description: Extra attention or outside help is welcome

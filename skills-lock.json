@@ -1,6 +1,13 @@
 {
   "version": 1,
   "skills": {
+    "add-adr": {
+      "source": "andryorelabs/aokit",
+      "sourceType": "github",
+      "skillPath": "registry-src/adr-docs/files/skill/add-adr.md",
+      "ref": "9b7d480129c484e79def051d890a7233d7be330e",
+      "computedHash": "82f7bda5772baf9b1003045e7f420cfedfee178b574eebee9d9fc3288afa615d"
+    },
     "animate": {
       "source": "emilkowalski/skills",
       "sourceType": "github",
@@ -21,6 +28,13 @@
       "skillPath": "skills/break-ui/SKILL.md",
       "ref": "e8a175de22ae1e49370fc144c1f3bb9aeedf988d",
       "computedHash": "60ada67662925f4df5e3c6ff41cac3ab241b66f8898100a5ffcd7ba7196cb868"
+    },
+    "cut-release": {
+      "source": "andryorelabs/aokit",
+      "sourceType": "github",
+      "skillPath": "registry-src/release-skills/files/cut-release.md",
+      "ref": "9b7d480129c484e79def051d890a7233d7be330e",
+      "computedHash": "fd29e04653bfd3227a1979b1b40126fd03870f6b9012e5faf02022a7e2da2ffe"
     },
     "emil-design-eng": {
       "source": "emilkowalski/skills",

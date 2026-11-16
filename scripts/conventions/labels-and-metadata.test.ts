@@ -52,14 +52,62 @@ function collectLabelValues(node: unknown): string[] {
   );
 }
 
-const knownLabels = new Set(
-  readRepositoryFile(".github/labels.yml")
-    .matchAll(/^- name: "(.+)"$/gm)
-    .map((match) => match[1])
-    .filter((label): label is string => label !== undefined),
-);
+const STANDARD_LABELS: readonly string[] = [
+  "Type: Bug",
+  "Type: Feature",
+  "Type: Enhancement",
+  "Type: Docs",
+  "Type: Security",
+  "Status: Needs Info",
+  "Status: Needs Decision",
+  "Status: Blocked",
+  "Status: In Progress",
+  "Priority: Critical",
+  "Priority: High",
+  "Priority: Medium",
+  "Priority: Low",
+  "Resolution: Duplicate",
+  "Resolution: Won't Fix",
+  "Resolution: Invalid",
+  "dependencies",
+  "github-actions",
+  "security",
+  "breaking-change",
+  "good first issue",
+  "help wanted",
+];
+
+const AREA_LABELS: readonly string[] = ["Area: components", "Area: build", "Area: ci"];
+
+const declaredLabels: readonly string[] = readRepositoryFile(".github/labels.yml")
+  .matchAll(/^- name: "?(.+?)"?$/gm)
+  .map((match) => match[1])
+  .filter((label): label is string => label !== undefined)
+  .toArray();
+
+const knownLabels = new Set(declaredLabels);
+
+function byName(left: string, right: string): number {
+  return left.localeCompare(right);
+}
 
 describe("labels", () => {
+  test(".github/labels.yml holds exactly the standard label set plus the Area labels", () => {
+    expect(declaredLabels.toSorted(byName)).toEqual(
+      [...STANDARD_LABELS, ...AREA_LABELS].toSorted(byName),
+    );
+  });
+
+  test("every label in .github/labels.yml has a color and a description", () => {
+    const entries = readRepositoryFile(".github/labels.yml").split(/^(?=- name: )/m);
+
+    expect(entries).toHaveLength(declaredLabels.length);
+    for (const entry of entries) {
+      expect(entry).toMatch(/^ {2}color: "?[\da-f]{6}"?$/m);
+      expect(entry).toMatch(/^ {2}description: \S/m);
+    }
+  });
+
   test("the issue form directory holds the expected forms", () => {
     const forms = readdirSync(path.join(ROOT, ".github/ISSUE_TEMPLATE"))
       .filter((name) => /^\d-.+\.yml$/.test(name))

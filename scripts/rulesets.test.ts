@@ -35,7 +35,13 @@ interface NamedJob {
 
 const RULESETS_DIRECTORY = path.resolve(import.meta.dirname, "../.github/rulesets");
 const MATRIX_EXPRESSION = /\$\{\{\s*matrix\.([\w-]+)\s*\}\}/;
-const REQUIRED_CHECKS = ["CI passed", "Validate PR title", "Check markdown links"];
+const REQUIRED_CHECKS = [
+  "CI passed",
+  "Validate PR title",
+  "Check markdown links",
+  "Analyze (javascript-typescript)",
+  "Analyze (actions)",
+];
 
 function readRuleset(fileName: string): Ruleset {
   return JSON.parse(readFileSync(path.join(RULESETS_DIRECTORY, fileName), "utf8")) as Ruleset;

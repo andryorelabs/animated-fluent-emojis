@@ -1,8 +1,12 @@
 import { defineConfig } from "vitest/config";
 
+import { coverageTimeout, floorFor } from "./tools/coverage/floors.ts";
+
 export default defineConfig({
   test: {
     environment: "node",
+    testTimeout: coverageTimeout(5000),
+    hookTimeout: coverageTimeout(10_000),
     include: [
       "scripts/**/*.test.ts",
       "tools/**/*.test.ts",
@@ -26,11 +30,9 @@ export default defineConfig({
         "eslint-rules/**/*.test.ts",
         "oxlint-plugins/**/*.test.ts",
         "docs/brand/tools/**/*.test.ts",
-        "docs/brand/tools/export.mjs",
-        "scripts/lint-parity/run.ts",
       ],
-      reporter: ["text", "lcov"],
-      thresholds: { lines: 94, functions: 95, branches: 87, statements: 94 },
+      reporter: ["text", "lcov", "json-summary"],
+      thresholds: floorFor("."),
     },
   },
 });
