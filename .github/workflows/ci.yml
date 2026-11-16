@@ -15,10 +15,10 @@ permissions:
 
 jobs:
   quality:
-    name: Quality (format, lint, typecheck, knip)
+    name: Quality (format, lint, typecheck, knip, lint parity)
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
       vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
-    timeout-minutes: 15
+    timeout-minutes: 30
     permissions:
       contents: read
     steps:
@@ -58,19 +58,17 @@ jobs:
           key: ${{ runner.os }}-turbo-quality-${{ github.sha }}
           restore-keys: ${{ runner.os }}-turbo-quality-
 
-      - name: Check workspaces
-        env:
-          TURBO_SCM_BASE: origin/${{ github.base_ref }}
-        run: bunx turbo run check ${{ github.event_name == 'pull_request' &&
-          '--affected' || '' }}
+      - name: Check
+        run: bun run check
 
-      - name: Check root
-        run: bunx turbo run check:root
+      - name: Check Oxlint and ESLint parity
+        run: bun run lint:parity
 
   test:
     name: Test (Vitest browser mode)
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 30
     permissions:
       contents: read
     steps:
@@ -125,27 +123,13 @@ jobs:
           key: ${{ runner.os }}-turbo-test-${{ github.sha }}
           restore-keys: ${{ runner.os }}-turbo-test-
 
-      - name: Run workspace tests with coverage
+      - name: Run the tests with coverage and the coverage gate
         env:
-          TURBO_SCM_BASE: origin/${{ github.base_ref }}
-        run: bunx turbo run test:coverage ${{ github.event_name == 'pull_request'
-          && '--affected' || '' }}
+          COVERAGE_BASE_REF: origin/${{ github.base_ref || 'develop' }}
+        run: bun run test
 
-      - name: Run library browser tests on Firefox and WebKit
-        run: bun run --cwd packages/animated-fluent-emojis test:cross-browser
-
-      - name: Run root tests with coverage
-        run: bunx turbo run test:coverage:root
-
-      - name: Check the coverage floors against the base branch
-        if: github.event_name == 'pull_request'
-        env:
-          BASE_REF: ${{ github.base_ref }}
-        run: bun tools/coverage/check.ts --base-only --base "origin/$BASE_REF"
-
-      - name: Check the coverage gate
-        if: github.event_name != 'pull_request'
-        run: bun tools/coverage/check.ts --base origin/develop
+      - name: Run the browser tests on Chromium, Firefox and WebKit
+        run: bun run test:browsers
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
@@ -160,7 +144,8 @@ jobs:
 
   package:
     name: Package (build, publint, attw, size)
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 15
     permissions:
       contents: read
@@ -194,11 +179,17 @@ jobs:
           key: ${{ runner.os }}-turbo-package-${{ github.sha }}
           restore-keys: ${{ runner.os }}-turbo-package-
 
-      - name: Build, lint package and check size limit
+      - name: Build and lint the package
         env:
           TURBO_SCM_BASE: origin/${{ github.base_ref }}
-        run: bunx turbo run build lint:package size --filter=animated-fluent-emojis
-          ${{ github.event_name == 'pull_request' && '--affected' || '' }}
+        run: bun run lint:package --filter=animated-fluent-emojis ${{
+          github.event_name == 'pull_request' && '--affected' || '' }}
+
+      - name: Check the size limit
+        env:
+          TURBO_SCM_BASE: origin/${{ github.base_ref }}
+        run: bun run size --filter=animated-fluent-emojis ${{ github.event_name
+          == 'pull_request' && '--affected' || '' }}
 
       - name: Report package size
         run: |
@@ -216,6 +207,48 @@ jobs:
             echo ""
             echo "**dist size:** \`${dist_size}\`"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  bun-canary:
+    name: Canary (latest Bun)
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 20
+    continue-on-error: true
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: latest
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        timeout-minutes: 5
+        run: bunx playwright install --with-deps chromium
+
+      - name: Install ffmpeg
+        run: |
+          if ! command -v ffmpeg > /dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends ffmpeg
+          fi
+
+      - name: Run the tests with coverage and the coverage gate
+        env:
+          COVERAGE_BASE_REF: origin/${{ github.base_ref || 'develop' }}
+        run: bun run test
 
   commitlint:
     name: Commitlint
