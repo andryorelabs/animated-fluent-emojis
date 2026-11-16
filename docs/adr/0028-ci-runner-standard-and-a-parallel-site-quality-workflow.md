@@ -15,6 +15,12 @@ parallel, the Lighthouse job runs as 2 shards (still 5 runs per page), and the
 CI `test` job caches Playwright browsers. Expected times: CI about 2.5 minutes,
 Site Quality about 10-12 minutes without queueing.
 
+Revised: 2026-11-16, every job uses the runner expression instead of a literal
+`ubuntu-latest`, as standard v2 requires ([ADR 0031](0031-adopt-the-andryorelabs-standard-v2.md)).
+The `release.yml` `publish` job now uses it too, so `BLACKSMITH_RUNNER` must
+stay unset, or `publish` must first get an explicit literal-runner exemption:
+npm trusted publishing is bound to GitHub-hosted runners.
+
 ## Context
 
 The five andryorelabs repositories (andryore-web, animated-fluent-emojis, snug,

@@ -549,3 +549,20 @@ test("runCommand files gives new slugs to emoji missing from the registry", asyn
     "grinning-face-with-big-eyes",
   );
 });
+
+test("runLists rethrows a live index read error that is not a missing file", async () => {
+  const scratch = await createScratch();
+  const manifestPath = path.join(scratch, "manifest.json");
+  await writeFile(manifestPath, JSON.stringify(createTeamsManifest()));
+  const registryPath = path.join(scratch, "slugs.json");
+  await writeFile(registryPath, JSON.stringify({ version: 1, slugs: {} }));
+
+  await expect(
+    runLists(
+      manifestPath,
+      path.join(scratch, "docs"),
+      path.join(scratch, "emoji-id.generated.ts"),
+      { registryPath, indexPath: scratch },
+    ),
+  ).rejects.toMatchObject({ code: "EISDIR" });
+});

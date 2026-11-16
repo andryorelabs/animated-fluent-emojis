@@ -287,13 +287,13 @@ unchanged:
 - **CI passed**: aggregates the jobs above. It is one of the three required
   status checks, with `Validate PR title` and `Check markdown links`.
 
-**CI runners.** The light jobs (`ci.yml` `quality`, `commitlint` and
-`ci-passed`; `lint-pr.yml` `validate-title`; `lint-docs.yml` `check-links`;
-`lint-workflows.yml` `lint`; `labels.yml` `sync`) use
+**CI runners.** Every job in `ci.yml`, `codeql.yml`, `scorecard.yml`,
+`release.yml`, `sync-assets.yml`, `deploy-site.yml`, `lint-pr.yml`,
+`lint-docs.yml`, `lint-workflows.yml` and `labels.yml` uses
 `runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}`.
 Pull requests from forks always fall back to GitHub's `ubuntu-latest`. The
 `BLACKSMITH_RUNNER` repository variable is unset by default, so every job runs
-on `ubuntu-latest`; every other job keeps a literal `ubuntu-latest`. Why it
+on `ubuntu-latest`; `site-quality.yml` still keeps a literal `ubuntu-latest`. Why it
 stays unset on this public repository, and how to turn it on or roll it back:
 [ADR 0028](adr/0028-ci-runner-standard-and-a-parallel-site-quality-workflow.md).
 
@@ -526,15 +526,17 @@ Settings for the org-owned repository
 applied by hand through the GitHub API. The rulesets for `develop`, `main` and `v*` tags
 are `.github/rulesets/develop.json`, `.github/rulesets/main.json` and
 `.github/rulesets/tags.json`; the other
-settings and the `gh api` commands that apply them are listed in
+settings are in `.github/repo-settings.json`, and the `gh api` commands that apply them are listed in
 [`docs/brand/apply-spec.md`](brand/apply-spec.md). `bun run repo-settings:check`
-compares the live settings with those files and exits non-zero on any
+compares the live settings with those files (including both Dependabot alerts
+and Dependabot security updates, which must be on) and exits non-zero on any
 difference. Fix drift by re-applying from the files, never by editing live.
 
 The posture is recorded in [ADR 0001](adr/0001-public-repo-security-posture.md):
 squash-only merges into `develop` with linear history, merge commits only into
 `main`, signed commits, the strict required checks
-`CI passed`, `Validate PR title` and `Check markdown links`, private
+`CI passed`, `Validate PR title`, `Check markdown links`, `Analyze (javascript-typescript)`
+and `Analyze (actions)`, private
 vulnerability reporting, secret scanning with push protection, Dependabot
 security updates, immutable releases, `sha_pinning_required` and CodeQL (a
 workflow, with the default setup disabled). Change the ADR and the files

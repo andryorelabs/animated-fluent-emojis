@@ -40,3 +40,8 @@ export function misused(): void {
 
 export const describeStats = (stats: Stats, shape: Shape): string =>
   stats.toString() + shape.name
+
+export function withDefault(label?: string): string {
+  label ??= 'x'
+  return label
+}

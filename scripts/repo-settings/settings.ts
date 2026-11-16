@@ -8,9 +8,9 @@ export interface JsonObject {
 }
 
 /**
- * The repository settings this repo keeps as code: the flat settings, keyed by
- * their dotted path in the GitHub REST responses, and the rulesets, keyed by
- * ruleset name.
+ * The repository settings this repo keeps as code: the settings in the shape
+ * of `.github/repo-settings.json` (the `repository`, `security`, `actions` and
+ * `code_scanning` groups), and the rulesets, keyed by ruleset name.
  */
 export interface RepositorySettings {
   readonly settings: JsonObject;
@@ -27,38 +27,39 @@ export interface SettingDifference {
   readonly live: JsonValue | undefined;
 }
 
-/** Runs `gh` with the given arguments and resolves with its standard output. */
+/**
+ * Runs `gh` with the given arguments and resolves with its standard output.
+ * It rejects when `gh` exits non-zero, with `gh`'s standard error in the
+ * error's `stderr` or `message`.
+ */
 export type GhRunner = (commandArguments: string[]) => Promise<string>;
 
 export const REPOSITORY = "andryorelabs/animated-fluent-emojis";
 
-/**
- * The expected repository settings, keyed by their dotted path in the GitHub
- * REST responses. `docs/brand/apply-spec.md` lists the same values with the
- * commands that apply them.
- */
-export const EXPECTED_REPOSITORY_SETTINGS: JsonObject = {
-  allow_squash_merge: true,
-  allow_merge_commit: true,
-  allow_rebase_merge: false,
-  squash_merge_commit_title: "PR_TITLE",
-  squash_merge_commit_message: "PR_BODY",
-  merge_commit_title: "PR_TITLE",
-  merge_commit_message: "PR_BODY",
-  delete_branch_on_merge: true,
-  allow_auto_merge: true,
-  allow_update_branch: true,
-  has_wiki: false,
-  has_projects: false,
-  has_discussions: false,
-  homepage: "https://animated-fluent-emojis.andryore.dev",
-  "security_and_analysis.secret_scanning.status": "enabled",
-  "security_and_analysis.secret_scanning_push_protection.status": "enabled",
-  "security_and_analysis.dependabot_security_updates.status": "enabled",
-  "private_vulnerability_reporting.enabled": true,
-};
-
 const RULESETS_DIRECTORY = path.resolve(import.meta.dirname, "../../.github/rulesets");
+const SETTINGS_FILE = path.resolve(import.meta.dirname, "../../.github/repo-settings.json");
+
+const SETTINGS_GROUPS = ["repository", "security", "actions", "code_scanning"] as const;
+
+const REPOSITORY_FIELDS = [
+  "description",
+  "homepage",
+  "topics",
+  "default_branch",
+  "has_wiki",
+  "has_projects",
+  "has_discussions",
+  "allow_squash_merge",
+  "allow_merge_commit",
+  "allow_rebase_merge",
+  "allow_auto_merge",
+  "allow_update_branch",
+  "delete_branch_on_merge",
+  "squash_merge_commit_title",
+  "squash_merge_commit_message",
+  "merge_commit_title",
+  "merge_commit_message",
+] as const;
 
 const RULESET_FIELDS = [
   "name",
@@ -70,6 +71,8 @@ const RULESET_FIELDS = [
 ] as const;
 
 const ELEMENT_IDENTITY_KEYS = ["type", "context"] as const;
+
+const NOT_FOUND = "HTTP 404";
 
 function isJsonObject(value: JsonValue | undefined): value is JsonObject {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -160,7 +163,8 @@ function diffValues(
 /**
  * Lists every value that differs between the expected settings and the live
  * ones. Only the keys the expected side names are compared, so the defaults
- * GitHub adds to a response are not drift. A ruleset, a rule or a required
+ * GitHub adds to a response are not drift. A list of plain values, such as the
+ * topics, is compared without regard to order. A ruleset, a rule or a required
  * check that exists only on GitHub is drift.
  * @param expected The settings held in the repository files.
  * @param live The settings read from GitHub.
@@ -187,30 +191,93 @@ export function diffSettings(
   return differences;
 }
 
-function lookUp(source: JsonObject, dottedPath: string): JsonValue | undefined {
-  let current: JsonValue | undefined = source;
-  for (const segment of dottedPath.split(".")) {
-    if (!isJsonObject(current)) return undefined;
-    current = current[segment];
-  }
-  return current;
-}
-
-function pickDefined(
-  source: JsonObject,
-  keys: readonly string[],
-  read: (source: JsonObject, key: string) => JsonValue | undefined,
-): JsonObject {
+function definedEntries(entries: Record<string, JsonValue | undefined>): JsonObject {
   const picked: Record<string, JsonValue> = {};
-  for (const key of keys) {
-    const value = read(source, key);
+  for (const [key, value] of Object.entries(entries)) {
     if (value !== undefined) picked[key] = value;
   }
   return picked;
 }
 
+function pick(source: JsonObject, keys: readonly string[]): JsonObject {
+  return definedEntries(Object.fromEntries(keys.map((key) => [key, source[key]])));
+}
+
 function getEndpoint(endpoint: string): string[] {
   return ["api", "--method", "GET", `repos/${REPOSITORY}${endpoint}`];
+}
+
+async function readObject(run: GhRunner, endpoint: string, source: string): Promise<JsonObject> {
+  return parseJsonObject(await run(getEndpoint(endpoint)), source);
+}
+
+function featureEnabled(repository: JsonObject, feature: string): boolean | undefined {
+  const analysis = repository.security_and_analysis;
+  const entry = isJsonObject(analysis) ? analysis[feature] : undefined;
+  const status = isJsonObject(entry) ? entry.status : undefined;
+  if (status === "enabled") return true;
+  return status === "disabled" ? false : undefined;
+}
+
+function isNotFound(error: unknown): boolean {
+  const { message, stderr } = (error ?? {}) as {
+    readonly message?: unknown;
+    readonly stderr?: unknown;
+  };
+  return [message, stderr].some((text) => typeof text === "string" && text.includes(NOT_FOUND));
+}
+
+async function readDependabotAlerts(run: GhRunner): Promise<boolean> {
+  try {
+    await run(getEndpoint("/vulnerability-alerts"));
+    return true;
+  } catch (error: unknown) {
+    if (isNotFound(error)) return false;
+    throw error;
+  }
+}
+
+async function readSecurity(run: GhRunner, repository: JsonObject): Promise<JsonObject> {
+  const dependabotAlerts = await readDependabotAlerts(run);
+  const reporting = await readObject(
+    run,
+    "/private-vulnerability-reporting",
+    "the private vulnerability reporting response",
+  );
+  return definedEntries({
+    secret_scanning: featureEnabled(repository, "secret_scanning"),
+    secret_scanning_push_protection: featureEnabled(repository, "secret_scanning_push_protection"),
+    dependabot_alerts: dependabotAlerts,
+    dependabot_security_updates: featureEnabled(repository, "dependabot_security_updates"),
+    private_vulnerability_reporting: reporting.enabled,
+  });
+}
+
+async function readActions(run: GhRunner): Promise<JsonObject> {
+  const workflow = await readObject(
+    run,
+    "/actions/permissions/workflow",
+    "the Actions workflow permissions response",
+  );
+  const forkApproval = await readObject(
+    run,
+    "/actions/permissions/fork-pr-contributor-approval",
+    "the fork pull request approval response",
+  );
+  return definedEntries({
+    default_workflow_permissions: workflow.default_workflow_permissions,
+    can_approve_pull_request_reviews: workflow.can_approve_pull_request_reviews,
+    fork_pr_contributor_approval: forkApproval.approval_policy,
+  });
+}
+
+async function readCodeScanning(run: GhRunner): Promise<JsonObject> {
+  const defaultSetup = await readObject(
+    run,
+    "/code-scanning/default-setup",
+    "the CodeQL default setup response",
+  );
+  return definedEntries({ default_setup: defaultSetup.state });
 }
 
 async function readLiveRulesets(run: GhRunner): Promise<Record<string, JsonObject>> {
@@ -224,45 +291,56 @@ async function readLiveRulesets(run: GhRunner): Promise<Record<string, JsonObjec
     if (typeof id !== "number") {
       throw new TypeError("repo-settings: a listed ruleset has no numeric id.");
     }
-    const response = await run(getEndpoint(`/rulesets/${String(id)}`));
-    const ruleset = parseJsonObject(response, `ruleset ${String(id)}`);
+    const ruleset = await readObject(run, `/rulesets/${String(id)}`, `ruleset ${String(id)}`);
     const name = ruleset.name;
     if (typeof name !== "string") {
       throw new TypeError(`repo-settings: ruleset ${String(id)} has no name.`);
     }
-    rulesets[name] = pickDefined(ruleset, RULESET_FIELDS, (source, key) => source[key]);
+    rulesets[name] = pick(ruleset, RULESET_FIELDS);
   }
   return rulesets;
 }
 
 /**
- * Reads the live repository settings and rulesets from GitHub. Every call is
- * a `GET`, so nothing is changed.
+ * Reads the live repository settings and rulesets from GitHub, in the shape of
+ * `.github/repo-settings.json`. Every call is a `GET`, so nothing is changed.
+ * Dependabot alerts are off when their endpoint answers 404; any other failure
+ * of a call rejects.
  * @param run Runs `gh` with the given arguments and resolves with its output.
  * @returns The live values of the settings this repo tracks, and its rulesets.
  */
 export async function readLiveSettings(run: GhRunner): Promise<RepositorySettings> {
-  const repository = parseJsonObject(await run(getEndpoint("")), "the repository response");
-  const vulnerabilityReporting = parseJsonObject(
-    await run(getEndpoint("/private-vulnerability-reporting")),
-    "the private vulnerability reporting response",
-  );
-  const settings = pickDefined(
-    { ...repository, private_vulnerability_reporting: vulnerabilityReporting },
-    Object.keys(EXPECTED_REPOSITORY_SETTINGS),
-    lookUp,
-  );
+  const repository = await readObject(run, "", "the repository response");
+  const settings: JsonObject = {
+    repository: pick(repository, REPOSITORY_FIELDS),
+    security: await readSecurity(run, repository),
+    actions: await readActions(run),
+    code_scanning: await readCodeScanning(run),
+  };
   return { settings, rulesets: await readLiveRulesets(run) };
 }
 
+function readSettingsFile(settingsFile: string): JsonObject {
+  const source = path.basename(settingsFile);
+  const settings = parseJsonObject(readFileSync(settingsFile, "utf8"), source);
+  for (const group of SETTINGS_GROUPS) {
+    if (!isJsonObject(settings[group])) {
+      throw new TypeError(`repo-settings: ${source} has no "${group}" object.`);
+    }
+  }
+  return settings;
+}
+
 /**
- * Reads the expected settings from the repository: the settings list above
+ * Reads the expected settings from the repository: `.github/repo-settings.json`
  * and every ruleset file under `.github/rulesets`.
  * @param rulesetsDirectory The directory that holds the ruleset JSON files.
+ * @param settingsFile The settings file, with the `repository`, `security`, `actions` and `code_scanning` groups.
  * @returns The expected settings, with the rulesets keyed by their `name`.
  */
 export function readExpectedSettings(
   rulesetsDirectory: string = RULESETS_DIRECTORY,
+  settingsFile: string = SETTINGS_FILE,
 ): RepositorySettings {
   const rulesets: Record<string, JsonObject> = {};
   const fileNames = readdirSync(rulesetsDirectory)
@@ -279,5 +357,5 @@ export function readExpectedSettings(
     }
     rulesets[name] = ruleset;
   }
-  return { settings: EXPECTED_REPOSITORY_SETTINGS, rulesets };
+  return { settings: readSettingsFile(settingsFile), rulesets };
 }

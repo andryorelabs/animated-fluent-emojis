@@ -25,6 +25,9 @@ An index of every document in this repository.
   emoji gallery and docs in ten languages (`apps/site`).
 - [`PRODUCT.md`](../PRODUCT.md): product context for agents.
 - [`apps/site/DESIGN.md`](../apps/site/DESIGN.md): the website's design rules.
+- [`ACCESSIBILITY.md`](../ACCESSIBILITY.md): accessibility goal, checks and how to report a barrier.
+- [`DESIGN.md`](../DESIGN.md): pointer to the website design rules and the brand kit.
+- [`configuration.md`](configuration.md): the environment variables the code reads.
 - [`AGENTS.md`](../AGENTS.md): instructions for coding agents (`CLAUDE.md`
   imports it).
 
@@ -64,6 +67,7 @@ An index of every document in this repository.
 ## Architecture decision records
 
 - [`adr/README.md`](adr/README.md): ADR index and status table.
+- [`adr/0000-template.md`](adr/0000-template.md)
 - [`adr/0001-public-repo-security-posture.md`](adr/0001-public-repo-security-posture.md)
 - [`adr/0002-tsdoc-only-code-comments.md`](adr/0002-tsdoc-only-code-comments.md)
 - [`adr/0003-esm-only-and-vite-8.md`](adr/0003-esm-only-and-vite-8.md)
@@ -94,6 +98,7 @@ An index of every document in this repository.
 - [`adr/0028-ci-runner-standard-and-a-parallel-site-quality-workflow.md`](adr/0028-ci-runner-standard-and-a-parallel-site-quality-workflow.md)
 - [`adr/0029-andryorelabs-cross-repo-standard.md`](adr/0029-andryorelabs-cross-repo-standard.md)
 - [`adr/0030-develop-is-the-trunk.md`](adr/0030-develop-is-the-trunk.md)
+- [`adr/0031-adopt-the-andryorelabs-standard-v2.md`](adr/0031-adopt-the-andryorelabs-standard-v2.md)
 
 ## Brand
 
@@ -114,6 +119,7 @@ An index of every document in this repository.
 - [`agents/domain.md`](agents/domain.md): domain docs layout.
 - [`agents/issue-tracker.md`](agents/issue-tracker.md): the Linear tracker.
 - [`agents/triage-labels.md`](agents/triage-labels.md): triage label vocabulary.
+- [`agents/codebase.md`](agents/codebase.md): the codebase map: workspaces, entry points, tests and scripts.
 - [`agents/emet.md`](agents/emet.md): emet operational specifics.
 
 ## Emoji reference

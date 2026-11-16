@@ -4,13 +4,18 @@ on:
   push:
     tags: ["v*"]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: read
 
 jobs:
   verify:
     name: Verify, build and pack
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 30
     permissions:
       contents: read
@@ -27,6 +32,23 @@ jobs:
           pkg_version=$(jq -r .version packages/animated-fluent-emojis/package.json)
           if [[ "${tag_version}" != "${pkg_version}" ]]; then
             echo "Tag ${GITHUB_REF_NAME} does not match packages/animated-fluent-emojis/package.json version ${pkg_version}"
+            exit 1
+          fi
+
+      - name: Extract changelog section
+        run: |
+          tag_version="${GITHUB_REF_NAME#v}"
+          awk -v ver="${tag_version}" '
+            /^## \[/ {
+              if (found) exit
+              if (index($0, "## [" ver "]") == 1) { found = 1 }
+              next
+            }
+            /^\[[^]]+\]: / { if (found) exit }
+            found { print }
+          ' CHANGELOG.md > "${RUNNER_TEMP}/release-notes.md"
+          if [[ -z "$(tr -d '[:space:]' < "${RUNNER_TEMP}/release-notes.md")" ]]; then
+            echo "No CHANGELOG.md section found for version ${tag_version}"
             exit 1
           fi
 
@@ -121,28 +143,11 @@ jobs:
       - name: Build
         run: bun run build
 
-      - name: Extract changelog section
-        run: |
-          tag_version="${GITHUB_REF_NAME#v}"
-          awk -v ver="${tag_version}" '
-            /^## \[/ {
-              if (found) exit
-              if (index($0, "## [" ver "]") == 1) { found = 1 }
-              next
-            }
-            /^\[[^]]+\]: / { if (found) exit }
-            found { print }
-          ' CHANGELOG.md > release-notes.md
-          if [[ -z "$(tr -d '[:space:]' < release-notes.md)" ]]; then
-            echo "No CHANGELOG.md section found for version ${tag_version}"
-            exit 1
-          fi
-
       - name: Pack the tarball from the library workspace
         run: |
           mkdir release-artifact
           (cd packages/animated-fluent-emojis && bun pm pack --destination "${GITHUB_WORKSPACE}/release-artifact" --quiet)
-          mv release-notes.md release-artifact/release-notes.md
+          mv "${RUNNER_TEMP}/release-notes.md" release-artifact/release-notes.md
           cp .node-version release-artifact/node-version
 
       - name: Verify the tarball contents
@@ -170,7 +175,8 @@ jobs:
   publish:
     name: Publish to npm and create GitHub Release
     needs: verify
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' ||
+      vars.BLACKSMITH_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 10
     environment: npm
     permissions:

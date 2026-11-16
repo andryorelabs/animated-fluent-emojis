@@ -1,7 +1,9 @@
-import "../../element/index.js";
+import { defineFluentEmoji } from "../../element/fluent-emoji.js";
 import type { FluentEmojiElement } from "../../element/index.js";
 import type { ConformanceDriver, ConformanceOptions } from "./driver.js";
 import { defineConformanceSuite } from "./suite.js";
+
+defineFluentEmoji();
 
 const applyOptions = (element: FluentEmojiElement, options: ConformanceOptions): void => {
   element.id = options.id;

@@ -1,1 +1,44 @@
-[]
+[
+  {
+    "file": "scripts/zv-eslint-comments.ts",
+    "line": 8,
+    "rule": "unused-disable-directive",
+    "reason": "Same violation, one report fewer: the fixture disables no-console twice (lines 7 and 8) with no console problem to suppress. ESLint reports both directives as unused, Oxlint only the first (line 7, common), so the unused region is still rejected and @eslint-community/eslint-comments/no-duplicate-disable flags line 8 on both engines. Directive bookkeeping lives in Oxlint's Rust core, which no jsPlugin or option reaches. Checked 2026-11-16 against Oxlint 1.90.0."
+  },
+  {
+    "file": "scripts/zv-eslint-comments.ts",
+    "line": 13,
+    "rule": "unused-disable-directive",
+    "reason": "Location only: for an unused `/* eslint-disable rule */ ... /* eslint-enable rule */` block, ESLint reports the disable comments (lines 13 and 14) and Oxlint reports the closing enable comment instead (line 15, oxlint-only) with the same 'Unused eslint-disable directive' message, so the unused block is still rejected. Directive reporting lives in Oxlint's Rust core, which no jsPlugin or option reaches. Checked 2026-11-16 against Oxlint 1.90.0."
+  },
+  {
+    "file": "scripts/zv-eslint-comments.ts",
+    "line": 14,
+    "rule": "unused-disable-directive",
+    "reason": "Location only, same block as line 13: ESLint reports each disable comment of the unused block, Oxlint reports the closing enable comment (line 15, oxlint-only), so the unused block is still rejected. Checked 2026-11-16 against Oxlint 1.90.0."
+  },
+  {
+    "file": "scripts/zv-eslint-comments.ts",
+    "line": 20,
+    "rule": "@eslint-community/eslint-comments/disable-enable-pair",
+    "reason": "Suppressed by the comment it reports: eslint-comments reports directive problems at column -1, which ESLint never suppresses. Oxlint rejects a negative column, so oxlint-plugins/eslint-comments.mjs clamps it to 0, the start of the unlimited `/* eslint-disable */` on line 20, and Oxlint's disable-all region covers it. Oxlint has no position before a line's first column to report at instead. The unlimited disable is still rejected on both engines by unicorn/no-abusive-eslint-disable (line 20, common). Checked 2026-11-16 against Oxlint 1.90.0."
+  },
+  {
+    "file": "scripts/zv-eslint-comments.ts",
+    "line": 20,
+    "rule": "@eslint-community/eslint-comments/no-unlimited-disable",
+    "reason": "Suppressed by the comment it reports, as for disable-enable-pair on line 20: the clamped column-0 report falls inside Oxlint's disable-all region. The unlimited disable is still rejected on both engines by unicorn/no-abusive-eslint-disable (line 20, common). Checked 2026-11-16 against Oxlint 1.90.0."
+  },
+  {
+    "file": "scripts/zv-eslint-comments.ts",
+    "line": 20,
+    "rule": "@eslint-community/eslint-comments/require-description",
+    "reason": "Suppressed by the comment it reports, as for disable-enable-pair on line 20: the clamped column-0 report falls inside Oxlint's disable-all region. Undescribed directives are still rejected elsewhere (line 1, common), and the unlimited disable by unicorn/no-abusive-eslint-disable (line 20, common). Checked 2026-11-16 against Oxlint 1.90.0."
+  },
+  {
+    "file": "scripts/zv-eslint-comments.ts",
+    "line": 20,
+    "rule": "unused-disable-directive",
+    "reason": "Follows from the eslint-comments reports on line 20: Oxlint's unlimited `/* eslint-disable */` suppresses the clamped column-0 eslint-comments reports on its own line, so Oxlint counts it as used, while ESLint never suppresses them and finds it unused. The unlimited disable is still rejected on both engines by unicorn/no-abusive-eslint-disable (line 20, common). Checked 2026-11-16 against Oxlint 1.90.0."
+  }
+]

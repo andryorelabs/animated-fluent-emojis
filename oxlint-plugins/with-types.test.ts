@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { RuleTester } from "oxlint/plugins-dev";
-import { afterAll, describe, it } from "vitest";
+import { afterAll, describe, expect, it } from "vitest";
 
 import typescriptJsPlugin from "./typescript-js.mjs";
 import unicornJsPlugin from "./unicorn-js.mjs";
@@ -205,4 +205,52 @@ ruleTester.run("with-types probe", probeRule, {
       errors: [{ messageId: "uncoveredFile", line: 1 }],
     },
   ],
+});
+
+mkdirSync(path.join(temporaryRoot, "corrupt/tsconfig.json"), { recursive: true });
+const corruptFile = writeFile("corrupt/src/probe.ts", "export const target = 1\n");
+
+/** The minimal context `withTypes` reads before it hands over to the wrapped rule. */
+interface DirectContext {
+  readonly filename: string;
+  readonly sourceCode: object;
+}
+
+/**
+ * Builds the context a direct `create` call needs.
+ * @param filename Absolute path of the file being linted.
+ * @returns The minimal context.
+ */
+function directContext(filename: string): DirectContext {
+  return { filename, sourceCode: {} };
+}
+
+describe("with-types guards", () => {
+  it("throws when the covering tsconfig cannot be read", () => {
+    const rule = withTypes({ create: () => ({}) }, { requireTypes: true });
+    expect(() => rule.create?.(directContext(corruptFile) as never)).toThrow(
+      /with-types: cannot read .*tsconfig\.json/,
+    );
+  });
+
+  it("throws when an ESTree node has no TypeScript node", () => {
+    const rule = withTypes(
+      {
+        create(context: {
+          parserServices: {
+            esTreeNodeToTSNodeMap: { get(node: object): void };
+          };
+        }) {
+          context.parserServices.esTreeNodeToTSNodeMap.get({
+            range: [90_000, 90_001],
+          });
+          return {};
+        },
+      },
+      { requireTypes: true },
+    );
+    expect(() => rule.create?.(directContext(probeFile) as never)).toThrow(
+      /with-types: no TypeScript node at 90000-90001/,
+    );
+  });
 });

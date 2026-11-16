@@ -1,0 +1,23 @@
+# animated-fluent-emojis
+
+> animated-fluent-emojis is an ESM-only component library that renders Microsoft's Fluent Emoji as animated sprites. It ships adapters for React, Vue, Svelte and Astro, plus a framework-free `<fluent-emoji>` custom element.
+
+## Use
+
+- [Usage](https://github.com/andryorelabs/animated-fluent-emojis/blob/main/docs/usage.md): install the package and render your first emoji.
+- [Frameworks](https://github.com/andryorelabs/animated-fluent-emojis/blob/main/docs/guide/frameworks.md): the React, Vue, Svelte, Astro and element adapters.
+- [Props](https://github.com/andryorelabs/animated-fluent-emojis/blob/main/docs/guide/props.md): every option an emoji accepts.
+- [Lookup](https://github.com/andryorelabs/animated-fluent-emojis/blob/main/docs/guide/lookup.md): find an emoji by name, Unicode or keyword.
+- [Configuration](https://github.com/andryorelabs/animated-fluent-emojis/blob/main/docs/configuration.md): point the library at the asset site.
+
+## Reference
+
+- [Types](https://github.com/andryorelabs/animated-fluent-emojis/blob/main/docs/guide/types.md): the exported TypeScript types.
+- [Behavior](https://github.com/andryorelabs/animated-fluent-emojis/blob/main/docs/guide/behavior.md): playback, hover, reduced motion and fallbacks.
+- [Troubleshooting](https://github.com/andryorelabs/animated-fluent-emojis/blob/main/docs/troubleshooting.md): symptom, cause and fix for the common failures.
+- [Changelog](https://github.com/andryorelabs/animated-fluent-emojis/blob/main/CHANGELOG.md): what changed in each release.
+
+## Optional
+
+- [Security](https://github.com/andryorelabs/animated-fluent-emojis/blob/main/docs/security.md): the Content Security Policy and supply-chain notes.
+- [Architecture](https://github.com/andryorelabs/animated-fluent-emojis/blob/main/docs/architecture.md): how the repository is laid out.

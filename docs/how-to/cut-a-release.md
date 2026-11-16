@@ -3,12 +3,15 @@
 Releases are manual and tag-driven. Pushing a signed `v*` tag publishes the
 package to npm and creates the GitHub Release.
 
-1. Bump the `version` field in `packages/animated-fluent-emojis/package.json` to
-   the new version number.
+1. Run `bun run release:prep x.y.z`. It bumps the `version` field in
+   `packages/animated-fluent-emojis/package.json`, moves `[Unreleased]` in
+   `CHANGELOG.md` into a new `## [x.y.z] - YYYY-MM-DD` section, leaves an empty
+   `## [Unreleased]` above it and updates the compare links at the bottom of the
+   file. It fails without changing anything when `[Unreleased]` has no entries
+   or `x.y.z` is not higher than the current version.
 
-2. In `CHANGELOG.md`, rename the `[Unreleased]` heading content into a new
-   `## [x.y.z] - YYYY-MM-DD` section, leave an empty `## [Unreleased]` above it,
-   and update the link references at the bottom of the file.
+2. Review the diff of both files. Entries must sit under `### Added`,
+   `### Changed` or `### Fixed`.
 
 3. Run `bun run check` and `bun run test` to confirm everything passes.
 

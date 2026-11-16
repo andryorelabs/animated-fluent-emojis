@@ -1,0 +1,26 @@
+{
+  ".": {
+    "lines": 90.19,
+    "functions": 93.45,
+    "branches": 87.9,
+    "statements": 89.49
+  },
+  "packages/animated-fluent-emojis": {
+    "lines": 99.56,
+    "functions": 99.53,
+    "branches": 92.26,
+    "statements": 97.75
+  },
+  "apps/site": {
+    "lines": 98.06,
+    "functions": 98.82,
+    "branches": 91.8,
+    "statements": 97.64
+  },
+  "apps/assets": {
+    "lines": 99.37,
+    "functions": 99.71,
+    "branches": 90.62,
+    "statements": 98.54
+  }
+}

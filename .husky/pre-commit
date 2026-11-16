@@ -1,1 +1,1 @@
-bunx lint-staged
+bun "$(dirname "$0")/../tools/hooks/pre-commit.ts"

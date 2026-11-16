@@ -1,6 +1,6 @@
 {
   "name": "animated-fluent-emojis",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Microsoft's animated Fluent emojis as one component. They play on load or hover, rest under reduced motion and hold their space while they load.",
   "author": "Andry Orellana <hello@andryore.dev>",
   "license": "MIT",
@@ -49,7 +49,8 @@
   "module": "./dist/animated-fluent-emojis.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "llms.txt"
   ],
   "exports": {
     ".": {
@@ -93,9 +94,10 @@
     "lint:package": "bun run build && publint --strict && attw --pack . --profile esm-only",
     "check": "bun run typecheck && bun run lint:package",
     "size": "size-limit",
-    "test": "vitest run",
+    "test": "vitest run --coverage",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:browsers": "vitest run",
     "test:cross-browser": "vitest run --project 'browser (firefox)' --project 'browser (webkit)'"
   },
   "peerDependencies": {
@@ -142,9 +144,9 @@
     "@vitest/coverage-v8": "catalog:",
     "astro": "catalog:",
     "axe-core": "4.14.0",
-    "msw": "3.0.3",
-    "playwright": "1.64.1",
-    "preact": "11.1.1",
+    "msw": "3.0.4",
+    "playwright": "1.65.0",
+    "preact": "11.2.0",
     "publint": "0.3.25",
     "react": "catalog:",
     "react-dom": "catalog:",

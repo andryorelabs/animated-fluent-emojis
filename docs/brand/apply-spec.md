@@ -27,58 +27,100 @@ globs.
 
 ## Repository settings and rulesets
 
-The values below and the files in `.github/rulesets/` are the source of truth
-for the GitHub settings. `bun run repo-settings:check` reads the live settings
-with `gh api` (GET only), prints each value that differs and exits non-zero when
-there is any. It needs `gh` signed in with admin access to the repository.
+[`.github/repo-settings.json`](../../.github/repo-settings.json) and the files
+in [`.github/rulesets/`](../../.github/rulesets/README.md) are the source of
+truth for the GitHub settings. `bun run repo-settings:check` reads the live
+settings with `gh api` (GET only), prints each value that differs and exits
+non-zero when there is any. It needs `gh` signed in with admin access to the
+repository.
 
 Drift is fixed by re-applying from these files, never by editing the live
-settings. To change a setting, change it here (or in the ruleset file, and in
-`scripts/repo-settings/settings.ts` for the table), merge, then apply.
+settings. To change a setting, change it in `.github/repo-settings.json` (or in
+the ruleset file) and in the table below, merge, then apply.
 
-| Setting                                                        | Value                                                 | Meaning                                         |
-| -------------------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------- |
-| `allow_squash_merge`                                           | `true`                                                | Squash merges pull requests into `develop`      |
-| `allow_merge_commit`                                           | `true`                                                | Merge commits promote `develop` to `main`       |
-| `allow_rebase_merge`                                           | `false`                                               | No rebase merges                                |
-| `squash_merge_commit_title`                                    | `PR_TITLE`                                            | The squash commit subject is the PR title       |
-| `squash_merge_commit_message`                                  | `PR_BODY`                                             | The squash commit body is the PR body           |
-| `merge_commit_title`                                           | `PR_TITLE`                                            | The merge commit subject is the PR title        |
-| `merge_commit_message`                                         | `PR_BODY`                                             | The merge commit body is the PR body            |
-| `delete_branch_on_merge`                                       | `true`                                                | Head branches are deleted on merge              |
-| `allow_auto_merge`                                             | `true`                                                | Auto-merge is available                         |
-| `allow_update_branch`                                          | `true`                                                | "Update branch" is offered on pull requests     |
-| `has_wiki`                                                     | `false`                                               | Wiki off                                        |
-| `has_projects`                                                 | `false`                                               | Projects off                                    |
-| `has_discussions`                                              | `false`                                               | Discussions off                                 |
-| `homepage`                                                     | `https://animated-fluent-emojis.andryore.dev`         | Repository, About, website                      |
-| `security_and_analysis.secret_scanning.status`                 | `enabled`                                             | Secret scanning on                              |
-| `security_and_analysis.secret_scanning_push_protection.status` | `enabled`                                             | Push protection on                              |
-| `security_and_analysis.dependabot_security_updates.status`     | `enabled`                                             | Dependabot security updates on                  |
-| `private_vulnerability_reporting.enabled`                      | `true`                                                | Private vulnerability reporting on              |
-| Ruleset `develop`                                              | [`develop.json`](../../.github/rulesets/develop.json) | Rules for the trunk: squash only, strict checks |
-| Ruleset `main`                                                 | [`main.json`](../../.github/rulesets/main.json)       | Rules for the default branch: merge commit only |
-| Ruleset `tags`                                                 | [`tags.json`](../../.github/rulesets/tags.json)       | Rules for `refs/tags/v*`                        |
+The settings file has four groups. `repository` holds fields of the repository
+object; `security` holds the security features as `true` or `false`;
+`actions` holds the default `GITHUB_TOKEN` permissions and the fork pull
+request approval policy; `code_scanning` holds the state of CodeQL default
+setup, which stays `not-configured` because `.github/workflows/codeql.yml` is
+the advanced setup.
 
-Apply the settings:
+| Setting                                    | Value                                                                                                                       | Meaning                                                  |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `repository.description`                   | `Fluent emojis, but they move: Microsoft's animated emojis as one component. Not affiliated with or endorsed by Microsoft.` | About description, from `copy.md`                        |
+| `repository.homepage`                      | `https://animated-fluent-emojis.andryore.dev`                                                                               | About website                                            |
+| `repository.topics`                        | `["animated-emojis","animation","emoji","emojis","fluent-emoji","fluent-emojis","react","typescript"]`                      | About topics, compared without regard to order           |
+| `repository.default_branch`                | `main`                                                                                                                      | `main` is the default branch; `develop` is the trunk     |
+| `repository.has_wiki`                      | `false`                                                                                                                     | Wiki off                                                 |
+| `repository.has_projects`                  | `false`                                                                                                                     | Projects off                                             |
+| `repository.has_discussions`               | `false`                                                                                                                     | Discussions off                                          |
+| `repository.allow_squash_merge`            | `true`                                                                                                                      | Squash merges pull requests into `develop`               |
+| `repository.allow_merge_commit`            | `true`                                                                                                                      | Merge commits promote `develop` to `main`                |
+| `repository.allow_rebase_merge`            | `false`                                                                                                                     | No rebase merges                                         |
+| `repository.allow_auto_merge`              | `true`                                                                                                                      | Auto-merge is available                                  |
+| `repository.allow_update_branch`           | `true`                                                                                                                      | "Update branch" is offered on pull requests              |
+| `repository.delete_branch_on_merge`        | `true`                                                                                                                      | Head branches are deleted on merge                       |
+| `repository.squash_merge_commit_title`     | `PR_TITLE`                                                                                                                  | The squash commit subject is the PR title                |
+| `repository.squash_merge_commit_message`   | `PR_BODY`                                                                                                                   | The squash commit body is the PR body                    |
+| `repository.merge_commit_title`            | `PR_TITLE`                                                                                                                  | The merge commit subject is the PR title                 |
+| `repository.merge_commit_message`          | `PR_BODY`                                                                                                                   | The merge commit body is the PR body                     |
+| `security.secret_scanning`                 | `true`                                                                                                                      | Secret scanning on                                       |
+| `security.secret_scanning_push_protection` | `true`                                                                                                                      | Push protection on                                       |
+| `security.dependabot_alerts`               | `true`                                                                                                                      | Dependabot alerts on                                     |
+| `security.dependabot_security_updates`     | `true`                                                                                                                      | Dependabot security updates on                           |
+| `security.private_vulnerability_reporting` | `true`                                                                                                                      | Private vulnerability reporting on                       |
+| `actions.default_workflow_permissions`     | `read`                                                                                                                      | The default `GITHUB_TOKEN` is read-only                  |
+| `actions.can_approve_pull_request_reviews` | `false`                                                                                                                     | Workflows cannot approve pull requests                   |
+| `actions.fork_pr_contributor_approval`     | `all_external_contributors`                                                                                                 | Every outside contributor's fork PR waits for approval   |
+| `code_scanning.default_setup`              | `not-configured`                                                                                                            | CodeQL default setup off; `codeql.yml` is the setup used |
+| Ruleset `develop`                          | [`develop.json`](../../.github/rulesets/develop.json)                                                                       | Rules for the trunk: squash only, strict checks          |
+| Ruleset `main`                             | [`main.json`](../../.github/rulesets/main.json)                                                                             | Rules for the default branch: merge commit only          |
+| Ruleset `tags`                             | [`tags.json`](../../.github/rulesets/tags.json)                                                                             | Rules for `refs/tags/v*`                                 |
+
+The check reads `security.secret_scanning`, `security.secret_scanning_push_protection`
+and `security.dependabot_security_updates` from `security_and_analysis` in the
+repository object. It reads `security.dependabot_alerts` from
+`vulnerability-alerts`, which answers 204 when alerts are on and 404 when they
+are off, so alerts that are off are drift, not an error.
+
+Apply the repository fields, then the topics:
 
 ```sh
 gh api --method PATCH repos/andryorelabs/animated-fluent-emojis \
+  -f "description=Fluent emojis, but they move: Microsoft's animated emojis as one component. Not affiliated with or endorsed by Microsoft." \
+  -f homepage=https://animated-fluent-emojis.andryore.dev -f default_branch=main \
   -F allow_squash_merge=true -F allow_merge_commit=true -F allow_rebase_merge=false \
   -f squash_merge_commit_title=PR_TITLE -f squash_merge_commit_message=PR_BODY \
   -f merge_commit_title=PR_TITLE -f merge_commit_message=PR_BODY \
   -F delete_branch_on_merge=true -F allow_auto_merge=true -F allow_update_branch=true \
   -F has_wiki=false -F has_projects=false -F has_discussions=false \
-  -f homepage=https://animated-fluent-emojis.andryore.dev \
   -f 'security_and_analysis[secret_scanning][status]=enabled' \
   -f 'security_and_analysis[secret_scanning_push_protection][status]=enabled'
+gh api --method PUT repos/andryorelabs/animated-fluent-emojis/topics \
+  -f 'names[]=animated-emojis' -f 'names[]=animation' -f 'names[]=emoji' -f 'names[]=emojis' \
+  -f 'names[]=fluent-emoji' -f 'names[]=fluent-emojis' -f 'names[]=react' -f 'names[]=typescript'
+```
+
+Apply the security features. Dependabot security updates
+(`automated-security-fixes`) need Dependabot alerts (`vulnerability-alerts`) on
+first, so keep that order:
+
+```sh
 gh api --method PUT repos/andryorelabs/animated-fluent-emojis/vulnerability-alerts
 gh api --method PUT repos/andryorelabs/animated-fluent-emojis/automated-security-fixes
 gh api --method PUT repos/andryorelabs/animated-fluent-emojis/private-vulnerability-reporting
 ```
 
-Dependabot security updates (`automated-security-fixes`) need Dependabot alerts
-(`vulnerability-alerts`) on first, so keep that order.
+Apply the Actions settings and keep CodeQL default setup off:
+
+```sh
+gh api --method PUT repos/andryorelabs/animated-fluent-emojis/actions/permissions/workflow \
+  -f default_workflow_permissions=read -F can_approve_pull_request_reviews=false
+gh api --method PUT repos/andryorelabs/animated-fluent-emojis/actions/permissions/fork-pr-contributor-approval \
+  -f approval_policy=all_external_contributors
+gh api --method PATCH repos/andryorelabs/animated-fluent-emojis/code-scanning/default-setup \
+  -f state=not-configured
+```
 
 Apply the rulesets. Each file is the request body as is. Look up the ruleset
 ids, then replace each ruleset with its file:
@@ -103,21 +145,22 @@ Then run `bun run repo-settings:check`; it must exit 0. It compares every file
 in `.github/rulesets/` with the live rulesets by name, so a live ruleset with no
 file and a file with no live ruleset are both drift.
 
-`scripts/rulesets.test.ts` fails when a required check in `develop.json` or
-`main.json` is not a job name in `.github/workflows`, so a job is renamed in the
-workflows and in both ruleset files together, and the rulesets are applied again
-after the merge.
+`develop.json` and `main.json` require `CI passed`, `Validate PR title`,
+`Check markdown links`, `Analyze (javascript-typescript)` and
+`Analyze (actions)`. `scripts/rulesets.test.ts` fails when one of them is not a
+job name in `.github/workflows`, so a job is renamed in the workflows and in
+both ruleset files together, and the rulesets are applied again after the
+merge.
 
 ## Manual (GitHub and npm)
 
 Applied by hand: these have no API or are not checked by `repo-settings:check`.
 
-| Where                                | Value                                                                                                                       |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| Repository, Settings, Social preview | Upload [`og/social-preview.png`](og/social-preview.png) (1280x640, 235 KB)                                                  |
-| Repository, About, description       | "Fluent emojis, but they move: Microsoft's animated emojis as one component. Not affiliated with or endorsed by Microsoft." |
-| Repository, About, topics            | `react`, `emoji`, `emojis`, `animated-emojis`, `fluent-emoji`, `fluent-emojis`, `animation`, `typescript`                   |
-| npm page                             | Nothing to do: it shows the README and the `package.json` fields above                                                      |
+| Where                                | Value                                                                      |
+| ------------------------------------ | -------------------------------------------------------------------------- |
+| Repository, Settings, Social preview | Upload [`og/social-preview.png`](og/social-preview.png) (1280x640, 235 KB) |
+| Labels                               | `.github/workflows/labels.yml` syncs `.github/labels.yml`                  |
+| npm page                             | Nothing to do: it shows the README and the `package.json` fields above     |
 
 ## Not done on purpose
 

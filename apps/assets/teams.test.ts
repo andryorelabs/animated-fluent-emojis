@@ -138,3 +138,34 @@ test("discoverTeamsVersion does not flag when one source works", async () => {
 
   expect(discovery.advertisedSourcesFailed).toBe(false);
 });
+
+test("discoverTeamsVersion warns when the web client HTML has no config bundle links", async () => {
+  const { fetch } = createFakeFetch({
+    ...headRoute(OLD_HASH, "Wed, 03 May 2023 17:03:38 GMT"),
+    "GET https://teams.microsoft.com/v2/": { body: "<html></html>" },
+  });
+
+  const discovery = await discoverTeamsVersion({
+    fetchImplementation: fetch,
+    knownHashes: [OLD_HASH],
+  });
+
+  expect(discovery.warnings).toContain("Teams web client HTML had no config bundle links");
+});
+
+test("discoverTeamsVersion records a failed manifest probe and keeps the others", async () => {
+  const { fetch } = createFakeFetch({
+    ...headRoute(OLD_HASH, "Wed, 03 May 2023 17:03:38 GMT"),
+    [`HEAD ${buildManifestUrl(MID_HASH)}`]: { status: 403 },
+  });
+
+  const discovery = await discoverTeamsVersion({
+    fetchImplementation: fetch,
+    knownHashes: [MID_HASH, OLD_HASH],
+  });
+
+  expect(discovery.version.hash).toBe(OLD_HASH);
+  expect(discovery.warnings.some((warning) => warning.includes(`${MID_HASH} probe failed`))).toBe(
+    true,
+  );
+});

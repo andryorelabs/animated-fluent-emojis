@@ -4,6 +4,7 @@ import type { Manifest } from "../../packages/animated-fluent-emojis/src/utils/t
 import { PIPELINE_VERSION } from "./catalog.js";
 import type { PublishedVersion } from "./site-writer.js";
 import {
+  createDefaultDependencies,
   createPlanGuard,
   fetchPublishedJson,
   formatErrorChain,
@@ -234,4 +235,22 @@ test("verify-live fails on another pipeline version", async () => {
     },
   });
   await expect(verifyLive(fetch, liveUrl)).rejects.toThrow("pipelineVersion");
+});
+
+test("formatErrorChain lists every error of an AggregateError", () => {
+  const output = formatErrorChain(
+    new AggregateError([new Error("first failure"), "second failure"], "all failed"),
+  );
+
+  expect(output).toContain("AggregateError: all failed");
+  expect(output).toContain("  - Error: first failure");
+  expect(output).toContain("  - second failure");
+});
+
+test("createDefaultDependencies wires the live globals", () => {
+  const dependencies = createDefaultDependencies();
+
+  expect(dependencies.fetch).toBe(fetch);
+  expect(dependencies.environment).toBe(process.env);
+  expect(typeof dependencies.buildAssets).toBe("function");
 });
