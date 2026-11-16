@@ -20,6 +20,14 @@
   <a href="https://www.npmjs.com/package/animated-fluent-emojis"><img src="https://img.shields.io/npm/types/animated-fluent-emojis" alt="Types"></a>
 </p>
 
+<p align="center">
+  <a href="docs/README.md">Documentation</a> ·
+  <a href="docs/usage.md">Usage</a> ·
+  <a href="CHANGELOG.md">Changelog</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a> ·
+  <a href="ACCESSIBILITY.md">Accessibility</a>
+</p>
+
 Drop Microsoft's animated Fluent emojis into a React, Vue, Svelte or Astro app,
 or any page through the `<fluent-emoji>` element: one import, one tag. They play
 on load or on hover, rest on a still frame when someone asks for less motion,
