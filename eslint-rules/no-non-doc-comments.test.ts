@@ -1,5 +1,5 @@
 import { RuleTester } from "eslint";
-import { describe, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import rule from "./no-non-doc-comments.mjs";
 
@@ -104,4 +104,22 @@ ruleTester.run("no-non-doc-comments", rule, {
       errors: [{ messageId: "noNonDocComment" }],
     },
   ],
+});
+
+describe("no-non-doc-comments create", () => {
+  it("falls back to getSourceCode on a context without sourceCode", () => {
+    const reported: unknown[] = [];
+    const comment = { type: "Line", value: " explains" };
+    const visitor = rule.create({
+      getSourceCode: () => ({
+        getAllComments: () => [comment],
+        getText: () => "// explains",
+      }),
+      report: (descriptor: unknown) => {
+        reported.push(descriptor);
+      },
+    } as never) as { Program(): void };
+    visitor.Program();
+    expect(reported).toEqual([{ node: comment, messageId: "noNonDocComment" }]);
+  });
 });
