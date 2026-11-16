@@ -13,6 +13,9 @@ merge commit) was not met when this record was accepted;
 Revised: 2026-11-12, emet reviews and escalations run on `opus` instead of
 `fable`, matching `emet.config.json` since #191.
 
+Revised: 2026-11-16, [ADR 0031](0031-adopt-the-andryorelabs-standard-v2.md)
+extends this record to standard v2.
+
 ## Context
 
 Six andryorelabs repositories (andryore-web, animated-fluent-emojis, snug, emet,

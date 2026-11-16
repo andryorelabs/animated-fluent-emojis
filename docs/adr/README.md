@@ -43,3 +43,4 @@ for editing and replacing ADRs are in
 | 0028   | [CI runner standard and a parallel Site Quality workflow](0028-ci-runner-standard-and-a-parallel-site-quality-workflow.md)                                   | Accepted | -                        |
 | 0029   | [Adopt the andryorelabs cross-repo standard v1](0029-andryorelabs-cross-repo-standard.md)                                                                    | Accepted | -                        |
 | 0030   | [develop is the trunk, promoted to main by merge commit](0030-develop-is-the-trunk.md)                                                                       | Accepted | -                        |
+| 0031   | [Adopt the andryorelabs cross-repo standard v2](0031-adopt-the-andryorelabs-standard-v2.md)                                                                  | Accepted | -                        |
