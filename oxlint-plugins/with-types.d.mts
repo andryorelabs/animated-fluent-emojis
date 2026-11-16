@@ -8,10 +8,7 @@ type OxlintRule = Parameters<RuleTester["run"]>[1];
  * imported from `with-types.test.ts` and TypeScript cannot infer types across
  * a `.ts` -> `.mjs` import without one.
  */
-export declare function withTypes(
-  rule: object,
-  options: { requireTypes: boolean },
-): OxlintRule;
+export declare function withTypes(rule: object, options: { requireTypes: boolean }): OxlintRule;
 
 export declare function withTypesPlugin(
   plugin: { rules: Record<string, object> },

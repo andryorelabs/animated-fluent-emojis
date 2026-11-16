@@ -2,35 +2,31 @@
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "sortPackageJson": false,
   "sortImports": {
-    "ignoreCase": true,
-    "newlinesBetween": true,
-    "internalPattern": ["@/"],
+    "groups": [
+      "builtin",
+      { "newlinesBetween": false },
+      "astro",
+      { "newlinesBetween": false },
+      "external",
+      "internal",
+      ["parent", "sibling", "index"],
+      "unknown"
+    ],
     "customGroups": [
       {
         "groupName": "astro",
         "elementNamePattern": ["astro", "astro/**", "astro:*"]
       }
     ],
-    "groups": [
-      "builtin",
-      { "newlinesBetween": false },
-      ["external", "astro"],
-      "internal",
-      ["parent", "sibling", "index"],
-      "unknown"
-    ]
+    "internalPattern": ["@/"],
+    "ignoreCase": true,
+    "newlinesBetween": true
   },
   "sortTailwindcss": {
     "stylesheet": "./apps/site/src/styles/global.css",
     "functions": ["cn", "cva", "clsx"]
   },
   "astro": {},
-  "associations": [
-    {
-      "files": ["*.astro"],
-      "language": "astro"
-    }
-  ],
   "ignorePatterns": [
     "node_modules",
     "**/dist",

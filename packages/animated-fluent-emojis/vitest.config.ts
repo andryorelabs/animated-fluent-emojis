@@ -1,7 +1,7 @@
+import { getViteConfig } from "astro/config";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import react from "@vitejs/plugin-react";
 import { playwright } from "@vitest/browser-playwright";
-import { getViteConfig } from "astro/config";
 import { msw } from "msw/vite";
 import { defineConfig } from "vitest/config";
 
