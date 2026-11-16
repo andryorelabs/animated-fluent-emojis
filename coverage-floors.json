@@ -12,10 +12,10 @@
     "statements": 97.75
   },
   "apps/site": {
-    "lines": 80.68,
-    "functions": 73.9,
-    "branches": 76.66,
-    "statements": 79.7
+    "lines": 98.06,
+    "functions": 98.82,
+    "branches": 91.8,
+    "statements": 97.64
   },
   "apps/assets": {
     "lines": 99.37,
