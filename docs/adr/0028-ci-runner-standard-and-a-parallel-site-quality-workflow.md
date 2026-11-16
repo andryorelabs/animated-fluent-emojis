@@ -17,6 +17,9 @@ Site Quality about 10-12 minutes without queueing.
 
 Revised: 2026-11-16, every job uses the runner expression instead of a literal
 `ubuntu-latest`, as standard v2 requires ([ADR 0031](0031-adopt-the-andryorelabs-standard-v2.md)).
+The `release.yml` `publish` job now uses it too, so `BLACKSMITH_RUNNER` must
+stay unset, or `publish` must first get an explicit literal-runner exemption:
+npm trusted publishing is bound to GitHub-hosted runners.
 
 ## Context
 
