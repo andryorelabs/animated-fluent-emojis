@@ -64,6 +64,13 @@
       "ref": "e8a175de22ae1e49370fc144c1f3bb9aeedf988d",
       "computedHash": "f221cea36642168df6d3d6d7f236237cbf1ae669138ff7df07775674223d49ad"
     },
+    "modern-web-guidance": {
+      "source": "googlechrome/modern-web-guidance",
+      "sourceType": "github",
+      "skillPath": "skills/modern-web-guidance/SKILL.md",
+      "ref": "64a6d708f5a43f2cd3fde5d4d7db3905ba1bdf65",
+      "computedHash": "d9f3ceba8b5c77b12ae6f852932a349843ce086d03ce76ab5e2257e7e5acd16d"
+    },
     "pick-ui-library": {
       "source": "emilkowalski/skills",
       "sourceType": "github",
