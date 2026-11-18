@@ -85,6 +85,10 @@ describe("retired names", () => {
       prefix: "scripts/standard-invariants.test.ts",
       reason: "the test names what it forbids",
     },
+    {
+      prefix: ".claude/skills/modern-web-guidance/",
+      reason: "vendored upstream guides use the verb forge and must stay byte-identical",
+    },
   ];
 
   test("appear in tracked files only on the allowlist", () => {

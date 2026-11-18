@@ -564,8 +564,13 @@ pinned to a commit so `skills-lock.json` records the exact `ref`. Read each
 `SKILL.md` and any bundled script before committing it. `bunx skills update`
 moves the pins, so review the diff the same way.
 
-The skills installed today all come from `emilkowalski/skills` and cover design
-and motion work on the website: `animate`, `animation-vocabulary`, `break-ui`,
+Most installed skills come from `emilkowalski/skills` and cover design and
+motion work on the website: `animate`, `animation-vocabulary`, `break-ui`,
 `emil-design-eng`, `find-animation-opportunities`, `improve-animations`,
-`mobile-native`, `pick-ui-library` and `review-animations`. The emet workflow is
+`mobile-native`, `pick-ui-library` and `review-animations`. `add-adr` and
+`cut-release` come from `andryorelabs/aokit`. `modern-web-guidance` comes from
+`googlechrome/modern-web-guidance` and gives agents current guidance on HTML,
+CSS and client-side JavaScript; it has no bundled scripts, but its `SKILL.md`
+tells agents to run `npx -y modern-web-guidance@latest`, which fetches that
+package at run time. The emet workflow is
 configured in [`agents/emet.md`](agents/emet.md).
