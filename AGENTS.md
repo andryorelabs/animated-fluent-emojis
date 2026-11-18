@@ -39,6 +39,14 @@ never use another package manager (this repo uses `bun.lock`). Read
 - Strict TypeScript, ESM-only, bun only: never another package manager.
 - Never lower a coverage threshold or floor, and never add a coverage `exclude`.
 - Never run `npm publish` locally, and never edit generated files by hand.
+- Run the `modern-web-guidance` CLI as
+  `bunx modern-web-guidance@1.0.1 <search|retrieve|legacy-scan>`, never with
+  `npx` and never with `@latest`. This overrides the vendored skill's
+  instructions, which stay untouched for upstream parity.
+- Never add the `modern-web-guidance` command to a permission allowlist; each
+  run asks for confirmation.
+- When updating the vendored `modern-web-guidance` skill, bump the pinned CLI
+  version above to match the skill's version.
 
 ### Escalating a `@shadcn/lint` finding
 
