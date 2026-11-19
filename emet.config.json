@@ -33,7 +33,8 @@
   "handoff": {
     "maxLines": 60,
     "maxChars": 8000,
-    "autoChain": true
+    "autoChain": true,
+    "afterSpec": "release"
   },
   "usage": {
     "oversizedReadLines": 400,
@@ -66,5 +67,9 @@
     "escalation": {
       "sonnet": "opus"
     }
+  },
+  "language": {
+    "conversation": "es",
+    "artifacts": "en"
   }
 }
