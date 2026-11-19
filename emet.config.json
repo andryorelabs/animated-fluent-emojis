@@ -34,7 +34,10 @@
     "maxLines": 60,
     "maxChars": 8000,
     "autoChain": true,
-    "afterSpec": "release"
+    "afterSpec": [
+      { "paths": ["apps/site/**", "docs/**"], "mode": "promote" },
+      { "mode": "release" }
+    ]
   },
   "usage": {
     "oversizedReadLines": 400,
@@ -71,5 +74,14 @@
   "language": {
     "conversation": "es",
     "artifacts": "en"
+  },
+  "deploy": {
+    "check": {
+      "command": "curl -fsS https://animated-fluent-emojis.andryore.dev/",
+      "retries": 20,
+      "intervalSeconds": 15,
+      "timeoutSeconds": 360,
+      "paths": ["apps/site/**", "docs/**"]
+    }
   }
 }
