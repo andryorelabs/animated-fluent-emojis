@@ -144,7 +144,7 @@
     "@vitest/coverage-v8": "catalog:",
     "astro": "catalog:",
     "axe-core": "4.14.0",
-    "msw": "3.0.4",
+    "msw": "3.0.6",
     "playwright": "1.65.0",
     "preact": "11.2.0",
     "publint": "0.3.25",
