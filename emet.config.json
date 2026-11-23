@@ -33,7 +33,11 @@
   "handoff": {
     "maxLines": 60,
     "maxChars": 8000,
-    "autoChain": true
+    "autoChain": true,
+    "afterSpec": [
+      { "paths": ["apps/site/**", "docs/**"], "mode": "promote" },
+      { "mode": "release" }
+    ]
   },
   "usage": {
     "oversizedReadLines": 400,
@@ -66,5 +70,42 @@
     "escalation": {
       "sonnet": "opus"
     }
+  },
+  "language": {
+    "conversation": "es",
+    "artifacts": "en"
+  },
+  "deploy": {
+    "check": {
+      "command": "curl -fsS https://animated-fluent-emojis.andryore.dev/",
+      "retries": 20,
+      "intervalSeconds": 15,
+      "timeoutSeconds": 360,
+      "paths": ["apps/site/**", "docs/**"]
+    }
+  },
+  "verify": {
+    "browser": {
+      "startCommand": "bun run --cwd apps/site dev",
+      "url": "http://localhost:4321",
+      "paths": ["apps/site/**"]
+    }
+  },
+  "landing": {
+    "specMergeMethod": "squash"
+  },
+  "validate": {
+    "coupledSurfaces": [
+      {
+        "source": "docs/{guide,how-to}/**/*.md",
+        "dependents": "apps/site/src/content/translations/**"
+      }
+    ]
+  },
+  "specs": {
+    "enabled": true
+  },
+  "review": {
+    "highRiskPaths": ["dockerfile", ".github/rulesets/"]
   }
 }
